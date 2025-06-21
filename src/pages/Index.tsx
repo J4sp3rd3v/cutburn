@@ -30,7 +30,6 @@ import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import DailyShots from '@/components/DailyShots';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
-import PectoralFatLossProtocol from '@/components/PectoralFatLossProtocol';
 import { useAdvancedNutritionTracking } from '@/hooks/useAdvancedNutritionTracking';
 
 const Index = () => {
@@ -112,7 +111,7 @@ const Index = () => {
   const today = new Date();
   const daysSinceStart = Math.max(1, Math.ceil((today.getTime() - registrationDate.getTime()) / (1000 * 60 * 60 * 24)));
 
-  // Calcolo deficit calorico ottimizzato per grasso pettorale
+  // Calcolo deficit calorico ottimizzato
   const calculateOptimalDeficit = () => {
     if (!userProfile || !nutritionData) return {
       bmr: 1680,
@@ -171,15 +170,12 @@ const Index = () => {
       <main className="max-w-md mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="px-4 pt-4">
-            <TabsList className="grid w-full grid-cols-7 bg-white/70 backdrop-blur-sm text-xs">
+            <TabsList className="grid w-full grid-cols-6 bg-white/70 backdrop-blur-sm text-xs">
               <TabsTrigger value="dashboard" className="text-xs">
                 <Target className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="meals" className="text-xs">
                 <Utensils className="w-4 h-4" />
-              </TabsTrigger>
-              <TabsTrigger value="protocol" className="text-xs">
-                <TrendingDown className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="diet" className="text-xs">
                 <Calendar className="w-4 h-4" />
@@ -203,14 +199,14 @@ const Index = () => {
                   Ciao {userProfile.name}! 🔥
                 </h2>
                 <p className="text-slate-600">
-                  Giorno {daysSinceStart} - Protocollo Grasso Pettorale
+                  Giorno {daysSinceStart} - Protocollo Fat Loss
                 </p>
               </div>
 
               {/* Enhanced Deficit Status */}
               <Card className="p-4 bg-gradient-to-r from-red-500 to-orange-500 text-white">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold">Deficit Aggressivo Pettorale</h3>
+                  <h3 className="font-semibold">Deficit Calorico Aggressivo</h3>
                   <Badge variant="secondary" className="bg-white/20 text-white">
                     -{calorieData.deficit} kcal/giorno
                   </Badge>
@@ -286,7 +282,7 @@ const Index = () => {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Workout Pettorali</span>
+                    <span className="text-slate-600">Workout Completato</span>
                     <Button
                       variant={dailyProgress.workoutCompleted ? "default" : "outline"}
                       size="sm"
@@ -346,14 +342,6 @@ const Index = () => {
                   onMarkMealAsEaten={markMealAsEaten}
                 />
               )}
-            </TabsContent>
-
-            {/* Nuovo Tab Protocol */}
-            <TabsContent value="protocol" className="mt-4">
-              <PectoralFatLossProtocol 
-                userWeight={userProfile.currentWeight}
-                currentBodyFat={15} // Default, poi possiamo renderlo dinamico
-              />
             </TabsContent>
 
             <TabsContent value="diet" className="mt-4">
