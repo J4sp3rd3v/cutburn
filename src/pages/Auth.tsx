@@ -27,14 +27,20 @@ const Auth = () => {
     setError('');
 
     try {
+      console.log('🔄 Inizio processo di login...');
+      
       const success = await signIn(email, password);
+      
       if (success) {
+        console.log('✅ Login riuscito, reindirizzamento...');
         navigate('/');
       } else {
-        setError('Email o password non corretti');
+        console.log('❌ Login fallito');
+        setError('Email o password non corretti. Verifica le tue credenziali.');
       }
     } catch (err) {
-      setError('Errore durante il login');
+      console.error('❌ Errore durante handleLogin:', err);
+      setError('Errore durante il login. Controlla la connessione e riprova.');
     } finally {
       setLoading(false);
     }

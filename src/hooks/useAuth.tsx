@@ -74,40 +74,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       console.log('🔄 Caricamento profilo per utente:', supabaseUser.id);
       
-      // Cerca il profilo utente nel database
-      const { data: profile, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('auth_user_id', supabaseUser.id)
-        .single();
+      // Prima imposta l'utente con i dati di base per evitare blocchi
+      const basicUser = {
+        id: supabaseUser.id,
+        email: supabaseUser.email || '',
+        name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
+        created_at: supabaseUser.created_at
+      };
+      
+      console.log('✅ Impostazione utente con dati base:', basicUser);
+      setUser(basicUser);
+      
+      // Poi prova a caricare il profilo dal database (opzionale)
+      try {
+        const { data: profile, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('auth_user_id', supabaseUser.id)
+          .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ Errore caricamento profilo:', error);
-        alert(`Errore caricamento profilo: ${error.message}`);
-        return;
-      }
-
-      if (profile) {
-        console.log('✅ Profilo trovato nel database:', profile);
-        setUser({
-          id: profile.id,
-          email: supabaseUser.email || '',
-          name: profile.name,
-          created_at: profile.created_at || supabaseUser.created_at
-        });
-      } else {
-        console.log('⚠️ Profilo non trovato, uso dati base Supabase');
-        // Se non esiste un profilo, usa i dati di base di Supabase
-        setUser({
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
-          created_at: supabaseUser.created_at
-        });
+        if (profile && !error) {
+          console.log('✅ Profilo trovato nel database, aggiornamento dati:', profile);
+          setUser({
+            id: profile.id,
+            email: supabaseUser.email || '',
+            name: profile.name,
+            created_at: profile.created_at || supabaseUser.created_at
+          });
+        } else {
+          console.log('⚠️ Profilo non trovato nel database, uso dati base');
+        }
+      } catch (dbError) {
+        console.log('⚠️ Database non accessibile, uso dati base:', dbError);
+        // L'utente è già impostato con i dati base, quindi continuiamo
       }
     } catch (error) {
       console.error('❌ Errore generale loadUserProfile:', error);
-      alert(`Errore caricamento utente: ${error}`);
+      // Fallback: imposta comunque l'utente con dati minimi
+      setUser({
+        id: supabaseUser.id,
+        email: supabaseUser.email || '',
+        name: supabaseUser.email?.split('@')[0] || 'Utente',
+        created_at: supabaseUser.created_at
+      });
     }
   };
 
@@ -117,26 +126,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       console.log('🔄 Tentativo login per:', email);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Timeout per evitare blocchi infiniti
+      const loginPromise = supabase.auth.signInWithPassword({
         email,
         password
       });
 
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout login')), 10000); // 10 secondi
+      });
+
+      const { data, error } = await Promise.race([loginPromise, timeoutPromise]) as any;
+
       if (error) {
         console.error('❌ Errore login Supabase:', error);
+        alert(`Errore login: ${error.message}`);
         return false;
       }
 
       console.log('✅ Login Supabase completato:', data);
 
       if (data.user && data.session) {
+        console.log('🔄 Caricamento profilo utente...');
         await loadUserProfile(data.user);
+        console.log('✅ Login completato con successo!');
         return true;
       }
 
       return false;
     } catch (error) {
       console.error('❌ Errore generale login:', error);
+      if (error.message === 'Timeout login') {
+        alert('Timeout durante il login. Riprova.');
+      } else {
+        alert(`Errore di connessione: ${error.message}`);
+      }
       return false;
     } finally {
       setLoading(false);
