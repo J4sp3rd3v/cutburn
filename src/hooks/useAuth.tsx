@@ -56,6 +56,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
+      console.log('🔄 Caricamento profilo per utente:', supabaseUser.id);
+      
       // Cerca il profilo utente nel database
       const { data: profile, error } = await supabase
         .from('user_profiles')
@@ -64,11 +66,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error loading user profile:', error);
+        console.error('❌ Errore caricamento profilo:', error);
+        alert(`Errore caricamento profilo: ${error.message}`);
         return;
       }
 
       if (profile) {
+        console.log('✅ Profilo trovato nel database:', profile);
         setUser({
           id: profile.id,
           email: supabaseUser.email || '',
@@ -76,16 +80,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           created_at: profile.created_at || supabaseUser.created_at
         });
       } else {
+        console.log('⚠️ Profilo non trovato, uso dati base Supabase');
         // Se non esiste un profilo, usa i dati di base di Supabase
         setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || '',
-          name: supabaseUser.email?.split('@')[0] || 'Utente',
+          name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
           created_at: supabaseUser.created_at
         });
       }
     } catch (error) {
-      console.error('Error in loadUserProfile:', error);
+      console.error('❌ Errore generale loadUserProfile:', error);
+      alert(`Errore caricamento utente: ${error}`);
     }
   };
 
@@ -93,8 +99,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       
+      console.log('🔄 Tentativo login per:', email);
+      
       // Credenziali demo
       if (email === 'demo@cutburn.com' && password === 'demo123') {
+        console.log('✅ Login demo utente');
         setUser({
           id: 'demo_user',
           email: 'demo@cutburn.com',
@@ -110,13 +119,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (error) {
-        console.error('Sign in error:', error);
+        console.error('❌ Errore login Supabase:', error);
+        alert(`Errore login: ${error.message}`);
         return false;
       }
 
-      return !!data.user;
+      console.log('✅ Login Supabase completato:', data);
+
+      if (data.user && data.session) {
+        await loadUserProfile(data.user);
+        return true;
+      }
+
+      return false;
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('❌ Errore generale login:', error);
+      alert(`Errore di connessione: ${error}`);
       return false;
     } finally {
       setLoading(false);
@@ -127,17 +145,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       
+      console.log('🔄 Tentativo registrazione per:', email);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          data: {
+            name: name,
+            full_name: name
+          }
+        }
       });
 
       if (error) {
-        console.error('Sign up error:', error);
+        console.error('❌ Errore registrazione Supabase:', error);
+        alert(`Errore registrazione: ${error.message}`);
         return false;
       }
 
-      if (data.user) {
+      console.log('✅ Registrazione Supabase completata:', data);
+
+      if (data.user && data.session) {
+        console.log('🔄 Creazione profilo utente...');
+        
+        // Aspetta un attimo per assicurarsi che l'utente sia completamente creato
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         // Crea il profilo utente nel database
         const { error: profileError } = await supabase
           .from('user_profiles')
@@ -158,16 +192,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           });
 
         if (profileError) {
-          console.error('Profile creation error:', profileError);
-          // Non bloccare la registrazione se c'è un errore nella creazione del profilo
+          console.error('❌ Errore creazione profilo:', profileError);
+          alert(`Errore creazione profilo: ${profileError.message}`);
+          // Continua comunque, il profilo può essere creato successivamente
+        } else {
+          console.log('✅ Profilo creato con successo');
         }
 
+        // Imposta subito l'utente
+        setUser({
+          id: data.user.id,
+          email: data.user.email || '',
+          name: name,
+          created_at: data.user.created_at
+        });
+
         return true;
+      } else if (data.user && !data.session) {
+        console.log('📧 Conferma email richiesta');
+        alert('Controlla la tua email per confermare la registrazione!');
+        return false;
       }
 
       return false;
     } catch (error) {
-      console.error('Sign up error:', error);
+      console.error('❌ Errore generale registrazione:', error);
+      alert(`Errore di connessione: ${error}`);
       return false;
     } finally {
       setLoading(false);
