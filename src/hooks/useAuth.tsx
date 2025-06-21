@@ -1,6 +1,5 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { useLocalStorage } from './useLocalStorage';
 
 interface User {
   id: string;
@@ -20,54 +19,25 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useLocalStorage<User | null>('currentUser', null);
-  const [users, setUsers] = useLocalStorage<User[]>('registeredUsers', []);
-  const [loading, setLoading] = useState(false);
+  // Utente fittizio per bypassare l'autenticazione
+  const [user] = useState<User>({
+    id: 'demo_user',
+    email: 'demo@cutburn.com',
+    name: 'Utente Demo',
+    created_at: new Date().toISOString()
+  });
+  const [loading] = useState(false);
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
-    setLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const foundUser = users.find(u => u.email === email);
-    if (foundUser) {
-      setUser(foundUser);
-      setLoading(false);
-      return true;
-    }
-    
-    setLoading(false);
-    return false;
+    return true;
   };
 
   const signUp = async (email: string, password: string, name: string): Promise<boolean> => {
-    setLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const existingUser = users.find(u => u.email === email);
-    if (existingUser) {
-      setLoading(false);
-      return false;
-    }
-    
-    const newUser: User = {
-      id: `user_${Date.now()}`,
-      email,
-      name: name || 'Utente',
-      created_at: new Date().toISOString()
-    };
-    
-    setUsers(prev => [...prev, newUser]);
-    setUser(newUser);
-    setLoading(false);
     return true;
   };
 
   const signOut = async () => {
-    setUser(null);
+    // Non fa nulla
   };
 
   return (

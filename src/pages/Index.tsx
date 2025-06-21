@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,8 +15,7 @@ import {
   Clock,
   Zap,
   Droplets,
-  Flame,
-  LogOut
+  Flame
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
@@ -33,7 +31,7 @@ import DailyShots from '@/components/DailyShots';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 
 const Index = () => {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
   
@@ -60,27 +58,13 @@ const Index = () => {
   const [weeklyProgress, setWeeklyProgress] = useState<Array<{ date: string; weight: number }>>([]);
 
   useEffect(() => {
-    if (authLoading) return;
-    
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
-  }, [user, authLoading, navigate]);
-
-  useEffect(() => {
     if (user) {
       const progress = getWeeklyProgress();
       setWeeklyProgress(progress);
     }
   }, [user, getWeeklyProgress]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
-
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
@@ -93,7 +77,7 @@ const Index = () => {
     );
   }
 
-  if (!user || !userProfile) {
+  if (!userProfile) {
     return null;
   }
 
@@ -127,14 +111,6 @@ const Index = () => {
                 className="rounded-full"
               >
                 <User className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="rounded-full text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <LogOut className="w-5 h-5" />
               </Button>
             </div>
           </div>
