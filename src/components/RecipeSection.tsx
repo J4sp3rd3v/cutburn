@@ -1,22 +1,14 @@
-import React, { useState, useMemo, Suspense } from 'react';
+
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles, Loader2 } from 'lucide-react';
+import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles } from 'lucide-react';
 
-// Componente di loading
-const RecipeLoader = () => (
-  <div className="flex items-center justify-center py-8">
-    <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-    <span className="ml-2 text-slate-600">Caricamento ricette...</span>
-  </div>
-);
-
-const RecipeSection = React.memo(() => {
+const RecipeSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("detox");
 
-  // Memoizza le ricette per evitare re-render inutili
-  const recipes = useMemo(() => ({
+  const recipes = {
     detox: [
       {
         name: "THE BOOSTER - Cetriolo Detox",
@@ -75,6 +67,36 @@ const RecipeSection = React.memo(() => {
         benefits: "Citrullina per pump muscolare. Idratazione pre-workout ottimale.",
         timing: "45 min pre-allenamento",
         fatBurning: "Citrullina migliora flusso sangue tessuto adiposo"
+      },
+      {
+        name: "THE BOOSTER",
+        time: "3 min",
+        servings: 1,
+        calories: 65,
+        type: "Estratto Detox",
+        category: "Mattina - Purificante",
+        ingredients: [
+          "Barbabietola rossa: 1/2 piccola cruda sbucciata",
+          "Sedano: 1 gambo",
+          "Mela verde: 1/2",
+          "Lime: 1/2 (succo)",
+          "Acqua: 80ml"
+        ],
+        preparation: [
+          "Lavare e tagliare barbabietola, sedano, mela a pezzi",
+          "Inserire tutti ingredienti nel boccale con acqua",
+          "Frullare 1 min / Vel 10 per consistenza omogenea",
+          "Filtrare con colino a maglie fini se si vuole succo limpido",
+          "Bere immediatamente per massimi benefici"
+        ],
+        bimbySteps: [
+          "Verdure + frutta nel boccale con acqua",
+          "1 min / Vel 10 per estrazione completa",
+          "Filtraggio opzionale per consistenza"
+        ],
+        benefits: "Barbabietola per ossido nitrico. Detox epatico naturale.",
+        timing: "A stomaco vuoto, 30 min prima colazione",
+        fatBurning: "Nitrati barbabietola migliorano efficienza metabolica +10%"
       },
       {
         name: "THE HEAVY METAL DETOX",
@@ -286,6 +308,120 @@ const RecipeSection = React.memo(() => {
         benefits: "Citrullina anguria per vasodilatazione. Idratazione naturale.",
         timing: "Pre o post-workout per idratazione",
         fatBurning: "Citrullina migliora flusso sanguigno tessuto adiposo"
+      },
+      {
+        name: "DIAMOND DETOX ELIXIR ⭐",
+        time: "12 min",
+        servings: 1,
+        calories: 95,
+        type: "Michelin Detox",
+        category: "Royal Cleanse",
+        ingredients: [
+          "Cetriolo giapponese: 150g (con buccia biologica)",
+          "Sedano bianco: 100g (cuore tenero)",
+          "Mela verde Granny Smith: 80g (senza torsolo)",
+          "Limone Meyer: 1/2 (succo + scorza)",
+          "Zenzero fresco: 3 cm (sbucciato)",
+          "Prezzemolo riccio: 15g (solo foglie)",
+          "Acqua filtrata: 200ml",
+          "Sale rosa Himalaya: pizzico",
+          "Olio EVO premium: 3 gocce (finale)"
+        ],
+        preparation: [
+          "Tutti ingredienti tagliati finemente a julienne",
+          "Zenzero e limone nel boccale, tritare 10 sec / Vel 8",
+          "Aggiungere cetriolo, sedano, mela, prezzemolo",
+          "Versare acqua filtrata e sale rosa",
+          "Frullare 2 min / Vel 10 per estrazione completa",
+          "Filtrare con garza fine per purezza cristallina",
+          "3 gocce olio EVO finale per assorbimento vitamine"
+        ],
+        bimbySteps: [
+          "Zenzero + limone: 10 sec / Vel 8",
+          "Verdure + acqua: 2 min / Vel 10",
+          "Filtraggio fine per purezza",
+          "Olio EVO finale per biodisponibilità"
+        ],
+        benefits: "Enzimi vivi concentrati. Mineralizzazione profonda con sale rosa.",
+        timing: "Mattina 6:30 a stomaco vuoto per detox luxury",
+        fatBurning: "Enzimi + minerali attivano metabolismo +30%"
+      },
+      {
+        name: "RUBY ANTIOXIDANT NECTAR ⭐",
+        time: "10 min",
+        servings: 1,
+        calories: 110,
+        type: "Royal Elixir",
+        category: "Anti-aging Supreme",
+        ingredients: [
+          "Barbabietola golden: 100g (cruda sbucciata)",
+          "Melograno: 80g (arilli freschi)",
+          "Carota viola: 60g (biologica con buccia)",
+          "Arancia rossa: 1/2 (succo + polpa)",
+          "Zenzero candito: 1 cm (senza zucchero)",
+          "Curcuma fresca: 1 cm (grattugiata)",
+          "Pepe rosa: 3 grani (macinati)",
+          "Acqua di rose: 1 cucchiaino",
+          "Miele acacia: 1 cucchiaino"
+        ],
+        preparation: [
+          "Barbabietola, carota, zenzero a cubetti piccoli",
+          "Arilli melograno separati delicatamente",
+          "Tutti ingredienti nel boccale con arancia",
+          "Curcuma, pepe rosa, acqua rose, miele",
+          "Frullare 90 sec / Vel 9 per colore rubino",
+          "Passare al setaccio fine mantenendo polpa",
+          "Servire in calice cristallo per eleganza"
+        ],
+        bimbySteps: [
+          "Verdure + frutta: 90 sec / Vel 9",
+          "Spezie + aromi: 30 sec / Vel 7",
+          "Setacciatura fine elegante",
+          "Servizio in calice cristallo"
+        ],
+        benefits: "Betalaine + antocianine sinergia. Nitrati per circolazione.",
+        timing: "Aperitivo salutare 18:00-19:00",
+        fatBurning: "Polifenoli attivano AMPK cellulare +32%"
+      },
+      {
+        name: "CRYSTAL GREEN GODDESS ⭐",
+        time: "15 min",
+        servings: 1,
+        calories: 85,
+        type: "Jade Elixir",
+        category: "Goddess Ritual",
+        ingredients: [
+          "Spinaci baby: 100g (biologici triple-lavati)",
+          "Cetriolo inglese: 120g (senza semi)",
+          "Sedano bianco: 80g (solo cuore)",
+          "Mela verde: 60g (varietà Granny Smith)",
+          "Lime kaffir: 1 (succo + scorza)",
+          "Basilico santo: 10 foglie (Tulsi)",
+          "Menta piperita: 8 foglie",
+          "Acqua cocco premium: 250ml",
+          "Chlorella: 1 cucchiaino",
+          "Spirulina hawaiana: 1/2 cucchiaino",
+          "Cristalli commestibili: per decorazione"
+        ],
+        preparation: [
+          "Spinaci, cetriolo, sedano lavati in acqua ghiacciata",
+          "Mela, lime, erbe aromatiche nel boccale",
+          "Tritare 15 sec / Vel 7 per rilascio oli essenziali",
+          "Aggiungere verdure e acqua cocco",
+          "Frullare 2 min / Vel 10 per verde cristallino",
+          "Chlorella e spirulina finale per intensità",
+          "Filtrare con garza per purezza assoluta",
+          "Cristalli commestibili per energia vibrazionale"
+        ],
+        bimbySteps: [
+          "Erbe aromatiche: 15 sec / Vel 7",
+          "Verdure + acqua cocco: 2 min / Vel 10",
+          "Superfood finale: 15 sec / Vel 6",
+          "Filtraggio purezza + cristalli energia"
+        ],
+        benefits: "Clorofilla concentrata + elettroliti naturali. Energia vibrazionale.",
+        timing: "Rituale mattutino 7:00 con meditazione",
+        fatBurning: "Superfood verdi attivano mitocondri +40%"
       }
     ],
     smoothies: [
@@ -541,6 +677,108 @@ const RecipeSection = React.memo(() => {
         benefits: "Antocianine recupero muscolare. Proteine complete.",
         timing: "Entro 30 min post-workout per recupero",
         fatBurning: "Proteine + antocianine sinergia recupero +19%"
+      },
+      {
+        name: "GOLD VELVET ELIXIR ⭐",
+        time: "6 min",
+        servings: 1,
+        calories: 420,
+        type: "Michelin Smoothie",
+        category: "Haute Nutrition",
+        ingredients: [
+          "Mango Alfonso premium: 120g (congelato)",
+          "Anacardi tostati: 25g (ammollati 2h)",
+          "Latte cocco biologico: 150ml",
+          "Curcuma fresca: 1 cm grattugiata",
+          "Zafferano: 3 pistilli",
+          "Miele millefiori: 1 cucchiaio",
+          "Cardamomo: 2 baccelli (semi)",
+          "Acqua rose: 1 cucchiaino"
+        ],
+        preparation: [
+          "Ammollare anacardi 2h, sciacquare e sgocciolare",
+          "Zafferano in infusione con 2 cucchiai latte cocco caldo",
+          "Mango, anacardi, curcuma, cardamomo nel boccale",
+          "Aggiungere latte cocco, zafferano, miele, acqua rose",
+          "Frullare 2 min / Vel 10 per texture setosa",
+          "Passare al setaccio fine per perfezione"
+        ],
+        bimbySteps: [
+          "Anacardi + mango: 1 min / Vel 10",
+          "Spezie + liquidi: 1 min / Vel 9",
+          "Rifinitura setosa: 30 sec / Vel 8"
+        ],
+        benefits: "Curcumina + piperina biodisponibilità. Grassi premium per ormoni.",
+        timing: "Afternoon luxury break 15:00-16:00",
+        fatBurning: "Curcuma + zafferano attivano AMPK +25%"
+      },
+      {
+        name: "EMERALD FOREST NECTAR ⭐",
+        time: "8 min",
+        servings: 1,
+        calories: 380,
+        type: "Green Michelin",
+        category: "Detox Gourmet",
+        ingredients: [
+          "Avocado Hass: 1/2 (perfettamente maturo)",
+          "Spinaci baby: 60g (biologici)",
+          "Cetriolo giapponese: 100g (con buccia)",
+          "Lime kaffir: 1 (succo + scorza)",
+          "Basilico thai: 8 foglie",
+          "Acqua cocco premium: 200ml",
+          "Chlorella: 1/2 cucchiaino",
+          "Sciroppo d'acero grado A: 1 cucchiaio"
+        ],
+        preparation: [
+          "Avocado tagliato a cubetti, spinaci lavati delicatamente",
+          "Cetriolo con buccia, lime spremuto + scorza grattugiata",
+          "Basilico thai spezzettato per rilasciare oli",
+          "Tutti ingredienti nel boccale con acqua cocco",
+          "Frullare 90 sec / Vel 9 per cremosità vellutata",
+          "Chlorella finale per colore smeraldo intenso"
+        ],
+        bimbySteps: [
+          "Verdure + avocado: 1 min / Vel 9",
+          "Erbe + liquidi: 30 sec / Vel 8",
+          "Chlorella finale: 15 sec / Vel 6"
+        ],
+        benefits: "Grassi monoinsaturi premium. Clorofilla concentrata detox.",
+        timing: "Mattina 8:00 a stomaco vuoto per detox luxury",
+        fatBurning: "Avocado + chlorella sinergia metabolica +20%"
+      },
+      {
+        name: "ROYAL BERRY SYMPHONY ⭐",
+        time: "7 min",
+        servings: 1,
+        calories: 350,
+        type: "Antioxidant Royal",
+        category: "Anti-aging Luxury",
+        ingredients: [
+          "Mirtilli selvaggi: 80g (biologici congelati)",
+          "More di gelso: 40g (rare, secche ammollate)",
+          "Açaí puro: 50g (polpa congelata)",
+          "Latte mandorla artigianale: 150ml",
+          "Collagene marino: 10g",
+          "Miele Manuka: 1 cucchiaio",
+          "Vaniglia Bourbon: 1/4 baccello (semi)",
+          "Polvere cacao crudo: 1 cucchiaino"
+        ],
+        preparation: [
+          "More di gelso ammollate 30 min, scolate",
+          "Vaniglia Bourbon: estrarre semi dal baccello",
+          "Mirtilli, more, açaí nel boccale con latte",
+          "Collagene, miele Manuka, vaniglia, cacao",
+          "Frullare 2 min / Vel 10 per antocianine intense",
+          "Texture vellutata da collagene marino"
+        ],
+        bimbySteps: [
+          "Frutti + latte: 1 min / Vel 10",
+          "Collagene + miele: 45 sec / Vel 9",
+          "Vaniglia + cacao: 30 sec / Vel 8"
+        ],
+        benefits: "Antocianine rare + collagene marino. Polifenoli anti-aging.",
+        timing: "Evening beauty ritual 19:00-20:00",
+        fatBurning: "Polifenoli attivano sirtuine longevità +30%"
       }
     ],
     bowls: [
@@ -894,6 +1132,124 @@ const RecipeSection = React.memo(() => {
         benefits: "Cacao flavonoidi per umore. Proteine arachidi per sazietà.",
         timing: "Merenda 15:00-16:00 o post-workout dolce",
         fatBurning: "Cacao teobromina + caffeina aumentano termogenesi +12%"
+      },
+      {
+        name: "ROYAL AÇAÍ THRONE ⭐",
+        time: "10 min",
+        servings: 1,
+        calories: 450,
+        type: "Michelin Bowl",
+        category: "Purple Royalty",
+        ingredients: [
+          "Açaí puro: 100g (polpa congelata premium)",
+          "Mirtilli selvaggi: 60g (biologici congelati)",
+          "Banana congelata: 80g (a rondelle)",
+          "Latte cocco premium: 80ml",
+          "Granola artigianale: 40g",
+          "More di gelso: 20g (secche ammollate)",
+          "Pistacchi siciliani: 15g (sgusciati)",
+          "Miele Manuka: 1 cucchiaio",
+          "Petali rosa edibili: per decorazione",
+          "Cocco grattugiato fresco: 10g"
+        ],
+        preparation: [
+          "Açaí, mirtilli, banana nel boccale con latte cocco",
+          "Frullare 90 sec / Vel 9 per base densa viola",
+          "Consistenza gelato denso, non liquida",
+          "Versare in bowl raffreddato 15 min",
+          "Disporre granola a mezzaluna artistica",
+          "More gelso, pistacchi, cocco in geometrie",
+          "Petali rosa finale per tocco regale",
+          "Miele Manuka a gocce dorate"
+        ],
+        bimbySteps: [
+          "Base açaí: 90 sec / Vel 9",
+          "Consistenza gelato denso",
+          "Plating artistico geometrico"
+        ],
+        benefits: "Antocianine rare + omega-3. Polifenoli anti-aging intensi.",
+        timing: "Brunch luxury 10:00-11:00 weekend",
+        fatBurning: "Antocianine attivano SIRT1 longevità +35%"
+      },
+      {
+        name: "GOLDEN TURMERIC TEMPLE ⭐",
+        time: "8 min",
+        servings: 1,
+        calories: 390,
+        type: "Healing Bowl",
+        category: "Ayurvedic Luxury",
+        ingredients: [
+          "Mango Alfonso: 120g (congelato a cubetti)",
+          "Banana: 60g (congelata)",
+          "Latte cocco artigianale: 100ml",
+          "Curcuma fresca: 2 cm (grattugiata)",
+          "Zenzero fresco: 1 cm (grattugiato)",
+          "Cardamomo: 3 baccelli (semi)",
+          "Cannella Ceylon: 1/2 cucchiaino",
+          "Pepe nero: pizzico (per biodisponibilità)",
+          "Granola speziata: 30g",
+          "Anacardi tostati: 20g",
+          "Miele millefiori: 1 cucchiaio",
+          "Fiori calendula: per decorazione"
+        ],
+        preparation: [
+          "Mango, banana, latte cocco nel boccale",
+          "Curcuma, zenzero, cardamomo, cannella, pepe",
+          "Frullare 2 min / Vel 9 per colore oro intenso",
+          "Base cremosa e profumata alle spezie",
+          "Versare in bowl preriscaldato leggermente",
+          "Granola speziata disposta a spirale dorata",
+          "Anacardi tostati per croccantezza",
+          "Fiori calendula per eleganza finale"
+        ],
+        bimbySteps: [
+          "Frutta + latte: 1 min / Vel 9",
+          "Spezie fresche: 1 min / Vel 8",
+          "Decorazione spirale dorata"
+        ],
+        benefits: "Curcumina + piperina sinergia. Proprietà antinfiammatorie.",
+        timing: "Colazione ayurvedica 7:30-8:30",
+        fatBurning: "Curcuma + zenzero termogenesi +28%"
+      },
+      {
+        name: "EMERALD GARDEN SYMPHONY ⭐",
+        time: "9 min",
+        servings: 1,
+        calories: 360,
+        type: "Green Michelin",
+        category: "Garden to Bowl",
+        ingredients: [
+          "Spinaci baby: 80g (biologici lavati)",
+          "Avocado Hass: 1/2 (perfetto grado maturazione)",
+          "Kiwi gold: 1 (sbucciato)",
+          "Cetriolo: 60g (con buccia biologica)",
+          "Acqua cocco premium: 120ml",
+          "Lime: 1 (succo + scorza)",
+          "Basilico genovese: 8 foglie",
+          "Chlorella: 1 cucchiaino",
+          "Granola verde: 25g (con semi zucca)",
+          "Semi canapa: 1 cucchiaio",
+          "Microgreens: mix per decorazione",
+          "Olio EVO premium: filo finale"
+        ],
+        preparation: [
+          "Spinaci, avocado, kiwi, cetriolo nel boccale",
+          "Acqua cocco, lime, basilico, chlorella",
+          "Frullare 90 sec / Vel 8 per verde smeraldo",
+          "Consistenza cremosa ma non troppo densa",
+          "Versare in bowl bianco per contrasto",
+          "Granola verde a semicerchio elegante",
+          "Semi canapa sparsi artisticamente",
+          "Microgreens finale + filo olio EVO"
+        ],
+        bimbySteps: [
+          "Verdure + frutta: 90 sec / Vel 8",
+          "Colore smeraldo perfetto",
+          "Plating garden-style raffinato"
+        ],
+        benefits: "Clorofilla concentrata + grassi omega-3. Detox luxury.",
+        timing: "Lunch detox 12:00-13:00",
+        fatBurning: "Chlorella + avocado sinergia metabolica +25%"
       }
     ],
     proteiche: [
@@ -936,317 +1292,115 @@ const RecipeSection = React.memo(() => {
     ],
     stellati: [
       {
-        name: "NOMA FOREST BOWL ⭐⭐⭐",
-        time: "8 min",
-        servings: 1,
-        calories: 420,
-        type: "Michelin Inspired",
-        category: "Nordic Superfood",
-        ingredients: [
-          "Quinoa tricolore: 40g (precotta)",
-          "Mirtilli nordici: 60g",
-          "Semi girasole tostati: 15g",
-          "Spinacini baby: 30g",
-          "Avocado Hass: 1/4",
-          "Tahini bianco: 1 cucchiaio",
-          "Limone Meyer: 1/2 (succo + zest)",
-          "Olio oliva EVO premium: 1 cucchiaino",
-          "Sale rosa himalayano: pizzico",
-          "Erba cipollina: 5g"
-        ],
-        preparation: [
-          "Quinoa precotta nel boccale con 50ml acqua calda",
-          "Riscaldare 2 min / 90°C / Vel 1 per reidratazione",
-          "Trasferire quinoa in bowl, pulire boccale",
-          "Tahini + succo limone + olio: 30 sec / Vel 5",
-          "Dressing cremoso senza grumi",
-          "Comporre bowl: quinoa, spinacini, avocado a fette",
-          "Mirtilli, semi tostati, zest limone",
-          "Dressing a spirale, erba cipollina finale"
-        ],
-        bimbySteps: [
-          "Quinoa reidratazione: 2 min / 90°C / Vel 1",
-          "Dressing tahini: 30 sec / Vel 5",
-          "Composizione artistica finale"
-        ],
-        benefits: "Antiossidanti nordici. Proteine complete quinoa. Grassi omega-3.",
-        timing: "Lunch 12:00-14:00 per energia sostenuta",
-        fatBurning: "Quinoa + mirtilli accelerano metabolismo +18%"
-      },
-      {
-        name: "ELEVEN MADISON SMOOTHIE ⭐⭐⭐",
+        name: "EMERALD GLOW Supreme",
         time: "6 min",
         servings: 1,
-        calories: 380,
-        type: "Plant-Based Luxury",
-        category: "Vegan Fine Dining",
+        calories: 180,
+        type: "Detox Reale",
+        category: "Luxury wellness",
         ingredients: [
-          "Anacardi premium: 30g (ammollati 2h)",
-          "Datteri Medjool: 2 grandi denocciolati",
-          "Cacao crudo: 1 cucchiaio",
-          "Banana congelata: 1 media",
-          "Latte avena barista: 200ml",
-          "Estratto vaniglia Madagascar: 1/2 cucchiaino",
-          "Cannella Ceylon: pizzico",
-          "Sale marino: granello",
-          "Ghiaccio: 4-5 cubetti"
+          "Cetriolo: 80g (1/2 piccolo pelato)",
+          "Spinaci freschi: 50g",
+          "Mela verde: 80g (1/2 senza torsolo)",
+          "Pompelmo rosa: 50g (2 spicchi a vivo)",
+          "Acqua cocco: 150ml",
+          "Lime: 1 cucchiaio succo",
+          "Spirulina: 1 cucchiaino (5g)",
+          "Menta fresca: 6 foglie"
         ],
         preparation: [
-          "Anacardi ammollati 2h, sciacquati e scolati",
-          "Datteri denocciolati, banana a pezzi",
-          "Tutti ingredienti secchi nel boccale",
-          "Latte avena gradualmente per cremosità",
-          "Frullare 90 sec / Vel 10 spatolando",
-          "Ghiaccio finale: 15 sec / Vel 8",
-          "Texture vellutata senza granelli",
-          "Servire in bicchiere crystal con paglia bambù"
+          "Cetriolo, mela, spinaci e menta nel boccale",
+          "Tritare grossolanamente: Velocità 7, 5 secondi",
+          "Aggiungere pompelmo, acqua cocco, lime, spirulina",
+          "Frullare Velocità 10, 90 secondi per consistenza liscia",
+          "Regolare acqua cocco per fluidità desiderata",
+          "Filtrare opzionale per succo liscio"
         ],
         bimbySteps: [
-          "Solidi + latte: 90 sec / Vel 10 con spatola",
-          "Ghiaccio finale: 15 sec / Vel 8",
-          "Controllo texture luxury"
+          "Verdure + menta: Velocità 7, 5 secondi",
+          "Tutti ingredienti: Velocità 10, 90 secondi",
+          "Controllo fluidità, aggiunta liquidi"
         ],
-        benefits: "Cacao crudo teobromina. Anacardi grassi MCT. Zero zuccheri aggiunti.",
-        timing: "Post-workout 16:00-17:00 per recupero premium",
-        fatBurning: "Teobromina + MCT attivano lipolisi +25%"
+        benefits: "Pompelmo rosa per metabolismo lipidi. Clorofilla detox epatico.",
+        timing: "Mid-morning per detox profondo",
+        fatBurning: "Naringina pompelmo attiva lipasi +20%"
       },
       {
-        name: "OSTERIA FRANCESCANA ESTRATTO ⭐⭐⭐",
+        name: "MATCHA ZEN GARDEN",
         time: "5 min",
         servings: 1,
-        calories: 95,
-        type: "Italian Mastery",
-        category: "Emilian Wellness",
+        calories: 310,
+        type: "Focus & Calma",
+        category: "Concentrazione",
         ingredients: [
-          "Pomodori San Marzano: 2 piccoli maturi",
-          "Basilico genovese DOP: 8 foglie",
-          "Sedano bianco Piemonte: 1 gambo",
-          "Carota viola: 1/2 piccola",
-          "Olio EVO Taggiasca: 1 cucchiaino",
-          "Sale Trapani: pizzico",
-          "Pepe nero Tellicherry: macinata fresca",
-          "Acqua oligominerale: 100ml"
+          "Banana congelata: 100g (1 media)",
+          "Latte d'avena: 150ml",
+          "Matcha cerimoniale: 1 cucchiaino (3g)",
+          "Burro mandorle: 15g",
+          "Spirulina: 1/2 cucchiaino (3g)",
+          "Miele/agave: 1 cucchiaino"
         ],
         preparation: [
-          "Pomodori scottati 30 sec, pelati, semi rimossi",
-          "Verdure tagliate a julienne fine",
-          "Basilico lavato delicatamente, asciugato",
-          "Tutti ingredienti nel boccale con acqua",
-          "Frullare 45 sec / Vel 9 per consistenza vellutata",
-          "Non surriscaldare per preservare enzimi",
-          "Filtrare con colino fine per estratto puro",
-          "Servire in bicchiere di cristallo, basilico decorativo"
+          "Banana congelata nel boccale con latte d'avena",
+          "Matcha, burro mandorle, spirulina, miele",
+          "Frullare Velocità 10, 75 secondi spatolando",
+          "Consistenza densa e omogenea",
+          "Colore verde intenso caratteristico",
+          "Servire in bicchiere alto con cannuccia"
         ],
         bimbySteps: [
-          "Verdure + acqua: 45 sec / Vel 9",
-          "Temperatura ambiente per enzimi",
-          "Filtraggio fine per purezza"
+          "Banana + latte: Velocità 8, 30 secondi",
+          "Matcha + grassi: Velocità 10, 45 secondi",
+          "Mantecatura finale: Velocità 6, 15 secondi"
         ],
-        benefits: "Licopene San Marzano. Eugenolo basilico anti-infiammatorio.",
-        timing: "Aperitivo 18:00-19:00 per digestione",
-        fatBurning: "Licopene attiva termogenesi tessuto bruno +15%"
+        benefits: "L-teanina + caffeina per focus. EGCG antiossidante potente.",
+        timing: "Mid-morning per concentrazione sostenuta",
+        fatBurning: "EGCG matcha attiva termogenesi +22%"
       },
       {
-        name: "LE BERNARDIN OCEAN BOWL ⭐⭐⭐",
-        time: "10 min",
-        servings: 1,
-        calories: 350,
-        type: "Oceanic Wellness",
-        category: "Sea Superfood",
-        ingredients: [
-          "Alghe wakame: 5g (reidratate)",
-          "Edamame sgusciati: 50g",
-          "Avocado: 1/2 maturo",
-          "Cetriolo giapponese: 1/2",
-          "Semi sesamo nero: 1 cucchiaio",
-          "Wasabi fresco: 1/2 cucchiaino",
-          "Salsa soia tamari: 1 cucchiaino",
-          "Olio sesamo tostato: 1/2 cucchiaino",
-          "Lime: 1/2 (succo)",
-          "Zenzero fresco: 1 cm"
-        ],
-        preparation: [
-          "Wakame reidratate 10 min acqua tiepida",
-          "Edamame scottati 3 min acqua salata",
-          "Zenzero + wasabi + tamari nel boccale",
-          "Emulsione: 20 sec / Vel 5 per dressing",
-          "Cetriolo a julienne, avocado a fette",
-          "Wakame strizzate, edamame raffreddati",
-          "Composizione: avocado base, verdure marine",
-          "Dressing wasabi, semi sesamo, lime finale"
-        ],
-        bimbySteps: [
-          "Dressing wasabi: 20 sec / Vel 5",
-          "Emulsione perfetta senza separazione",
-          "Composizione artistica giapponese"
-        ],
-        benefits: "Iodio alghe per tiroide. Proteine complete edamame.",
-        timing: "Dinner 19:00-20:00 per metabolismo serale",
-        fatBurning: "Iodio ottimizza funzione tiroidea +20%"
-      },
-      {
-        name: "ALINEA MOLECULAR SMOOTHIE ⭐⭐⭐",
-        time: "12 min",
-        servings: 1,
-        calories: 290,
-        type: "Molecular Gastronomy",
-        category: "Science Art",
-        ingredients: [
-          "Fragole gariguette: 100g",
-          "Yogurt greco 0%: 80g",
-          "Agar agar: 1g",
-          "Acqua: 50ml",
-          "Stevia: 3 gocce",
-          "Basilico: 3 foglie",
-          "Pepe rosa: 3 grani",
-          "Azoto liquido effect: ghiaccio secco (opzionale)",
-          "Lecitina soia: 1g per schiuma"
-        ],
-        preparation: [
-          "Agar agar sciolto in acqua calda 80°C",
-          "Raffreddare per gelificazione leggera",
-          "Fragole + basilico + pepe: 30 sec / Vel 8",
-          "Yogurt + gel agar: 45 sec / Vel 6",
-          "Lecitina finale: 15 sec / Vel 10 per schiuma",
-          "Texture molecolare unica",
-          "Servire in sfera di ghiaccio (effetto wow)",
-          "Schiuma lecitina come cappello"
-        ],
-        bimbySteps: [
-          "Gel agar preparazione: 80°C dissoluzione",
-          "Frutta + spezie: 30 sec / Vel 8",
-          "Schiuma molecolare: 15 sec / Vel 10"
-        ],
-        benefits: "Antocianine fragole. Probiotici yogurt. Zero grassi aggiunti.",
-        timing: "Dessert 21:00 per fine pasto luxury",
-        fatBurning: "Probiotici ottimizzano microbioma +22%"
-      },
-      {
-        name: "MUGARITZ FOREST JUICE ⭐⭐⭐",
+        name: "VELVET BERRY DREAM",
         time: "7 min",
         servings: 1,
-        calories: 110,
-        type: "Foraging Inspired",
-        category: "Wild Superfood",
+        calories: 340,
+        type: "Beauty Luxury",
+        category: "Bellezza & Benessere",
         ingredients: [
-          "Mela verde Granny: 1 grande",
-          "Sedano rapa: 30g",
-          "Prezzemolo riccio: 10g",
-          "Ortica giovane: 5g (scottata)",
-          "Limone biologico: 1/4 (succo + zest)",
-          "Miele acacia: 1 cucchiaino",
-          "Acqua sorgiva: 80ml",
-          "Sale celtico: pizzico"
+          "Frutti bosco misti: 120g (congelati)",
+          "Latte mandorla premium: 120ml",
+          "Anacardi ammollati: 15g (10-12 pezzi)",
+          "Datteri Medjool: 1-2 denocciolati",
+          "Semi chia: 1 cucchiaino",
+          "Estratto vaniglia: 1/4 cucchiaino",
+          "Collagen powder: 10g (opzionale)"
         ],
         preparation: [
-          "Ortica scottata 30 sec, raffreddata, strizzata",
-          "Mela e sedano rapa a pezzi grossi",
-          "Prezzemolo lavato, gambi inclusi",
-          "Tutti ingredienti nel boccale con acqua",
-          "Frullare 60 sec / Vel 10 per estrazione totale",
-          "Filtrare con garza per succo cristallino",
-          "Miele dissolto a fine per dolcezza naturale",
-          "Servire in bicchiere di legno (effetto natura)"
+          "Anacardi ammollati 30 min, sciacquati",
+          "Tutti ingredienti nel boccale insieme",
+          "Frullare Velocità 10, 90 secondi spatolando",
+          "Consistenza vellutata senza grumi",
+          "Collagen per effetto beauty (opzionale)",
+          "Cremosità incredibile dagli anacardi"
         ],
         bimbySteps: [
-          "Verdure selvagge + mela: 60 sec / Vel 10",
-          "Estrazione massima clorofilla",
-          "Filtraggio garza per purezza"
+          "Tutti ingredienti: Velocità 10, 90 secondi",
+          "Controllo cremosità, spatolare",
+          "Rifinitura vellutata: Velocità 8, 30 secondi"
         ],
-        benefits: "Ferro ortica. Silicio sedano rapa. Clorofilla selvaggia.",
-        timing: "Mattina 7:00-8:00 per risveglio naturale",
-        fatBurning: "Clorofilla selvaggia attiva metabolismo +28%"
-      },
-      {
-        name: "DANIEL BOULUD PROTEIN BOWL ⭐⭐⭐",
-        time: "9 min",
-        servings: 1,
-        calories: 480,
-        type: "French Technique",
-        category: "Haute Cuisine Fitness",
-        ingredients: [
-          "Lenticchie beluga: 60g (precotte)",
-          "Salmone affumicato: 40g a julienne",
-          "Yogurt greco: 60g",
-          "Aneto fresco: 1 cucchiaio",
-          "Capperi Pantelleria: 1 cucchiaino",
-          "Olio oliva Nyons: 1 cucchiaio",
-          "Limone Amalfi: 1/2 (succo + zest)",
-          "Pepe bianco: macinata fresca",
-          "Microgreens: per decorazione"
-        ],
-        preparation: [
-          "Lenticchie beluga riscaldate con brodo vegetale",
-          "Yogurt + aneto + capperi nel boccale",
-          "Emulsione: 20 sec / Vel 4 per salsa vellutata",
-          "Salmone affumicato a julienne fine",
-          "Lenticchie tiepide come base",
-          "Salsa yogurt a spirale artistica",
-          "Salmone disposto a rosa",
-          "Microgreens, zest limone, pepe finale"
-        ],
-        bimbySteps: [
-          "Salsa yogurt: 20 sec / Vel 4",
-          "Emulsione senza separazione",
-          "Impiattamento tecnica francese"
-        ],
-        benefits: "Proteine complete 35g. Omega-3 salmone. Fibre lenticchie.",
-        timing: "Post-workout 17:00 per sintesi proteica",
-        fatBurning: "Proteine + omega-3 sinergia anabolica +30%"
-      },
-      {
-        name: "GAGGAN PROGRESSIVE SMOOTHIE ⭐⭐⭐",
-        time: "15 min",
-        servings: 1,
-        calories: 320,
-        type: "Progressive Indian",
-        category: "Spice Fusion",
-        ingredients: [
-          "Mango Alfonso: 100g",
-          "Latte cocco: 150ml",
-          "Cardamomo verde: 3 baccelli",
-          "Curcuma fresca: 1 cm",
-          "Zenzero: 1 cm",
-          "Pepe lungo: 2 grani",
-          "Acqua rosa: 1 cucchiaino",
-          "Pistacchi Sicilia: 15g",
-          "Ghiaccio: 6 cubetti"
-        ],
-        preparation: [
-          "Cardamomo, curcuma, zenzero nel boccale",
-          "Spezie: 15 sec / Vel 10 per polvere fine",
-          "Mango + latte cocco + pistacchi",
-          "Frullare 90 sec / Vel 9 per cremosità",
-          "Acqua rosa finale per profumo",
-          "Ghiaccio: 20 sec / Vel 8 per freschezza",
-          "Colore dorato intenso caratteristico",
-          "Servire in bicchiere rame con cannella stick"
-        ],
-        bimbySteps: [
-          "Spezie fresche: 15 sec / Vel 10",
-          "Frutta + latte: 90 sec / Vel 9",
-          "Ghiaccio finale: 20 sec / Vel 8"
-        ],
-        benefits: "Curcumina biodisponibile. MCT cocco. Antiossidanti mango.",
-        timing: "Afternoon 15:00-16:00 per energia speziata",
-        fatBurning: "Curcuma + pepe lungo aumentano termogenesi +35%"
+        benefits: "Anacardi per grassi sani. Antiossidanti anti-aging intensi.",
+        timing: "Afternoon snack per energia e bellezza",
+        fatBurning: "Grassi monoinsaturi ottimizzano ormoni brucia-grassi"
       }
     ]
-  }), []);
+  };
 
-  // Memoizza le categorie per evitare re-render
-  const categories = useMemo(() => [
+  const categories = [
     { key: "detox", label: "Detox", icon: <Droplets className="w-4 h-4" /> },
     { key: "bowls", label: "Bowls", icon: <Zap className="w-4 h-4" /> },
     { key: "proteiche", label: "Proteiche", icon: <Flame className="w-4 h-4" /> },
-    { key: "stellati", label: "Stellati ⭐", icon: <Sparkles className="w-4 h-4" /> }
-  ], []);
+    { key: "stellati", label: "Stellati", icon: <Sparkles className="w-4 h-4" /> }
+  ];
 
-  // Memoizza le ricette correnti per performance
-  const currentRecipes = useMemo(() => 
-    recipes[selectedCategory as keyof typeof recipes] || [], 
-    [recipes, selectedCategory]
-  );
+  const currentRecipes = recipes[selectedCategory as keyof typeof recipes];
 
   return (
     <div className="space-y-4">
@@ -1276,10 +1430,9 @@ const RecipeSection = React.memo(() => {
       </div>
 
       {/* Recipes List */}
-      <Suspense fallback={<RecipeLoader />}>
-        <div className="space-y-4">
-          {currentRecipes.map((recipe, index) => (
-          <Card key={`${selectedCategory}-${index}`} className="p-4 bg-white/70 backdrop-blur-sm">
+      <div className="space-y-4">
+        {currentRecipes.map((recipe, index) => (
+          <Card key={index} className="p-4 bg-white/70 backdrop-blur-sm">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h3 className="font-semibold text-lg text-slate-800">{recipe.name}</h3>
@@ -1370,10 +1523,9 @@ const RecipeSection = React.memo(() => {
             </div>
           </Card>
         ))}
-        </div>
-      </Suspense>
+      </div>
     </div>
   );
-});
+};
 
 export default RecipeSection;
