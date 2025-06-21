@@ -71,137 +71,245 @@ const RecipeSection = () => {
     ],
     bowls: [
       {
+        name: "FORESTA VERDE Bowl",
+        time: "5 min",
+        servings: 1,
+        calories: 280,
+        type: "Smoothie Bowl",
+        category: "Colazione energizzante",
+        ingredients: [
+          "Spinaci freschi: 80g (2 manciate)",
+          "Banana congelata: 100g (1 media)",
+          "Mango congelato: 100g",
+          "Latte mandorla: 100ml",
+          "Spirulina: 1 cucchiaino (5g)",
+          "Semi chia: 1 cucchiaio"
+        ],
+        preparation: [
+          "Banana e mango congelati nel boccale con spinaci",
+          "Aggiungere spirulina e semi di chia",
+          "100ml latte di mandorla per iniziare",
+          "Frullare Velocità 10, 1 minuto spatolando",
+          "Regolare latte per consistenza densa",
+          "Versare in bowl, decorare con topping"
+        ],
+        bimbySteps: [
+          "Frutta congelata + spinaci: Velocità 10, 60 secondi",
+          "Controllo consistenza, aggiunta latte graduale",
+          "Mantecatura finale: Velocità 6, 15 secondi"
+        ],
+        benefits: "Clorofilla detox, energia prolungata. Magnesio per funzione muscolare.",
+        timing: "Colazione 7:00-8:30 per energia mattutina",
+        fatBurning: "Spirulina aumenta ossidazione grassi +12%"
+      },
+      {
+        name: "ANTIOSSIDANTE Berry Bowl",
+        time: "4 min",
+        servings: 1,
+        calories: 320,
+        type: "Recovery Bowl",
+        category: "Post-workout",
+        ingredients: [
+          "Frutti bosco misti: 150g (congelati)",
+          "Banana congelata: 50g (1/2 media)",
+          "Yogurt greco 0%: 50g",
+          "Latte cocco: 80ml",
+          "Açaí polvere: 1 cucchiaino (5g)",
+          "Semi lino: 1 cucchiaino"
+        ],
+        preparation: [
+          "Frutti di bosco e banana congelati nel boccale",
+          "Aggiungere yogurt, latte cocco, açaí, semi lino",
+          "Frullare Velocità 10, 1 minuto spatolando frequentemente",
+          "Consistenza molto densa e cremosa",
+          "Versare in bowl e decorare con topping freschi",
+          "Servire immediatamente"
+        ],
+        bimbySteps: [
+          "Frutta congelata: Velocità 10, 45 secondi",
+          "Yogurt + liquidi: Velocità 8, 30 secondi",
+          "Rifinitura cremosa: Velocità 6, 15 secondi"
+        ],
+        benefits: "Antocianine per recupero muscolare. Proteine per sintesi proteica.",
+        timing: "Entro 30 min post-workout",
+        fatBurning: "Açaí attiva metabolismo grassi +18%"
+      },
+      {
+        name: "GOLDEN ELIXIR Bowl",
+        time: "4 min",
+        servings: 1,
+        calories: 290,
+        type: "Antinfiammatorio",
+        category: "Wellness mattutino",
+        ingredients: [
+          "Ananas fresco: 100g",
+          "Latte cocco denso: 80ml",
+          "Curcuma fresca: 1 cm (5g)",
+          "Zenzero fresco: 1 cm (5g)",
+          "Miele: 1 cucchiaino",
+          "Cardamomo: 2-3 semi",
+          "Pepe nero: pizzico"
+        ],
+        preparation: [
+          "Tritare curcuma e zenzero: Velocità 8, 5 secondi",
+          "Aggiungere ananas, latte cocco, miele, cardamomo",
+          "Pepe nero per attivare curcuma",
+          "Frullare Velocità 10, 1 minuto per consistenza liscia",
+          "Ghiaccio se ananas non congelato",
+          "Consistenza cremosa e aromatica"
+        ],
+        bimbySteps: [
+          "Spezie fresche: Velocità 8, 5 secondi",
+          "Ananas + liquidi: Velocità 10, 60 secondi",
+          "Ghiaccio opzionale: Velocità 7, 15 secondi"
+        ],
+        benefits: "Curcumina antinfiammatoria. Ananas enzimi digestivi.",
+        timing: "Mid-morning per digestione e energia",
+        fatBurning: "Curcuma + pepe nero aumentano termogenesi +15%"
+      },
+      {
         name: "CHIA + GRANOLA JAR",
         time: "15 min",
         servings: 1,
-        calories: 420,
+        calories: 380,
         type: "Layered Bowl",
-        category: "Colazione energizzante",
+        category: "Colazione stratificata",
         ingredients: [
-          "Semi di chia: 25g",
-          "Bevanda al cocco: 150ml",
-          "Polpa di mango: 80g",
+          "Semi chia: 25g",
+          "Bevanda cocco: 150ml",
+          "Sciroppo acero: 1 cucchiaino",
+          "Mango maturo: 80g",
+          "Succo limone: 1 cucchiaino",
+          "Zucchero canna: 1 cucchiaino",
           "Mandorle tostate: 20g",
           "Semi sesamo tostati: 10g",
+          "Zucchero cocco: 1 cucchiaino",
+          "Cannella: pizzico",
           "Granola croccante: 3-4 cucchiai",
-          "Yogurt di cocco: 2 cucchiai",
-          "Burro di mandorle: 1 cucchiaio"
+          "Yogurt cocco: 2 cucchiai",
+          "Burro mandorle: 1 cucchiaio"
         ],
         preparation: [
-          "Budino chia: mescola chia + latte cocco, riposa 2h in frigo",
-          "Dukkah dolce: trita mandorle, sesamo, zucchero cocco, cannella - Vel 7, 5 sec",
-          "Composta mango: cuoci mango + limone + zucchero - 5 min/90°C/Vel 2",
-          "Assemblaggio a strati: budino chia, composta mango, yogurt, granola",
-          "Termina con burro mandorle e dukkah dolce"
+          "Sera prima: mescolare chia + bevanda cocco + sciroppo, riposare in frigo",
+          "Dukkah dolce: mandorle, sesamo, zucchero, cannella nel boccale",
+          "Tritare 5 sec / Vel 7, mettere da parte",
+          "Composta mango: mango + limone + zucchero nel boccale",
+          "Cuocere 5 min / 90°C / Vel 2, lasciare raffreddare",
+          "Assemblaggio a strati: budino chia, composta, yogurt, granola",
+          "Terminare con burro mandorle e dukkah dolce"
         ],
         bimbySteps: [
-          "Dukkah: mandorle + sesamo + spezie - Vel 7, 5 sec",
-          "Composta: mango + limone - 5 min/90°C/Vel 2",
-          "Assemblaggio manuale a strati"
+          "Dukkah: mandorle + spezie, Velocità 7, 5 secondi",
+          "Composta: mango + limone, 5 min / 90°C / Vel 2",
+          "Assemblaggio stratificato finale"
         ],
-        benefits: "Omega-3 da chia. Fibre per sazietà. Antiossidanti da mango.",
+        benefits: "Omega-3 da chia. Fibre per sazietà prolungata. Grassi sani.",
         timing: "Colazione 7:00-9:00 per energia sostenuta",
-        fatBurning: "Chia aumenta metabolismo basale +8% per 4 ore"
+        fatBurning: "Chia rallenta assorbimento zuccheri, stabilizza glicemia"
       },
       {
         name: "OAT SO GOOD",
         time: "10 min",
         servings: 1,
-        calories: 380,
-        type: "Overnight Bowl",
-        category: "Colazione veloce",
+        calories: 340,
+        type: "Overnight Oats",
+        category: "Prep ahead breakfast",
         ingredients: [
-          "Fiocchi d'avena: 40g",
-          "Semi di chia: 10g", 
-          "Bevanda al cocco: 180ml",
+          "Fiocchi avena: 40g",
+          "Semi chia: 10g",
+          "Bevanda cocco: 180ml",
           "Datteri Medjoul: 3 denocciolati",
+          "Acqua calda: 30ml",
           "Banana: 1/2 a fette",
-          "Noci pecan: 1 cucchiaio",
+          "Noci pecan: 1 cucchiaio tritato",
           "Semi misti: 1 cucchiaio"
         ],
         preparation: [
-          "Overnight oat: mescola avena + chia + latte cocco - 15 sec/Vel 3 Antiorario",
-          "Riposa tutta la notte in frigo",
-          "Salsa datteri: datteri + acqua calda - 30 sec/Vel 8",
-          "Guarnisci con banana, noci, semi",
-          "Irrora con salsa di datteri"
+          "Sera prima: avena + chia + bevanda cocco nel boccale",
+          "Mescolare 15 sec / Vel 3 Antiorario",
+          "Versare in vasetto, riposare in frigo tutta notte",
+          "Salsa datteri: datteri + acqua calda nel boccale pulito",
+          "Frullare 30 sec / Vel 8, spatolando se necessario",
+          "Assemblaggio: avena dal frigo + banana + noci + semi",
+          "Irrorare generosamente con salsa datteri"
         ],
         bimbySteps: [
-          "Overnight mix: avena + chia + latte - 15 sec/Vel 3 Antiorario",
-          "Salsa datteri: datteri + acqua - 30 sec/Vel 8",
-          "Assemblaggio con topping"
+          "Overnight oats: 15 sec / Vel 3 Antiorario",
+          "Salsa datteri: 30 sec / Vel 8",
+          "Assemblaggio finale con topping"
         ],
-        benefits: "Beta-glucani per colesterolo. Energia lenta da avena.",
-        timing: "Colazione 6:30-8:00 per energia prolungata",
-        fatBurning: "Avena stabilizza glicemia, ottimizza fat burning"
+        benefits: "Beta-glucani avena per controllo colesterolo. Energia a rilascio lento.",
+        timing: "Colazione 6:30-8:00 per energia mattutina costante",
+        fatBurning: "Avena aumenta sazietà, riduce picchi insulinici"
       },
       {
         name: "GRANOLA BABY",
         time: "20 min",
         servings: 1,
-        calories: 350,
+        calories: 420,
         type: "Panna Cotta Bowl",
-        category: "Dessert salutare",
+        category: "Dessert breakfast",
         ingredients: [
-          "Latte di cocco denso: 200ml",
-          "Sciroppo d'acero: 1 cucchiaio",
+          "Latte cocco lattina: 200ml (parte grassa)",
+          "Sciroppo acero: 1 cucchiaio",
           "Estratto vaniglia: 1/2 cucchiaino",
           "Agar agar: 1.5g",
           "Granola: 4-5 cucchiai",
           "Frutta fresca: 80g (mango/fragole/banana)",
-          "Latte vegetale: per guarnire"
+          "Latte mandorla: per versare"
         ],
         preparation: [
-          "Panna cotta: latte cocco + sciroppo + vaniglia + agar agar",
-          "Cuoci 6 min/90°C/Vel 3",
-          "Versa in ciotola, raffredda 4h in frigo",
-          "Sforma delicatamente",
-          "Guarnisci con granola e frutta fresca",
-          "Filo di latte vegetale attorno"
+          "Sera prima: latte cocco + sciroppo + vaniglia + agar nel boccale",
+          "Cuocere 6 min / 90°C / Vel 3",
+          "Versare in ciotola, raffreddare poi frigo 4 ore minimo",
+          "Assemblaggio: sformare panna cotta delicatamente",
+          "Ricoprire con granola e frutta fresca a pezzi",
+          "Versare filo di latte mandorla attorno se gradito"
         ],
         bimbySteps: [
-          "Panna cotta: tutti ingredienti - 6 min/90°C/Vel 3",
-          "Raffreddamento 4h in frigo",
-          "Assemblaggio con topping"
+          "Panna cotta: 6 min / 90°C / Vel 3",
+          "Raffreddamento e solidificazione in frigo",
+          "Assemblaggio con topping freschi"
         ],
-        benefits: "Grassi MCT da cocco. Probiotici naturali. Digestione facilitata.",
-        timing: "Merenda 15:00-17:00 o dessert dopo cena",
-        fatBurning: "MCT cocco aumentano termogenesi +15%"
+        benefits: "Grassi MCT cocco per energia immediata. Probiotici per microbioma.",
+        timing: "Colazione weekend 8:00-10:00 o merenda pomeridiana",
+        fatBurning: "MCT cocco bypass digestione, energia diretta"
       },
       {
         name: "SALTED CARAMEL BOWL",
         time: "5 min",
         servings: 1,
-        calories: 340,
-        type: "Protein Bowl",
-        category: "Post-workout",
+        calories: 350,
+        type: "Protein Smoothie Bowl",
+        category: "Post-workout indulgence",
         ingredients: [
-          "Banana grande congelata: 1 a rondelle",
-          "Burro di anacardi: 1 cucchiaio",
-          "Proteine caramello: 1 misurino",
+          "Banana congelata: 1 grande a rondelle",
+          "Burro anacardi: 1 cucchiaio",
+          "Proteine caramello salato: 1 misurino",
           "Semi lino macinati: 1 cucchiaino",
-          "Semi di chia: 1 cucchiaino",
-          "Maca in polvere: 1/2 cucchiaino",
+          "Semi chia: 1 cucchiaino",
+          "Maca polvere: 1/2 cucchiaino",
           "Cannella: pizzico",
           "Sale marino: pizzico",
-          "Latte mandorla: 80ml",
-          "Acqua di cocco: 40ml"
+          "Bevanda mandorla: 80ml",
+          "Acqua cocco: 40ml"
         ],
         preparation: [
-          "Tutti ingredienti nel boccale: banana, burro anacardi, proteine",
-          "Aggiungi semi, maca, cannella, sale, liquidi",
-          "Frulla 1 min/Vel 9 aiutandoti con spatola",
-          "Consistenza densa e cremosa",
-          "Guarnisci con banana fresca e cannella"
+          "Tutti ingredienti nel boccale: banana congelata, burro anacardi",
+          "Aggiungere proteine, semi lino, chia, maca, cannella, sale",
+          "Versare bevanda mandorla e acqua cocco",
+          "Frullare 1 min / Vel 9, spatolando se necessario",
+          "Ottenere crema densa e omogenea",
+          "Versare in ciotola, guarnire con banana e cannella"
         ],
         bimbySteps: [
-          "Tutti ingredienti insieme - 1 min/Vel 9",
-          "Spatolare durante frullatura",
-          "Servire immediatamente"
+          "Tutti ingredienti: 1 min / Vel 9",
+          "Spatolature frequenti per consistenza",
+          "Guarnizione immediata"
         ],
-        benefits: "25g proteine per recupero. Maca per energia. Elettroliti da cocco.",
-        timing: "Entro 30 min post-workout",
-        fatBurning: "Proteine + maca aumentano metabolismo +20%"
+        benefits: "25g proteine per recupero muscolare. Maca per energia e resistenza.",
+        timing: "Entro 30 min post-workout per finestra anabolica",
+        fatBurning: "Proteine + maca aumentano metabolismo basale +15%"
       },
       {
         name: "FILL ME UP PROTEIN",
@@ -209,83 +317,86 @@ const RecipeSection = () => {
         servings: 1,
         calories: 390,
         type: "Superfood Bowl",
-        category: "Power breakfast",
+        category: "Ultimate nutrition",
         ingredients: [
-          "Polpa açaí surgelata: 100g",
+          "Açaí surgelato: 100g",
           "Banana congelata: 1/2 a rondelle",
           "Mango surgelato: 50g",
-          "Proteine frutti bosco: 20g",
-          "Fiocchi d'avena: 1 cucchiaio",
-          "Bevanda al cocco: 50ml",
-          "Frutti bosco freschi: per guarnire",
+          "Proteine frutti bosco: 1 misurino (20g)",
+          "Fiocchi avena: 1 cucchiaio",
+          "Bevanda cocco: 50ml",
+          "Frutti bosco freschi: manciata",
           "Scaglie cocco: per guarnire",
           "Bacche goji: 1 cucchiaino",
           "Mandorle tritate: 1 cucchiaino",
-          "Polline d'api: pizzico"
+          "Polline api: pizzico"
         ],
         preparation: [
-          "Açaí, banana, mango surgelati nel boccale",
-          "Aggiungi proteine, avena, latte cocco",
-          "Frulla 1 min/Vel 9 usando spatola",
-          "Crema viola intenso e densa",
-          "Guarnisci decorativamente con topping",
-          "Disponi frutti, cocco, goji, mandorle, polline"
+          "Açaí + banana + mango surgelati nel boccale",
+          "Aggiungere proteine, fiocchi avena, bevanda cocco",
+          "Frullare 1 min / Vel 9, usando spatola per amalgamare",
+          "Versare crema viola intenso in ciotola",
+          "Disporre guarnizioni decorativamente: frutti bosco, cocco",
+          "Completare con goji, mandorle, polline api"
         ],
         bimbySteps: [
-          "Frutta surgelata + proteine + avena - 1 min/Vel 9",
-          "Spatolare per amalgamare",
-          "Decorazione artistica topping"
+          "Frutta surgelata + proteine: 1 min / Vel 9",
+          "Spatola per consistenza omogenea",
+          "Decorazione artistica finale"
         ],
-        benefits: "Antocianine açaí. 25g proteine complete. Antiossidanti potenti.",
-        timing: "Colazione 7:00-9:00 per energia esplosiva",
-        fatBurning: "Açaí + proteine attivano lipolisi +25%"
+        benefits: "Antocianine açaí per antiossidanti. 25g proteine complete.",
+        timing: "Colazione 7:00-8:30 o post-workout per recupero",
+        fatBurning: "Açaí + proteine sinergia per ossidazione grassi +22%"
       },
       {
         name: "NOURISH GREENBOWL",
         time: "4 min",
         servings: 1,
-        calories: 310,
-        type: "Detox Bowl",
-        category: "Wellness verde",
+        calories: 320,
+        type: "Green Superfood",
+        category: "Detox powerhouse",
         ingredients: [
-          "Banana grande congelata: 1 a rondelle",
-          "Spinacini freschi: 1 manciata grande",
+          "Banana congelata: 1 grande a rondelle",
+          "Spinacini freschi: grande manciata",
           "Supergreens polvere: 1 cucchiaino",
-          "Burro di mandorle: 1 cucchiaio",
+          "Burro mandorle: 1 cucchiaio",
           "Semi lino macinati: 1 cucchiaino",
-          "Semi di chia: 1 cucchiaino",
-          "Maca in polvere: 1/2 cucchiaino",
-          "Acqua di cocco: 120ml",
-          "Scaglie cocco tostate: per guarnire"
+          "Semi chia: 1 cucchiaino",
+          "Maca polvere: 1/2 cucchiaino",
+          "Acqua cocco: 120ml",
+          "Scaglie cocco tostate: per guarnire",
+          "Semi chia extra: per guarnire",
+          "Banana fresca: rondelle per guarnire"
         ],
         preparation: [
-          "Banana congelata, spinacini, supergreens nel boccale",
-          "Aggiungi burro mandorle, semi, maca, acqua cocco",
-          "Frulla 1 min/Vel 9 per composto liscio",
-          "Colore verde brillante caratteristico",
-          "Guarnisci con scaglie cocco, chia, banana"
+          "Banana congelata + spinacini + supergreens nel boccale",
+          "Aggiungere burro mandorle, semi lino, chia, maca",
+          "Versare acqua cocco gradualmente",
+          "Frullare 1 min / Vel 9 per colore verde brillante",
+          "Consistenza liscia e cremosa",
+          "Guarnire con scaglie cocco, chia, banana fresca"
         ],
         bimbySteps: [
-          "Tutti ingredienti base - 1 min/Vel 9",
+          "Tutti ingredienti base: 1 min / Vel 9",
           "Controllo consistenza verde brillante",
-          "Topping finale"
+          "Guarnizione finale colorata"
         ],
-        benefits: "Clorofilla detox. Ferro da spinaci. Grassi sani mandorle.",
-        timing: "Colazione 7:30-9:00 per detox mattutino",
-        fatBurning: "Clorofilla aumenta ossigenazione tessuti +18%"
+        benefits: "Clorofilla detox. Ferro spinaci + vitamina C. Grassi omega-3.",
+        timing: "Colazione 7:00-8:00 per energia verde mattutina",
+        fatBurning: "Supergreens accelerano metabolismo cellulare +18%"
       },
       {
         name: "MONKEY BUSINESS",
-        time: "4 min",
+        time: "3 min",
         servings: 1,
-        calories: 380,
-        type: "Chocolate Bowl",
-        category: "Indulgence salutare",
+        calories: 410,
+        type: "Chocolate Protein Bowl",
+        category: "Guilt-free indulgence",
         ingredients: [
-          "Banana grande congelata: 1 a rondelle",
+          "Banana congelata: 1 grande a rondelle",
           "Burro arachidi 100%: 1 cucchiaio abbondante",
           "Cacao amaro crudo: 1 cucchiaio",
-          "Latte mandorla: 100ml",
+          "Bevanda mandorla: 100ml",
           "Granola: 3-4 cucchiai",
           "Fragole fresche: 3-4 a fette",
           "Miele: 1 cucchiaino",
@@ -293,21 +404,22 @@ const RecipeSection = () => {
           "Semi chia: 1 cucchiaino"
         ],
         preparation: [
-          "Banana congelata, burro arachidi, cacao nel boccale",
-          "Aggiungi latte mandorla gradualmente",
-          "Frulla 1 min/Vel 9 per crema cioccolatosa",
-          "Consistenza densa simile gelato",
-          "Guarnisci a strisce: granola, fragole, cocco, chia",
-          "Completa con filo di miele"
+          "Banana congelata + burro arachidi + cacao nel boccale",
+          "Aggiungere bevanda mandorla gradualmente",
+          "Frullare 1 min / Vel 9 per crema densa cioccolatosa",
+          "Consistenza simile a gelato al cioccolato",
+          "Versare in ciotola immediatamente",
+          "Disporre granola, fragole, cocco, chia a strisce",
+          "Completare con filo di miele dorato"
         ],
         bimbySteps: [
-          "Banana + burro + cacao - 1 min/Vel 9",
-          "Latte graduale per consistenza",
-          "Decorazione artistica finale"
+          "Base cioccolato: 1 min / Vel 9",
+          "Consistenza gelato denso",
+          "Decorazione artistica a strisce"
         ],
-        benefits: "Cacao crudo antiossidante. Grassi sani arachidi. Potassio banana.",
-        timing: "Merenda 15:00-17:00 o post-workout goloso",
-        fatBurning: "Cacao crudo aumenta endorfine e metabolismo +12%"
+        benefits: "Cacao flavonoidi per umore. Proteine arachidi per sazietà.",
+        timing: "Merenda 15:00-16:00 o post-workout dolce",
+        fatBurning: "Cacao teobromina + caffeina aumentano termogenesi +12%"
       }
     ],
     proteiche: [
