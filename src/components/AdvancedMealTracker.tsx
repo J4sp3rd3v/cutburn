@@ -192,7 +192,7 @@ const AdvancedMealTracker = ({
             />
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
