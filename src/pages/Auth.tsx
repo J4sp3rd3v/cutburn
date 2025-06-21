@@ -4,41 +4,23 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { TrendingDown, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { TrendingDown, Mail, Lock, AlertCircle } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const { user, loading, signIn, signUp } = useAuth();
+  const { user, loading, signIn } = useAuth();
 
   useEffect(() => {
     if (user) {
       navigate('/');
     }
   }, [user, navigate]);
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
-
-    const success = await signUp(email, password, name);
-    
-    if (success) {
-      setMessage('Registrazione completata! Bentornato!');
-      setTimeout(() => navigate('/'), 1000);
-    } else {
-      setError('Utente già esistente o errore nella registrazione');
-    }
-  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,129 +54,58 @@ const Auth = () => {
         </div>
 
         <Card className="p-6 bg-white/80 backdrop-blur-sm">
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="signin">Accedi</TabsTrigger>
-              <TabsTrigger value="signup">Registrati</TabsTrigger>
-            </TabsList>
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-semibold">Accedi al tuo account</h2>
+          </div>
 
-            {error && (
-              <Alert className="mb-4 border-red-200 bg-red-50">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-600">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
+          {error && (
+            <Alert className="mb-4 border-red-200 bg-red-50">
+              <AlertCircle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-600">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
 
-            {message && (
-              <Alert className="mb-4 border-green-200 bg-green-50">
-                <AlertCircle className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-600">
-                  {message}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div>
-                  <Label htmlFor="signin-email" className="flex items-center space-x-2">
-                    <Mail className="w-4 h-4" />
-                    <span>Email</span>
-                  </Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="marco@esempio.com"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signin-password" className="flex items-center space-x-2">
-                    <Lock className="w-4 h-4" />
-                    <span>Password</span>
-                  </Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600"
-                  disabled={loading}
-                >
-                  {loading ? 'Accesso in corso...' : 'Accedi'}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div>
-                  <Label htmlFor="signup-name" className="flex items-center space-x-2">
-                    <User className="w-4 h-4" />
-                    <span>Nome</span>
-                  </Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Marco"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signup-email" className="flex items-center space-x-2">
-                    <Mail className="w-4 h-4" />
-                    <span>Email</span>
-                  </Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="marco@esempio.com"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signup-password" className="flex items-center space-x-2">
-                    <Lock className="w-4 h-4" />
-                    <span>Password</span>
-                  </Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    minLength={6}
-                    className="mt-1"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600"
-                  disabled={loading}
-                >
-                  {loading ? 'Registrazione in corso...' : 'Registrati'}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <div>
+              <Label htmlFor="signin-email" className="flex items-center space-x-2">
+                <Mail className="w-4 h-4" />
+                <span>Email</span>
+              </Label>
+              <Input
+                id="signin-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="marco@esempio.com"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="signin-password" className="flex items-center space-x-2">
+                <Lock className="w-4 h-4" />
+                <span>Password</span>
+              </Label>
+              <Input
+                id="signin-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="mt-1"
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600"
+              disabled={loading}
+            >
+              {loading ? 'Accesso in corso...' : 'Accedi'}
+            </Button>
+          </form>
         </Card>
 
         <div className="text-center mt-6 text-sm text-slate-600">
