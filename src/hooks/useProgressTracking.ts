@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
+import { useAuth } from './useAuth';
 import { toast } from '@/hooks/use-toast';
 
 interface DailyProgress {
@@ -31,22 +32,37 @@ interface UserProfile {
 }
 
 export const useProgressTracking = () => {
-  const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('userProfile', {
-    id: 'user-1',
-    name: 'Marco',
-    age: 30,
-    height: 173,
-    currentWeight: 69,
-    startWeight: 69,
-    targetWeight: 65,
-    activityLevel: 'moderate',
-    goal: 'fat-loss',
-    intermittentFasting: true,
-    lactoseIntolerant: false,
-    targetCalories: 1700,
-    targetWater: 2500,
-    created_at: new Date().toISOString()
-  });
+  const { user } = useAuth();
+  
+  const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('userProfile', null);
+
+  // Inizializza il profilo utente con i dati dell'utente autenticato
+  useEffect(() => {
+    if (user && !userProfile) {
+      const defaultProfile: UserProfile = {
+        id: user.id,
+        name: user.name,
+        age: 30,
+        height: 173,
+        currentWeight: 69,
+        startWeight: 69,
+        targetWeight: 65,
+        activityLevel: 'moderate',
+        goal: 'fat-loss',
+        intermittentFasting: true,
+        lactoseIntolerant: false,
+        targetCalories: 1700,
+        targetWater: 2500,
+        created_at: user.created_at
+      };
+      setUserProfile(defaultProfile);
+      console.log('✅ Profilo utente inizializzato:', defaultProfile);
+    } else if (user && userProfile && userProfile.name !== user.name) {
+      // Aggiorna il nome se è cambiato
+      setUserProfile(prev => prev ? { ...prev, name: user.name, id: user.id } : null);
+      console.log('🔄 Nome utente aggiornato:', user.name);
+    }
+  }, [user, userProfile, setUserProfile]);
 
   const today = new Date().toISOString().split('T')[0];
   const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress>(`dailyProgress_${today}`, {

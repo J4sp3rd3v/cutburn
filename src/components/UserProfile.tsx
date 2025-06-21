@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,10 +22,10 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileProps) => {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   
   const [profile, setProfile] = useState({
-    name: 'Marco',
+    name: user?.name || 'Utente',
     age: 30,
     height: 173,
     activityLevel: 'moderate',
@@ -33,6 +33,16 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
     lactoseIntolerant: true,
     goal: 'fat-loss'
   });
+
+  // Aggiorna il profilo quando cambia l'utente
+  useEffect(() => {
+    if (user?.name) {
+      setProfile(prev => ({
+        ...prev,
+        name: user.name
+      }));
+    }
+  }, [user]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newWeight, setNewWeight] = useState(userStats.currentWeight.toString());
