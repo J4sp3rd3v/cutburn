@@ -96,8 +96,37 @@ const Index = () => {
     ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userProfile.currentWeight) - (weeklyProgress[0]?.weight || userProfile.startWeight)
     : 0;
 
-  const startDate = new Date(userProfile.targetWeight ? '2024-01-01' : new Date().toISOString().split('T')[0]);
-  const daysSinceStart = Math.ceil((new Date().getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  // Calcolo corretto dei giorni dall'iscrizione
+  const registrationDate = new Date(userProfile.created_at || user.created_at);
+  const today = new Date();
+  const daysSinceStart = Math.max(1, Math.ceil((today.getTime() - registrationDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+  // Calcolo deficit calorico personalizzato basato su peso e obiettivi
+  const calculatePersonalizedCalories = () => {
+    const bmr = userProfile.height && userProfile.age 
+      ? (10 * userProfile.currentWeight) + (6.25 * userProfile.height) - (5 * userProfile.age) + 5
+      : 1680;
+    
+    const activityMultiplier = {
+      sedentary: 1.2,
+      light: 1.375,
+      moderate: 1.55,
+      active: 1.725,
+      very_active: 1.9
+    }[userProfile.activityLevel] || 1.55;
+    
+    const tdee = bmr * activityMultiplier;
+    const aggressiveDeficit = Math.round(tdee - (tdee * 0.25)); // 25% deficit per cut rapido
+    
+    return {
+      bmr: Math.round(bmr),
+      tdee: Math.round(tdee),
+      targetCalories: aggressiveDeficit,
+      deficit: Math.round(tdee - aggressiveDeficit)
+    };
+  };
+
+  const calorieData = calculatePersonalizedCalories();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -110,7 +139,7 @@ const Index = () => {
                 <TrendingDown className="w-4 h-4 text-white" />
               </div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-                CutBurn
+                CutBurn Pro
               </h1>
             </div>
             <div className="flex items-center space-x-2">
@@ -172,21 +201,35 @@ const Index = () => {
                 </p>
               </div>
 
-              {/* Daily Overview */}
+              {/* Enhanced Daily Overview con deficit personalizzato */}
               <Card className="p-4 bg-gradient-to-r from-blue-500 to-emerald-500 text-white">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold">Obiettivo Giornaliero</h3>
+                  <h3 className="font-semibold">Deficit Personalizzato</h3>
                   <Badge variant="secondary" className="bg-white/20 text-white">
-                    {weightChange >= 0 ? '+' : ''}{weightChange.toFixed(1)}kg questa settimana
+                    -{calorieData.deficit} kcal/giorno
                   </Badge>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs mb-3">
+                  <div className="text-center">
+                    <div className="font-bold">{calorieData.bmr}</div>
+                    <div className="opacity-80">BMR</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold">{calorieData.tdee}</div>
+                    <div className="opacity-80">TDEE</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold">{calorieData.targetCalories}</div>
+                    <div className="opacity-80">Target</div>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span>Calorie rimanenti</span>
-                    <span className="font-bold">{userProfile.targetCalories - dailyProgress.calories} kcal</span>
+                    <span>Calorie rimanenti oggi</span>
+                    <span className="font-bold">{calorieData.targetCalories - dailyProgress.calories} kcal</span>
                   </div>
                   <Progress 
-                    value={(dailyProgress.calories / userProfile.targetCalories) * 100} 
+                    value={(dailyProgress.calories / calorieData.targetCalories) * 100} 
                     className="bg-white/20"
                   />
                 </div>
@@ -215,17 +258,18 @@ const Index = () => {
 
                 <DashboardCard
                   title="Calorie"
-                  value={`${dailyProgress.calories}/${userProfile.targetCalories}`}
+                  value={`${dailyProgress.calories}/${calorieData.targetCalories}`}
                   unit="kcal consumate"
-                  progress={(dailyProgress.calories / userProfile.targetCalories) * 100}
+                  progress={(dailyProgress.calories / calorieData.targetCalories) * 100}
                   icon={<Flame className="w-5 h-5 text-orange-500" />}
                 />
               </div>
 
-              {/* Daily Shots */}
+              {/* Daily Shots con dosaggi personalizzati */}
               <DailyShots 
                 shotsConsumed={dailyProgress.shotsConsumed}
                 onTakeShot={addShot}
+                userWeight={userProfile.currentWeight}
               />
 
               {/* Today's Status */}
@@ -257,6 +301,14 @@ const Index = () => {
                       Finestra: 12:00-20:00
                     </Badge>
                   </div>
+                  {weightChange !== 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600">Variazione settimanale</span>
+                      <Badge variant={weightChange < 0 ? "default" : "secondary"}>
+                        {weightChange >= 0 ? '+' : ''}{weightChange.toFixed(1)}kg
+                      </Badge>
+                    </div>
+                  )}
                 </div>
               </Card>
 
@@ -279,7 +331,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="diet" className="mt-4">
-              <DietSection />
+              <DietSection userProfile={userProfile} />
             </TabsContent>
 
             <TabsContent value="recipes" className="mt-4">
@@ -287,7 +339,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="supplements" className="mt-4">
-              <SupplementSection />
+              <SupplementSection userProfile={userProfile} />
             </TabsContent>
 
             <TabsContent value="workout" className="mt-4">
@@ -302,10 +354,10 @@ const Index = () => {
               <UserProfile 
                 userStats={{
                   targetWater: userProfile.targetWater,
-                  targetCalories: userProfile.targetCalories,
+                  targetCalories: calorieData.targetCalories,
                   currentWeight: userProfile.currentWeight,
                   startWeight: userProfile.startWeight,
-                  startDate: '2024-01-01'
+                  startDate: userProfile.created_at || user.created_at
                 }}
                 onUpdateWeight={updateWeight}
                 weeklyProgress={weeklyProgress}

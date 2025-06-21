@@ -1,19 +1,61 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, Utensils, Target, ChefHat, BookOpen, Zap, Leaf, Calendar } from 'lucide-react';
+import { Clock, Utensils, Target, ChefHat, BookOpen, Zap, Leaf, Calendar, Scale } from 'lucide-react';
 
-const DietSection = () => {
+interface UserProfile {
+  currentWeight: number;
+  targetWeight: number;
+  height: number;
+  age: number;
+  activityLevel: string;
+  goal: string;
+}
+
+interface DietSectionProps {
+  userProfile: UserProfile;
+}
+
+const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedMeal, setSelectedMeal] = useState("pranzo");
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000); // Update every minute
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Calcoli metabolici personalizzati
+  const calculatePersonalizedNutrition = () => {
+    const bmr = (10 * userProfile.currentWeight) + (6.25 * userProfile.height) - (5 * userProfile.age) + 5;
+    const activityMultiplier = {
+      sedentary: 1.2,
+      light: 1.375,
+      moderate: 1.55,
+      active: 1.725,
+      very_active: 1.9
+    }[userProfile.activityLevel] || 1.55;
+    
+    const tdee = bmr * activityMultiplier;
+    const targetCalories = Math.round(tdee * 0.75); // 25% deficit aggressivo
+    const proteinTarget = Math.round(userProfile.currentWeight * 2.4); // 2.4g/kg per preservare massa
+    const fatTarget = Math.round((targetCalories * 0.30) / 9); // 30% da grassi
+    const carbTarget = Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4);
+
+    return {
+      bmr: Math.round(bmr),
+      tdee: Math.round(tdee),
+      targetCalories,
+      proteinTarget,
+      fatTarget,
+      carbTarget,
+      deficit: Math.round(tdee - targetCalories)
+    };
+  };
+
+  const nutrition = calculatePersonalizedNutrition();
 
   // Get current season and optimal meal based on time
   const getCurrentSeason = () => {
@@ -36,133 +78,123 @@ const DietSection = () => {
   const season = getCurrentSeason();
   const optimalMeal = getCurrentOptimalMeal();
 
-  // Enhanced user stats with body composition focus
-  const userStats = {
-    weight: 69,
-    height: 173,
-    age: 30,
-    bodyFat: 15, // Target: 8-10%
-    bmr: 1680, // Calculated with body composition
-    tdee: 2280, // With training 4x/week
-    targetCalories: 1650, // Aggressive but safe deficit (630kcal)
-    proteinTarget: 165, // 2.4g/kg for muscle preservation in deficit
-    fatTarget: 45, // 25% calories for hormone optimization
-    carbTarget: 82 // Remaining calories, focused around workouts
-  };
-
-  // Seasonal ingredients database
+  // Seasonal ingredients database (aggiornato per ogni stagione)
   const seasonalIngredients = {
     primavera: {
-      vegetables: ['asparagi', 'carciofi', 'piselli', 'fave', 'spinaci novelli', 'ravanelli'],
-      fruits: ['fragole', 'albicocche', 'ciliegie', 'kiwi'],
-      herbs: ['menta', 'basilico fresco', 'prezzemolo']
+      vegetables: ['asparagi', 'carciofi', 'piselli', 'fave', 'spinaci novelli', 'ravanelli', 'rucola selvaggia'],
+      fruits: ['fragole', 'albicocche', 'ciliegie', 'kiwi', 'mele annurche'],
+      herbs: ['menta', 'basilico fresco', 'prezzemolo', 'erba cipollina'],
+      proteins: ['agnello', 'capretto', 'branzino', 'orata', 'ricotta di capra']
     },
     estate: {
-      vegetables: ['zucchine', 'pomodori', 'peperoni', 'melanzane', 'cetrioli', 'rucola'],
-      fruits: ['pesche', 'melone', 'anguria', 'prugne', 'fichi'],
-      herbs: ['origano', 'timo', 'rosmarino']
+      vegetables: ['zucchine', 'pomodori cuore di bue', 'peperoni', 'melanzane', 'cetrioli', 'rucola', 'basilico'],
+      fruits: ['pesche', 'melone', 'anguria', 'prugne', 'fichi', 'more', 'lamponi'],
+      herbs: ['origano', 'timo', 'rosmarino', 'maggiorana'],
+      proteins: ['tonno', 'spigola', 'sgombro', 'mozzarella di bufala', 'burrata']
     },
     autunno: {
-      vegetables: ['zucca', 'cavolo nero', 'broccoli', 'cavolfiori', 'rape rosse'],
-      fruits: ['mele', 'pere', 'uva', 'melograno', 'castagne'],
-      herbs: ['salvia', 'alloro', 'maggiorana']
+      vegetables: ['zucca delica', 'cavolo nero', 'broccoli', 'cavolfiori', 'rape rosse', 'porcini', 'castagne'],
+      fruits: ['mele', 'pere', 'uva', 'melograno', 'cachi', 'noci fresche'],
+      herbs: ['salvia', 'alloro', 'maggiorana', 'timo'],
+      proteins: ['cinghiale', 'anatra', 'salmone', 'gorgonzola', 'pecorino']
     },
     inverno: {
-      vegetables: ['cavoli', 'porri', 'carciofi', 'finocchi', 'sedano rapa'],
-      fruits: ['arance', 'mandarini', 'pompelmi', 'kiwi', 'mele'],
-      herbs: ['rosmarino', 'timo', 'alloro']
+      vegetables: ['cavoli', 'porri', 'carciofi', 'finocchi', 'sedano rapa', 'radicchio di Treviso', 'spinaci'],
+      fruits: ['arance', 'mandarini', 'pompelmi', 'kiwi', 'mele', 'pere'],
+      herbs: ['rosmarino', 'timo', 'alloro', 'salvia'],
+      proteins: ['manzo', 'vitello', 'merluzzo', 'baccalà', 'taleggio']
     }
   };
 
-  // Dynamic meals based on season and scientific timing
+  // Pasti dinamici con calcoli personalizzati
   const getDynamicMeals = () => {
     const currentIngredients = seasonalIngredients[season];
     const dayOfWeek = new Date().getDay();
-    const isWorkoutDay = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
+    const isWorkoutDay = [1, 3, 5].includes(dayOfWeek);
 
     return {
       colazione: {
-        name: "Colazione Anabolica",
+        name: "Colazione Metabolica",
         time: "07:00-08:30",
-        calories: 285,
-        timing: "Peak cortisol + sensibilità insulinica",
-        hormones: "Ottimizzazione testosterone + GH notturno",
+        calories: Math.round(nutrition.targetCalories * 0.20),
+        timing: "Peak cortisol + sensibilità insulinica massima",
+        hormones: "Ottimizzazione testosterone + utilizzo GH notturno",
         season: season,
         foods: [
           {
-            name: "Smoothie proteico stagionale",
-            amount: "250ml",
-            calories: 185,
-            protein: 32,
-            carbs: 12,
-            fat: 2,
-            preparation: `Whey isolate + ${currentIngredients.fruits[0]} + cannella Ceylon + caffè espresso. Frullare con ghiaccio.`,
-            benefits: "Stimolazione mTOR per sintesi proteica. Caffeina per ossidazione grassi mattutina.",
+            name: `Smoothie proteico ${season}`,
+            amount: "300ml",
+            calories: Math.round(nutrition.targetCalories * 0.12),
+            protein: Math.round(nutrition.proteinTarget * 0.25),
+            carbs: isWorkoutDay ? 15 : 8,
+            fat: 3,
+            preparation: `Whey isolate ${Math.round(userProfile.currentWeight * 0.4)}g + ${currentIngredients.fruits[0]} 100g + cannella Ceylon + caffè espresso doppio. Frullare con ghiaccio.`,
+            benefits: "Stimolazione mTOR per sintesi proteica. Caffeina dosata per ossidazione grassi.",
             seasonal: true
           },
           {
-            name: "Mandorle biologiche",
-            amount: "12g",
-            calories: 70,
+            name: "Mandorle siciliane",
+            amount: `${Math.round(userProfile.currentWeight * 0.15)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.05),
             protein: 3,
             carbs: 2,
-            fat: 6,
-            preparation: "Mandorle crude, ricche vitamina E e magnesio.",
-            benefits: "Grassi monoinsaturi per produzione testosterone. Magnesio per 300+ reazioni enzimatiche.",
+            fat: Math.round(nutrition.fatTarget * 0.15),
+            preparation: "Mandorle crude biologiche, ricche vitamina E e magnesio.",
+            benefits: "Grassi monoinsaturi per produzione testosterone. Magnesio per 300+ enzimi.",
             seasonal: false
           },
           {
-            name: "Tè verde matcha",
-            amount: "1 tazza",
-            calories: 30,
+            name: "Tè verde matcha premium",
+            amount: "200ml",
+            calories: 25,
             protein: 2,
             carbs: 4,
             fat: 0,
-            preparation: "Matcha ceremoniale giapponese + acqua 70°C.",
-            benefits: "EGCG per termogenesi. L-teanina per focus senza jitter.",
+            preparation: `Matcha giapponese ${Math.round(userProfile.currentWeight * 0.05)}g + acqua 70°C.`,
+            benefits: "EGCG per termogenesi +18%. L-teanina per focus senza ansia.",
             seasonal: false
           }
         ]
       },
       pranzo: {
-        name: "Pranzo Lipolisi Peak",
+        name: "Pranzo Power Cut",
         time: "12:00-13:30",
-        calories: 465,
-        timing: "Massima sensibilità insulinica + attività metabolica",
-        hormones: "Peak leptina + ottimizzazione T3/T4",
+        calories: Math.round(nutrition.targetCalories * 0.35),
+        timing: "Massima sensibilità insulinica + attività metabolica peak",
+        hormones: "Peak leptina + ottimizzazione T3/T4 tiroidei",
         season: season,
         foods: [
           {
-            name: `Salmone selvaggio + ${currentIngredients.herbs[0]}`,
-            amount: "140g",
-            calories: 280,
-            protein: 45,
+            name: `${currentIngredients.proteins[0]} + ${currentIngredients.herbs[0]}`,
+            amount: `${Math.round(userProfile.currentWeight * 2)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.20),
+            protein: Math.round(nutrition.proteinTarget * 0.40),
             carbs: 0,
-            fat: 12,
-            preparation: `Marinare con ${currentIngredients.herbs[0]}, olio EVO, limone. Cottura sottovuoto 52°C x 12min.`,
-            benefits: "EPA/DHA per riduzione infiammazione viscerale. Riduce cortisol e CRP.",
+            fat: Math.round(nutrition.fatTarget * 0.20),
+            preparation: `Cottura sottovuoto 56°C x 15min con ${currentIngredients.herbs[0]}, olio EVO, limone biologico.`,
+            benefits: "Proteine ad alto VB per sintesi muscolare. Riduzione cortisolo e CRP.",
             seasonal: true
           },
           {
-            name: `${currentIngredients.vegetables[0]} saltati`,
-            amount: "180g",
-            calories: 85,
-            protein: 6,
-            carbs: 12,
+            name: `${currentIngredients.vegetables[0]} stagionali`,
+            amount: `${Math.round(userProfile.currentWeight * 2.5)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.06),
+            protein: 4,
+            carbs: 10,
             fat: 2,
-            preparation: `Saltare con aglio, olio EVO e pepe nero. Cottura al dente.`,
-            benefits: "Fibre solubili per microbiota. Polifenoli stagionali per riduzione stress ossidativo.",
+            preparation: `Saltati con aglio, olio EVO e pepe nero. Cottura al dente per preservare nutrienti.`,
+            benefits: "Fibre per microbiota. Polifenoli stagionali anti-infiammatori.",
             seasonal: true
           },
           {
-            name: isWorkoutDay ? "Riso basmati integrale" : "Quinoa tricolore",
-            amount: isWorkoutDay ? "40g secco" : "35g secco",
-            calories: isWorkoutDay ? 140 : 130,
-            protein: isWorkoutDay ? 3 : 5,
-            carbs: isWorkoutDay ? 28 : 22,
-            fat: isWorkoutDay ? 1 : 2,
-            preparation: isWorkoutDay ? "Basmati con curcuma + pepe nero" : "Quinoa con limone e prezzemolo",
-            benefits: isWorkoutDay ? "Amilosio per rilascio glucosio controllato" : "Aminoacidi completi + saponine detox",
+            name: isWorkoutDay ? "Riso basmati integrale" : "Cavolfiore riso",
+            amount: isWorkoutDay ? `${Math.round(userProfile.currentWeight * 0.6)}g secco` : "150g",
+            calories: isWorkoutDay ? Math.round(nutrition.targetCalories * 0.09) : 25,
+            protein: isWorkoutDay ? 4 : 3,
+            carbs: isWorkoutDay ? Math.round(nutrition.carbTarget * 0.4) : 5,
+            fat: 1,
+            preparation: isWorkoutDay ? "Basmati con curcuma + pepe nero + cardamomo" : "Cavolfiore tritato saltato con spezie",
+            benefits: isWorkoutDay ? "Amilosio per rilascio glucosio controllato" : "Fibra prebiotica + volume saziante",
             seasonal: false
           }
         ]
@@ -170,85 +202,85 @@ const DietSection = () => {
       spuntino: {
         name: "Pre-Workout Precision",
         time: "15:30-16:00",
-        calories: 180,
-        timing: "30-45min pre-allenamento - Peak performance window",
-        hormones: "Adrenalina + noradrenalina ottimali",
+        calories: Math.round(nutrition.targetCalories * 0.15),
+        timing: "30-45min pre-allenamento - Performance window",
+        hormones: "Picco adrenalina + noradrenalina per performance",
         season: season,
         foods: [
           {
-            name: "Shot energetico naturale",
-            amount: "100ml",
-            calories: 120,
-            protein: 22,
-            carbs: 8,
+            name: "Shot pre-workout naturale",
+            amount: "120ml",
+            calories: Math.round(nutrition.targetCalories * 0.10),
+            protein: Math.round(nutrition.proteinTarget * 0.20),
+            carbs: 12,
             fat: 1,
-            preparation: "Whey isolate + espresso doppio + estratto di ${currentIngredients.fruits[1]} + beta-alanina.",
-            benefits: "Aminoacidi ramificati per performance. Caffeina per lipolisi durante allenamento.",
+            preparation: `Whey isolate ${Math.round(userProfile.currentWeight * 0.3)}g + espresso triplo + ${currentIngredients.fruits[1]} + beta-alanina 3g.`,
+            benefits: "BCAA per performance. Caffeina 6mg/kg per lipolisi massima.",
             seasonal: true
           },
           {
-            name: "Noci brasiliane",
-            amount: "8g (2 noci)",
-            calories: 55,
-            protein: 1,
+            name: "Noci brasiliane premium",
+            amount: `${Math.round(userProfile.currentWeight * 0.12)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.05),
+            protein: 2,
             carbs: 1,
-            fat: 5,
-            preparation: "Noci brasiliane crude, fonte di selenio.",
-            benefits: "Selenio per funzione tiroidea ottimale. Grassi MCT-like per energia rapida.",
+            fat: Math.round(nutrition.fatTarget * 0.12),
+            preparation: "Noci crude, fonte selenio per tiroide.",
+            benefits: "Selenio per T3/T4 ottimale. Grassi per energia sostenuta.",
             seasonal: false
           }
         ]
       },
       cena: {
-        name: "Cena Recupero Ormonale",
+        name: "Cena Recovery Pro",
         time: "19:00-20:30",
-        calories: 420,
-        timing: "Finestra anabolica serale + prep sonno",
-        hormones: "GH release + melatonina endogena",
+        calories: Math.round(nutrition.targetCalories * 0.30),
+        timing: "Finestra anabolica serale + preparazione sonno",
+        hormones: "GH release + melatonina endogena + recupero",
         season: season,
         foods: [
           {
-            name: `Petto di pollo ruspante + ${currentIngredients.herbs[1]}`,
-            amount: "150g",
-            calories: 225,
-            protein: 46,
+            name: `${currentIngredients.proteins[1]} + ${currentIngredients.herbs[1]}`,
+            amount: `${Math.round(userProfile.currentWeight * 1.8)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.18),
+            protein: Math.round(nutrition.proteinTarget * 0.35),
             carbs: 0,
-            fat: 3,
-            preparation: `Marinatura 2h con ${currentIngredients.herbs[1]} + aglio. Cottura 160°C x 18min.`,
-            benefits: "Proteine complete ad alto VB. Triptofano per produzione serotonina→melatonina.",
+            fat: Math.round(nutrition.fatTarget * 0.15),
+            preparation: `Marinatura 3h con ${currentIngredients.herbs[1]} + aglio + limone. Cottura 160°C x 20min.`,
+            benefits: "Triptofano per serotonina→melatonina. Recupero muscolare notturno.",
             seasonal: true
           },
           {
             name: `${currentIngredients.vegetables[1]} al vapore`,
-            amount: "200g",
-            calories: 65,
-            protein: 6,
+            amount: `${Math.round(userProfile.currentWeight * 3)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.04),
+            protein: 5,
             carbs: 8,
             fat: 1,
-            preparation: `Vapore 4 minuti. Condimento: olio EVO + limone + sale rosa.`,
-            benefits: "Antiossidanti stagionali per recupero muscolare. Potassio per rilassamento.",
+            preparation: `Vapore 5 minuti. Condimento: olio EVO + limone + sale rosa himalayano.`,
+            benefits: "Antiossidanti per recupero. Potassio per rilassamento muscolare.",
             seasonal: true
           },
           {
-            name: "Patata dolce viola",
-            amount: "100g",
-            calories: 85,
+            name: "Patata dolce biologica",
+            amount: `${Math.round(userProfile.currentWeight * 1.2)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.06),
             protein: 2,
-            carbs: 20,
+            carbs: Math.round(nutrition.carbTarget * 0.25),
             fat: 0,
-            preparation: "Al forno 180°C x 25min con rosmarino.",
-            benefits: "Antocianine per riduzione infiammazione. Carboidrati per ricarica glicogeno notturna.",
+            preparation: "Al forno 180°C x 30min con rosmarino e paprika dolce.",
+            benefits: "Antocianine anti-infiammatorie. Ricarica glicogeno notturna.",
             seasonal: false
           },
           {
-            name: "Avocado Hass",
-            amount: "60g",
-            calories: 95,
+            name: "Avocado Hass maturo",
+            amount: `${Math.round(userProfile.currentWeight * 0.8)}g`,
+            calories: Math.round(nutrition.targetCalories * 0.06),
             protein: 2,
-            carbs: 5,
-            fat: 9,
-            preparation: "A fette con sale marino e pepe nero fresco.",
-            benefits: "Acido oleico per sintesi testosterone notturna. Potassio per pressione ottimale.",
+            carbs: 4,
+            fat: Math.round(nutrition.fatTarget * 0.25),
+            preparation: "A fette con sale marino e pepe nero macinato fresco.",
+            benefits: "Acido oleico per testosterone notturno. Potassio per pressione.",
             seasonal: false
           }
         ]
@@ -274,18 +306,19 @@ const DietSection = () => {
     <div className="space-y-4">
       <div className="text-center py-4">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">
-          Piano Nutrizionale Body Recomp 2025
+          Piano Nutrizionale Personalizzato
         </h2>
         <div className="flex items-center justify-center space-x-4 text-sm">
           <Badge variant="outline" className="flex items-center space-x-1">
             <Calendar className="w-3 h-3" />
             <span>{season.charAt(0).toUpperCase() + season.slice(1)}</span>
           </Badge>
-          <Badge variant="outline">
-            Deficit: {userStats.tdee - userStats.targetCalories}kcal
+          <Badge variant="outline" className="flex items-center space-x-1">
+            <Scale className="w-3 h-3" />
+            <span>{userProfile.currentWeight}kg</span>
           </Badge>
           <Badge variant="outline">
-            {currentTime.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+            -{nutrition.deficit}kcal/giorno
           </Badge>
         </div>
       </div>
@@ -309,28 +342,32 @@ const DietSection = () => {
         </Alert>
       )}
 
-      {/* Scientific Overview */}
+      {/* Scientific Overview Personalizzato */}
       <Card className="p-4 bg-gradient-to-r from-emerald-600 to-blue-600 text-white">
         <div className="flex items-center space-x-2 mb-3">
           <BookOpen className="w-5 h-5" />
-          <h3 className="font-semibold">Body Recomposition Science 2025</h3>
+          <h3 className="font-semibold">Body Recomp Personalizzato</h3>
         </div>
-        <div className="grid grid-cols-3 gap-4 text-sm">
-          <div>
-            <div className="text-xl font-bold">{userStats.targetCalories}</div>
-            <div className="opacity-90">kcal deficit</div>
+        <div className="grid grid-cols-4 gap-2 text-sm">
+          <div className="text-center">
+            <div className="text-lg font-bold">{nutrition.targetCalories}</div>
+            <div className="opacity-90 text-xs">kcal target</div>
           </div>
-          <div>
-            <div className="text-xl font-bold">{userStats.proteinTarget}g</div>
-            <div className="opacity-90">proteine</div>
+          <div className="text-center">
+            <div className="text-lg font-bold">{nutrition.proteinTarget}g</div>
+            <div className="opacity-90 text-xs">proteine</div>
           </div>
-          <div>
-            <div className="text-xl font-bold">8-10%</div>
-            <div className="opacity-90">BF target</div>
+          <div className="text-center">
+            <div className="text-lg font-bold">{Math.round((userProfile.currentWeight - userProfile.targetWeight) * 1000 / 7700)}g</div>
+            <div className="opacity-90 text-xs">grasso/sett</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold">{Math.round((userProfile.currentWeight - userProfile.targetWeight) / 0.5)}</div>
+            <div className="opacity-90 text-xs">settimane</div>
           </div>
         </div>
         <div className="mt-2 text-xs opacity-80">
-          Deficit aggressivo ma sicuro per riduzione grasso viscerale addominale + preservazione massa magra
+          Deficit personalizzato per {userProfile.currentWeight}kg → {userProfile.targetWeight}kg mantenendo massa magra
         </div>
       </Card>
 
