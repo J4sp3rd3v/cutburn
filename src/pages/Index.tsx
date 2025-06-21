@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -15,8 +16,12 @@ import {
   Clock,
   Zap,
   Droplets,
-  Flame
+  Flame,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useSupabaseProgressTracking } from '@/hooks/useSupabaseProgressTracking';
+import { useNavigate } from 'react-router-dom';
 import DashboardCard from '@/components/DashboardCard';
 import DietSection from '@/components/DietSection';
 import RecipeSection from '@/components/RecipeSection';
@@ -25,25 +30,74 @@ import WorkoutSection from '@/components/WorkoutSection';
 import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import DailyShots from '@/components/DailyShots';
-import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 const Index = () => {
+  const { user, loading: authLoading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+  
   const {
     dailyProgress,
-    userStats,
+    userProfile,
+    loading,
     addWater,
     addCalories,
     updateWeight,
     addShot,
     toggleWorkout,
     getWeeklyProgress
-  } = useProgressTracking();
+  } = useSupabaseProgressTracking();
 
-  const weeklyProgress = getWeeklyProgress();
+  const [weeklyProgress, setWeeklyProgress] = useState<Array<{ date: string; weight: number }>>([]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    const loadWeeklyProgress = async () => {
+      const progress = await getWeeklyProgress();
+      setWeeklyProgress(progress);
+    };
+    
+    if (user) {
+      loadWeeklyProgress();
+    }
+  }, [user, getWeeklyProgress]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <TrendingDown className="w-6 h-6 text-white animate-pulse" />
+          </div>
+          <p className="text-slate-600">Caricamento...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !userProfile) {
+    return null;
+  }
+
   const weightChange = weeklyProgress.length >= 2 
-    ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userStats.currentWeight) - (weeklyProgress[0]?.weight || userStats.startWeight)
+    ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userProfile.currentWeight) - (weeklyProgress[0]?.weight || userProfile.startWeight)
     : 0;
+
+  const startDate = new Date(userProfile.targetWeight ? '2024-01-01' : new Date().toISOString().split('T')[0]);
+  const daysSinceStart = Math.ceil((new Date().getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -59,14 +113,24 @@ const Index = () => {
                 CutBurn
               </h1>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setActiveTab("profile")}
-              className="rounded-full"
-            >
-              <User className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setActiveTab("profile")}
+                className="rounded-full"
+              >
+                <User className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="rounded-full text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -83,7 +147,7 @@ const Index = () => {
                 <Utensils className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="recipes" className="text-xs">
-                <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="supplements" className="text-xs">
                 <Zap className="w-4 h-4" />
@@ -101,10 +165,10 @@ const Index = () => {
             <TabsContent value="dashboard" className="mt-4 space-y-4">
               <div className="text-center py-4">
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                  Ciao Marco! 👋
+                  Ciao {userProfile.name}! 👋
                 </h2>
                 <p className="text-slate-600">
-                  Giorno {Math.ceil((new Date().getTime() - new Date(userStats.startDate).getTime()) / (1000 * 60 * 60 * 24))} del tuo percorso CutBurn
+                  Giorno {daysSinceStart} del tuo percorso CutBurn
                 </p>
               </div>
 
@@ -119,10 +183,10 @@ const Index = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span>Calorie rimanenti</span>
-                    <span className="font-bold">{userStats.targetCalories - dailyProgress.calories} kcal</span>
+                    <span className="font-bold">{userProfile.targetCalories - dailyProgress.calories} kcal</span>
                   </div>
                   <Progress 
-                    value={(dailyProgress.calories / userStats.targetCalories) * 100} 
+                    value={(dailyProgress.calories / userProfile.targetCalories) * 100} 
                     className="bg-white/20"
                   />
                 </div>
@@ -142,18 +206,18 @@ const Index = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="text-lg font-bold text-slate-800">
-                      {dailyProgress.water}/{userStats.targetWater}ml
+                      {dailyProgress.water}/{userProfile.targetWater}ml
                     </div>
                     <div className="text-xs text-slate-500">Tocca per +500ml</div>
-                    <Progress value={(dailyProgress.water / userStats.targetWater) * 100} className="h-2" />
+                    <Progress value={(dailyProgress.water / userProfile.targetWater) * 100} className="h-2" />
                   </div>
                 </Card>
 
                 <DashboardCard
                   title="Calorie"
-                  value={`${dailyProgress.calories}/${userStats.targetCalories}`}
+                  value={`${dailyProgress.calories}/${userProfile.targetCalories}`}
                   unit="kcal consumate"
-                  progress={(dailyProgress.calories / userStats.targetCalories) * 100}
+                  progress={(dailyProgress.calories / userProfile.targetCalories) * 100}
                   icon={<Flame className="w-5 h-5 text-orange-500" />}
                 />
               </div>
@@ -184,7 +248,7 @@ const Index = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Peso attuale</span>
                     <Badge variant="outline">
-                      {userStats.currentWeight}kg
+                      {userProfile.currentWeight}kg
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -236,7 +300,13 @@ const Index = () => {
 
             <TabsContent value="profile" className="mt-4">
               <UserProfile 
-                userStats={userStats}
+                userStats={{
+                  targetWater: userProfile.targetWater,
+                  targetCalories: userProfile.targetCalories,
+                  currentWeight: userProfile.currentWeight,
+                  startWeight: userProfile.startWeight,
+                  startDate: '2024-01-01'
+                }}
                 onUpdateWeight={updateWeight}
                 weeklyProgress={weeklyProgress}
               />
