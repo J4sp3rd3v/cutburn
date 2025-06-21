@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,18 +20,17 @@ import {
   LogOut
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useSupabaseProgressTracking } from '@/hooks/useSupabaseProgressTracking';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
+import { useNutritionTracking } from '@/hooks/useNutritionTracking';
 import { useNavigate } from 'react-router-dom';
 import DashboardCard from '@/components/DashboardCard';
 import DietSection from '@/components/DietSection';
-import RecipeSection from '@/components/RecipeSection';
 import SupplementSection from '@/components/SupplementSection';
 import WorkoutSection from '@/components/WorkoutSection';
 import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import DailyShots from '@/components/DailyShots';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
-import { useAdvancedNutritionTracking } from '@/hooks/useAdvancedNutritionTracking';
 
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -47,16 +47,15 @@ const Index = () => {
     addShot,
     toggleWorkout,
     getWeeklyProgress
-  } = useSupabaseProgressTracking();
+  } = useProgressTracking();
 
-  // Nuovo hook per tracking avanzato
   const {
     todayMeals,
     nutritionData,
     dailyTotals,
     loading: mealsLoading,
     markMealAsEaten
-  } = useAdvancedNutritionTracking(userProfile);
+  } = useNutritionTracking(userProfile);
 
   const [weeklyProgress, setWeeklyProgress] = useState<Array<{ date: string; weight: number }>>([]);
 
@@ -70,13 +69,9 @@ const Index = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    const loadWeeklyProgress = async () => {
-      const progress = await getWeeklyProgress();
-      setWeeklyProgress(progress);
-    };
-    
     if (user) {
-      loadWeeklyProgress();
+      const progress = getWeeklyProgress();
+      setWeeklyProgress(progress);
     }
   }, [user, getWeeklyProgress]);
 
@@ -106,29 +101,9 @@ const Index = () => {
     ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userProfile.currentWeight) - (weeklyProgress[0]?.weight || userProfile.startWeight)
     : 0;
 
-  // Fixed day calculation using created_at from userProfile or user
   const registrationDate = new Date(userProfile.created_at || user.created_at);
   const today = new Date();
   const daysSinceStart = Math.max(1, Math.ceil((today.getTime() - registrationDate.getTime()) / (1000 * 60 * 60 * 24)));
-
-  // Calcolo deficit calorico ottimizzato
-  const calculateOptimalDeficit = () => {
-    if (!userProfile || !nutritionData) return {
-      bmr: 1680,
-      tdee: 2600,
-      targetCalories: 1700,
-      deficit: 900
-    };
-
-    return {
-      bmr: nutritionData.bmr,
-      tdee: nutritionData.tdee,
-      targetCalories: nutritionData.targetCalories,
-      deficit: nutritionData.aggressiveDeficit
-    };
-  };
-
-  const calorieData = calculateOptimalDeficit();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -208,20 +183,20 @@ const Index = () => {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold">Deficit Calorico Aggressivo</h3>
                   <Badge variant="secondary" className="bg-white/20 text-white">
-                    -{calorieData.deficit} kcal/giorno
+                    -{nutritionData.aggressiveDeficit} kcal/giorno
                   </Badge>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-xs mb-3">
                   <div className="text-center">
-                    <div className="font-bold">{calorieData.bmr}</div>
+                    <div className="font-bold">{nutritionData.bmr}</div>
                     <div className="opacity-80">BMR</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-bold">{calorieData.tdee}</div>
+                    <div className="font-bold">{nutritionData.tdee}</div>
                     <div className="opacity-80">TDEE</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-bold">{calorieData.targetCalories}</div>
+                    <div className="font-bold">{nutritionData.targetCalories}</div>
                     <div className="opacity-80">Target</div>
                   </div>
                 </div>
@@ -231,7 +206,7 @@ const Index = () => {
                     <span className="font-bold">{dailyTotals.remainingCalories} kcal</span>
                   </div>
                   <Progress 
-                    value={Math.max(0, (dailyTotals.calories / calorieData.targetCalories) * 100)} 
+                    value={Math.max(0, (dailyTotals.calories / nutritionData.targetCalories) * 100)} 
                     className="bg-white/20"
                   />
                 </div>
@@ -260,9 +235,9 @@ const Index = () => {
 
                 <DashboardCard
                   title="Calorie"
-                  value={`${dailyTotals.calories}/${calorieData.targetCalories}`}
+                  value={`${dailyTotals.calories}/${nutritionData.targetCalories}`}
                   unit="kcal consumate"
-                  progress={(dailyTotals.calories / calorieData.targetCalories) * 100}
+                  progress={(dailyTotals.calories / nutritionData.targetCalories) * 100}
                   icon={<Flame className="w-5 h-5 text-orange-500" />}
                 />
               </div>
@@ -300,17 +275,15 @@ const Index = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Deficit giornaliero</span>
                     <Badge variant="default" className="bg-red-500">
-                      -{calorieData.deficit}kcal
+                      -{nutritionData.aggressiveDeficit}kcal
                     </Badge>
                   </div>
-                  {nutritionData && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-600">Perdita prevista</span>
-                      <Badge variant="outline">
-                        {nutritionData.expectedWeeklyLoss}kg/settimana
-                      </Badge>
-                    </div>
-                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">Perdita prevista</span>
+                    <Badge variant="outline">
+                      {nutritionData.expectedWeeklyLoss}kg/settimana
+                    </Badge>
+                  </div>
                 </div>
               </Card>
 
@@ -332,7 +305,6 @@ const Index = () => {
               )}
             </TabsContent>
 
-            {/* Nuovo Tab Meals con tracking avanzato */}
             <TabsContent value="meals" className="mt-4">
               {!mealsLoading && (
                 <AdvancedMealTracker
@@ -364,7 +336,7 @@ const Index = () => {
               <UserProfile 
                 userStats={{
                   targetWater: userProfile.targetWater,
-                  targetCalories: calorieData.targetCalories,
+                  targetCalories: nutritionData.targetCalories,
                   currentWeight: userProfile.currentWeight,
                   startWeight: userProfile.startWeight,
                   startDate: userProfile.created_at || user.created_at

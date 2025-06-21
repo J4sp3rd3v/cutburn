@@ -1,5 +1,7 @@
 
 import { useState, useEffect } from 'react';
+import { useLocalStorage } from './useLocalStorage';
+import { toast } from '@/hooks/use-toast';
 
 interface DailyProgress {
   date: string;
@@ -11,116 +13,127 @@ interface DailyProgress {
   shotsConsumed: string[];
 }
 
-interface UserStats {
-  targetWater: number;
-  targetCalories: number;
+interface UserProfile {
+  id: string;
+  name: string;
+  age: number;
+  height: number;
   currentWeight: number;
   startWeight: number;
-  startDate: string;
+  targetWeight: number;
+  activityLevel: string;
+  goal: string;
+  intermittentFasting: boolean;
+  lactoseIntolerant: boolean;
+  targetCalories: number;
+  targetWater: number;
+  created_at: string;
 }
 
 export const useProgressTracking = () => {
-  const [dailyProgress, setDailyProgress] = useState<DailyProgress>(() => {
-    const today = new Date().toISOString().split('T')[0];
-    const saved = localStorage.getItem(`dailyProgress_${today}`);
-    return saved ? JSON.parse(saved) : {
-      date: today,
-      water: 0,
-      calories: 0,
-      workoutCompleted: false,
-      supplementsTaken: 0,
-      shotsConsumed: []
-    };
+  const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('userProfile', {
+    id: 'user-1',
+    name: 'Marco',
+    age: 30,
+    height: 173,
+    currentWeight: 69,
+    startWeight: 69,
+    targetWeight: 65,
+    activityLevel: 'moderate',
+    goal: 'fat-loss',
+    intermittentFasting: true,
+    lactoseIntolerant: false,
+    targetCalories: 1700,
+    targetWater: 2500,
+    created_at: new Date().toISOString()
   });
 
-  const [userStats, setUserStats] = useState<UserStats>(() => {
-    const saved = localStorage.getItem('userStats');
-    return saved ? JSON.parse(saved) : {
-      targetWater: 2500, // 2.5L default
-      targetCalories: 1700,
-      currentWeight: 69,
-      startWeight: 69,
-      startDate: new Date().toISOString().split('T')[0]
-    };
+  const today = new Date().toISOString().split('T')[0];
+  const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress>(`dailyProgress_${today}`, {
+    date: today,
+    water: 0,
+    calories: 0,
+    workoutCompleted: false,
+    supplementsTaken: 0,
+    shotsConsumed: []
   });
 
-  // Save to localStorage whenever data changes
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem(`dailyProgress_${today}`, JSON.stringify(dailyProgress));
-  }, [dailyProgress]);
-
-  useEffect(() => {
-    localStorage.setItem('userStats', JSON.stringify(userStats));
-  }, [userStats]);
+  const [weeklyProgress, setWeeklyProgress] = useLocalStorage<Array<{ date: string; weight: number }>>('weeklyProgress', []);
 
   const addWater = () => {
-    setDailyProgress(prev => ({
-      ...prev,
-      water: Math.min(prev.water + 500, userStats.targetWater)
-    }));
+    if (!userProfile) return;
+    
+    const newWater = Math.min(dailyProgress.water + 500, userProfile.targetWater);
+    setDailyProgress(prev => ({ ...prev, water: newWater }));
+    
+    if (newWater >= userProfile.targetWater) {
+      toast({
+        title: "Obiettivo raggiunto! 💧",
+        description: "Hai bevuto abbastanza acqua oggi!",
+      });
+    }
   };
 
   const addCalories = (amount: number) => {
-    setDailyProgress(prev => ({
-      ...prev,
-      calories: Math.min(prev.calories + amount, userStats.targetCalories)
-    }));
+    if (!userProfile) return;
+    
+    const newCalories = Math.min(dailyProgress.calories + amount, userProfile.targetCalories);
+    setDailyProgress(prev => ({ ...prev, calories: newCalories }));
   };
 
   const updateWeight = (weight: number) => {
-    setUserStats(prev => ({
-      ...prev,
-      currentWeight: weight
-    }));
-    
-    const today = new Date().toISOString().split('T')[0];
-    setDailyProgress(prev => ({
-      ...prev,
-      weight: weight
-    }));
+    if (!userProfile) return;
+
+    // Update profile
+    setUserProfile(prev => prev ? { ...prev, currentWeight: weight } : null);
+
+    // Update daily progress
+    setDailyProgress(prev => ({ ...prev, weight }));
+
+    // Update weekly progress
+    const newEntry = { date: today, weight };
+    setWeeklyProgress(prev => {
+      const filtered = prev.filter(entry => entry.date !== today);
+      return [...filtered, newEntry].slice(-7);
+    });
+
+    toast({
+      title: "Peso aggiornato",
+      description: `Nuovo peso: ${weight}kg`,
+    });
   };
 
   const addShot = (shotType: string) => {
-    setDailyProgress(prev => ({
-      ...prev,
-      shotsConsumed: [...prev.shotsConsumed, shotType]
-    }));
+    const newShots = [...dailyProgress.shotsConsumed, shotType];
+    setDailyProgress(prev => ({ ...prev, shotsConsumed: newShots }));
+    
+    toast({
+      title: "Shot registrato! 🥤",
+      description: `${shotType} aggiunto al tracking`,
+    });
   };
 
   const toggleWorkout = () => {
-    setDailyProgress(prev => ({
-      ...prev,
-      workoutCompleted: !prev.workoutCompleted
-    }));
-  };
-
-  const getWeeklyProgress = () => {
-    const weights = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      const dayData = localStorage.getItem(`dailyProgress_${dateStr}`);
-      if (dayData) {
-        const parsed = JSON.parse(dayData);
-        if (parsed.weight) {
-          weights.push({ date: dateStr, weight: parsed.weight });
-        }
-      }
+    const newWorkoutStatus = !dailyProgress.workoutCompleted;
+    setDailyProgress(prev => ({ ...prev, workoutCompleted: newWorkoutStatus }));
+    
+    if (newWorkoutStatus) {
+      toast({
+        title: "Workout completato! 💪",
+        description: "Ottimo lavoro oggi!",
+      });
     }
-    return weights;
   };
 
   return {
     dailyProgress,
-    userStats,
+    userProfile,
+    loading: false,
     addWater,
     addCalories,
     updateWeight,
     addShot,
     toggleWorkout,
-    getWeeklyProgress,
-    setUserStats
+    getWeeklyProgress: () => weeklyProgress
   };
 };
