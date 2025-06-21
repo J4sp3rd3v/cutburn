@@ -1,14 +1,22 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles } from 'lucide-react';
+import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles, Loader2 } from 'lucide-react';
 
-const RecipeSection = () => {
+// Componente di loading
+const RecipeLoader = () => (
+  <div className="flex items-center justify-center py-8">
+    <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+    <span className="ml-2 text-slate-600">Caricamento ricette...</span>
+  </div>
+);
+
+const RecipeSection = React.memo(() => {
   const [selectedCategory, setSelectedCategory] = useState("detox");
 
-  const recipes = {
+  // Memoizza le ricette per evitare re-render inutili
+  const recipes = useMemo(() => ({
     detox: [
       {
         name: "THE BOOSTER - Cetriolo Detox",
@@ -1224,16 +1232,21 @@ const RecipeSection = () => {
         fatBurning: "Curcuma + pepe lungo aumentano termogenesi +35%"
       }
     ]
-  };
+  }), []);
 
-  const categories = [
+  // Memoizza le categorie per evitare re-render
+  const categories = useMemo(() => [
     { key: "detox", label: "Detox", icon: <Droplets className="w-4 h-4" /> },
     { key: "bowls", label: "Bowls", icon: <Zap className="w-4 h-4" /> },
     { key: "proteiche", label: "Proteiche", icon: <Flame className="w-4 h-4" /> },
     { key: "stellati", label: "Stellati ⭐", icon: <Sparkles className="w-4 h-4" /> }
-  ];
+  ], []);
 
-  const currentRecipes = recipes[selectedCategory as keyof typeof recipes];
+  // Memoizza le ricette correnti per performance
+  const currentRecipes = useMemo(() => 
+    recipes[selectedCategory as keyof typeof recipes] || [], 
+    [recipes, selectedCategory]
+  );
 
   return (
     <div className="space-y-4">
@@ -1263,9 +1276,10 @@ const RecipeSection = () => {
       </div>
 
       {/* Recipes List */}
-      <div className="space-y-4">
-        {currentRecipes.map((recipe, index) => (
-          <Card key={index} className="p-4 bg-white/70 backdrop-blur-sm">
+      <Suspense fallback={<RecipeLoader />}>
+        <div className="space-y-4">
+          {currentRecipes.map((recipe, index) => (
+          <Card key={`${selectedCategory}-${index}`} className="p-4 bg-white/70 backdrop-blur-sm">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h3 className="font-semibold text-lg text-slate-800">{recipe.name}</h3>
@@ -1356,9 +1370,10 @@ const RecipeSection = () => {
             </div>
           </Card>
         ))}
-      </div>
+        </div>
+      </Suspense>
     </div>
   );
-};
+});
 
 export default RecipeSection;
