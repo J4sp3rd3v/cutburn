@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat, Zap, Droplets, Flame } from 'lucide-react';
+import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles } from 'lucide-react';
 
 const RecipeSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("detox");
@@ -40,66 +40,6 @@ const RecipeSection = () => {
         fatBurning: "Accelera metabolismo basale +8% per 2 ore"
       },
       {
-        name: "THE HEAVY METAL DETOX",
-        time: "4 min",
-        servings: 1,  
-        calories: 180,
-        type: "Smoothie Detox",
-        category: "Post-workout",
-        ingredients: [
-          "Mirtilli: 100g",
-          "Spirulina: 1 cucchiaino (3-5g)",
-          "Coriandolo: 20g (ciuffo)",
-          "Banana: 1/2 media (50g)",
-          "Arancia: 100g (1/2 arancia grande)"
-        ],
-        preparation: [
-          "Sbucciare arancia e banana, lavare mirtilli e coriandolo",
-          "Tutti gli ingredienti nel boccale Bimby",
-          "Frullare Velocità 10, 1-2 minuti per composto liscio",
-          "Aggiungere acqua per consistenza desiderata",
-          "Servire immediatamente per preservare antiossidanti"
-        ],
-        bimbySteps: [
-          "Frutta e verdure nel boccale TM6",
-          "Velocità 10, 2 minuti",
-          "Controllo e eventuale aggiunta liquidi"
-        ],
-        benefits: "Chelazione metalli pesanti, antiossidanti potenti. Spirulina per energia muscolare.",
-        timing: "Post-workout entro 30 min",
-        fatBurning: "Antocianine attivano enzimi lipolisi +15%"
-      },
-      {
-        name: "THE GLOW - Avocado Power",
-        time: "3 min",
-        servings: 1,
-        calories: 220,
-        type: "Smoothie Cremoso",
-        category: "Spuntino pomeridiano",
-        ingredients: [
-          "Avocado: 1/4 medio (40-50g)",
-          "Ananas: 100g (1 fetta)",
-          "Spinaci: 30g (manciata)",
-          "Lime: 1/4 (succo)",
-          "Miele: 1 cucchiaino"
-        ],
-        preparation: [
-          "Sbucciare avocado e ananas, lavare spinaci",
-          "Ingredienti nel boccale con lime e miele",
-          "Frullare Velocità 10, 1-2 minuti per consistenza cremosa",
-          "Aggiungere ghiaccio per effetto rinfrescante",
-          "Servire in bicchiere alto con cannuccia"
-        ],
-        bimbySteps: [
-          "Tutti ingredienti nel boccale TM6",
-          "Velocità 10, 90 secondi",
-          "Aggiunta ghiaccio, Velocità 6, 30 secondi"
-        ],
-        benefits: "Grassi monoinsaturi per testosterone. Enzimi digestivi ananas.",
-        timing: "Spuntino 15:00-16:00, pre-allenamento",
-        fatBurning: "Bromelina ananas migliora digestione proteine"
-      },
-      {
         name: "THE ENERGISER - Anguria Boost",
         time: "2 min",
         servings: 1,
@@ -127,6 +67,105 @@ const RecipeSection = () => {
         benefits: "Citrullina per pump muscolare. Idratazione pre-workout ottimale.",
         timing: "45 min pre-allenamento",
         fatBurning: "Citrullina migliora flusso sangue tessuto adiposo"
+      }
+    ],
+    bowls: [
+      {
+        name: "FORESTA VERDE Bowl",
+        time: "5 min",
+        servings: 1,
+        calories: 280,
+        type: "Smoothie Bowl",
+        category: "Colazione energizzante",
+        ingredients: [
+          "Spinaci freschi: 80g (2 manciate)",
+          "Banana congelata: 100g (1 media)",
+          "Mango congelato: 100g",
+          "Latte mandorla: 100ml",
+          "Spirulina: 1 cucchiaino (5g)",
+          "Semi chia: 1 cucchiaio"
+        ],
+        preparation: [
+          "Banana e mango congelati nel boccale con spinaci",
+          "Aggiungere spirulina e semi di chia",
+          "100ml latte di mandorla per iniziare",
+          "Frullare Velocità 10, 1 minuto spatolando",
+          "Regolare latte per consistenza densa",
+          "Versare in bowl, decorare con topping"
+        ],
+        bimbySteps: [
+          "Frutta congelata + spinaci: Velocità 10, 60 secondi",
+          "Controllo consistenza, aggiunta latte graduale",
+          "Mantecatura finale: Velocità 6, 15 secondi"
+        ],
+        benefits: "Clorofilla detox, energia prolungata. Magnesio per funzione muscolare.",
+        timing: "Colazione 7:00-8:30 per energia mattutina",
+        fatBurning: "Spirulina aumenta ossidazione grassi +12%"
+      },
+      {
+        name: "ANTIOSSIDANTE Berry Bowl",
+        time: "4 min",
+        servings: 1,
+        calories: 320,
+        type: "Recovery Bowl",
+        category: "Post-workout",
+        ingredients: [
+          "Frutti bosco misti: 150g (congelati)",
+          "Banana congelata: 50g (1/2 media)",
+          "Yogurt greco 0%: 50g",
+          "Latte cocco: 80ml",
+          "Açaí polvere: 1 cucchiaino (5g)",
+          "Semi lino: 1 cucchiaino"
+        ],
+        preparation: [
+          "Frutti di bosco e banana congelati nel boccale",
+          "Aggiungere yogurt, latte cocco, açaí, semi lino",
+          "Frullare Velocità 10, 1 minuto spatolando frequentemente",
+          "Consistenza molto densa e cremosa",
+          "Versare in bowl e decorare con topping freschi",
+          "Servire immediatamente"
+        ],
+        bimbySteps: [
+          "Frutta congelata: Velocità 10, 45 secondi",
+          "Yogurt + liquidi: Velocità 8, 30 secondi",
+          "Rifinitura cremosa: Velocità 6, 15 secondi"
+        ],
+        benefits: "Antocianine per recupero muscolare. Proteine per sintesi proteica.",
+        timing: "Entro 30 min post-workout",
+        fatBurning: "Açaí attiva metabolismo grassi +18%"
+      },
+      {
+        name: "GOLDEN ELIXIR Bowl",
+        time: "4 min",
+        servings: 1,
+        calories: 290,
+        type: "Antinfiammatorio",
+        category: "Wellness mattutino",
+        ingredients: [
+          "Ananas fresco: 100g",
+          "Latte cocco denso: 80ml",
+          "Curcuma fresca: 1 cm (5g)",
+          "Zenzero fresco: 1 cm (5g)",
+          "Miele: 1 cucchiaino",
+          "Cardamomo: 2-3 semi",
+          "Pepe nero: pizzico"
+        ],
+        preparation: [
+          "Tritare curcuma e zenzero: Velocità 8, 5 secondi",
+          "Aggiungere ananas, latte cocco, miele, cardamomo",
+          "Pepe nero per attivare curcuma",
+          "Frullare Velocità 10, 1 minuto per consistenza liscia",
+          "Ghiaccio se ananas non congelato",
+          "Consistenza cremosa e aromatica"
+        ],
+        bimbySteps: [
+          "Spezie fresche: Velocità 8, 5 secondi",
+          "Ananas + liquidi: Velocità 10, 60 secondi",
+          "Ghiaccio opzionale: Velocità 7, 15 secondi"
+        ],
+        benefits: "Curcumina antinfiammatoria. Ananas enzimi digestivi.",
+        timing: "Mid-morning per digestione e energia",
+        fatBurning: "Curcuma + pepe nero aumentano termogenesi +15%"
       }
     ],
     proteiche: [
@@ -165,152 +204,116 @@ const RecipeSection = () => {
         benefits: "33g proteine per porzione. Fibre per sazietà prolungata. Grassi sani per ormoni.",
         timing: "Spuntino 10:00 o 16:00. Post-workout con verdure crude.",
         fatBurning: "Proteine aumentano termogenesi +25% per 3 ore"
-      },
-      {
-        name: "Yogurt Bowl Proteico",
-        time: "5 min",
-        servings: 1,
-        calories: 280,
-        type: "Bowl Completo",
-        category: "Colazione/Spuntino",
-        ingredients: [
-          "Yogurt greco 0%: 200g",
-          "Proteine vaniglia: 1 misurino (25g)",
-          "Burro di mandorle: 1 cucchiaio (15g)",
-          "Semi di chia: 1 cucchiaino (5g)",
-          "Mirtilli: 50g",
-          "Cannella: 1 pizzico",
-          "Stevia: a piacere"
-        ],
-        preparation: [
-          "Yogurt e proteine nel boccale Bimby",
-          "Mescolare Velocità 4, 30 secondi per amalgamare",
-          "Aggiungere burro mandorle e cannella",
-          "Velocità 3, 20 secondi per incorporare",
-          "Versare in bowl, aggiungere semi chia",
-          "Decorare con mirtilli freschi",
-          "Lasciare riposare 5 min per chia gel"
-        ],
-        bimbySteps: [
-          "Yogurt + proteine: Velocità 4, 30 secondi",
-          "Burro mandorle: Velocità 3, 20 secondi",
-          "Mantecatura finale: Velocità 2, 15 secondi"
-        ],
-        benefits: "45g proteine slow/fast release. Omega-3 per antinfiammazione.",
-        timing: "Colazione 7:00-8:00 o post-workout",
-        fatBurning: "Caseina mantiene metabolismo attivo 4-6 ore"
-      },
-      {
-        name: "Smoothie WARRIOR FUEL",
-        time: "3 min",
-        servings: 1,
-        calories: 320,
-        type: "Pre-Workout Power",
-        category: "45 min pre-allenamento",
-        ingredients: [
-          "Banana: 1 media (100g)",
-          "Datteri: 1-2 denocciolati (15g)",
-          "Espresso: 1 tazzina (50ml)",
-          "Olio cocco: 1 cucchiaino (5ml)",
-          "Semi chia: 1 cucchiaino (5g)",
-          "Latte cocco: 150ml",
-          "Proteine vaniglia: 1/2 misurino (12g)"
-        ],
-        preparation: [
-          "Banana e datteri nel boccale Bimby",
-          "Frullare Velocità 8, 30 secondi per sminuzzare",
-          "Aggiungere espresso freddo, olio cocco, proteine",
-          "Velocità 10, 45 secondi per amalgamare",
-          "Latte cocco e semi chia: Velocità 6, 30 secondi",
-          "Controllo consistenza cremosa",
-          "Servire immediatamente con ghiaccio"
-        ],
-        bimbySteps: [
-          "Banana + datteri: Velocità 8, 30 secondi",
-          "Liquidi + proteine: Velocità 10, 45 secondi",
-          "Semi chia: Velocità 6, 30 secondi"
-        ],
-        benefits: "Caffeina + L-teanina per focus. Carboidrati a rilascio immediato e graduale.",
-        timing: "45 min pre-workout per energia sostenuta",
-        fatBurning: "Caffeina mobilizza acidi grassi liberi +30%"
       }
     ],
-    superfood: [
+    stellati: [
       {
-        name: "GREEN GURU Supreme",
-        time: "4 min",
+        name: "EMERALD GLOW Supreme",
+        time: "6 min",
         servings: 1,
-        calories: 185,
-        type: "Superfood Smoothie",
-        category: "Morning power",
+        calories: 180,
+        type: "Detox Reale",
+        category: "Luxury wellness",
         ingredients: [
-          "Banana: 1 media (100g)",
+          "Cetriolo: 80g (1/2 piccolo pelato)",
+          "Spinaci freschi: 50g",
+          "Mela verde: 80g (1/2 senza torsolo)",
+          "Pompelmo rosa: 50g (2 spicchi a vivo)",
+          "Acqua cocco: 150ml",
+          "Lime: 1 cucchiaio succo",
           "Spirulina: 1 cucchiaino (5g)",
-          "Spinaci baby: 50g",
-          "Mango: 50g",
-          "Latte cocco: 150ml",
-          "Semi canapa: 1 cucchiaio (10g)",
-          "Matcha: 1/2 cucchiaino (1g)"
+          "Menta fresca: 6 foglie"
         ],
         preparation: [
-          "Banana e mango nel boccale, spinaci lavati",
-          "Frullare Velocità 8, 30 secondi per base cremosa",
-          "Aggiungere spirulina, matcha, semi canapa",
-          "Velocità 10, 60 secondi per dispersione uniforme",
-          "Latte cocco a filo: Velocità 4, 30 secondi",
-          "Controllo colore verde intenso",
-          "Servire immediatamente per preservare nutrienti"
+          "Cetriolo, mela, spinaci e menta nel boccale",
+          "Tritare grossolanamente: Velocità 7, 5 secondi",
+          "Aggiungere pompelmo, acqua cocco, lime, spirulina",
+          "Frullare Velocità 10, 90 secondi per consistenza liscia",
+          "Regolare acqua cocco per fluidità desiderata",
+          "Filtrare opzionale per succo liscio"
         ],
         bimbySteps: [
-          "Frutta + spinaci: Velocità 8, 30 secondi",
-          "Superfood: Velocità 10, 60 secondi",
-          "Latte cocco: Velocità 4, 30 secondi"
+          "Verdure + menta: Velocità 7, 5 secondi",
+          "Tutti ingredienti: Velocità 10, 90 secondi",
+          "Controllo fluidità, aggiunta liquidi"
         ],
-        benefits: "Clorofilla detox, aminoacidi completi canapa. L-teanina matcha per focus.",
-        timing: "Colazione o mid-morning per energia pulita",
-        fatBurning: "EGCG matcha attiva enzimi ossidazione grassi +17%"
+        benefits: "Pompelmo rosa per metabolismo lipidi. Clorofilla detox epatico.",
+        timing: "Mid-morning per detox profondo",
+        fatBurning: "Naringina pompelmo attiva lipasi +20%"
       },
       {
-        name: "BLUE HORIZON Antioxidant",
-        time: "4 min",
+        name: "MATCHA ZEN GARDEN",
+        time: "5 min",
         servings: 1,
-        calories: 240,
-        type: "Recovery Smoothie",
-        category: "Post-workout",
+        calories: 310,
+        type: "Focus & Calma",
+        category: "Concentrazione",
         ingredients: [
-          "Spirulina blu: 1 cucchiaino (5g)",
-          "Açaí polpa: 50g (congelata)",
-          "Banana: 1/2 media (50g)",
-          "Avocado: 1/4 medio (40g)",
-          "Ananas: 50g",
-          "Proteine vaniglia: 1 misurino (25g)",
-          "Acqua cocco: 200ml"
+          "Banana congelata: 100g (1 media)",
+          "Latte d'avena: 150ml",
+          "Matcha cerimoniale: 1 cucchiaino (3g)",
+          "Burro mandorle: 15g",
+          "Spirulina: 1/2 cucchiaino (3g)",
+          "Miele/agave: 1 cucchiaino"
         ],
         preparation: [
-          "Açaí congelato spezzato, banana e avocado",
-          "Frullare Velocità 7, 45 secondi per rompere ghiaccio",
-          "Ananas e spirulina: Velocità 9, 45 secondi",
-          "Proteine e acqua cocco: Velocità 10, 60 secondi",
-          "Controllo consistenza blu intenso",
-          "Aggiungere ghiaccio per texture frappé",
-          "Servire in bowl con toppings opzionali"
+          "Banana congelata nel boccale con latte d'avena",
+          "Matcha, burro mandorle, spirulina, miele",
+          "Frullare Velocità 10, 75 secondi spatolando",
+          "Consistenza densa e omogenea",
+          "Colore verde intenso caratteristico",
+          "Servire in bicchiere alto con cannuccia"
         ],
         bimbySteps: [
-          "Açaí + frutta: Velocità 7, 45 secondi",
-          "Spirulina + ananas: Velocità 9, 45 secondi",
-          "Proteine + liquidi: Velocità 10, 60 secondi"
+          "Banana + latte: Velocità 8, 30 secondi",
+          "Matcha + grassi: Velocità 10, 45 secondi",
+          "Mantecatura finale: Velocità 6, 15 secondi"
         ],
-        benefits: "Antocianine açaí per recupero muscolare. Ficocianina spirulina antinfiammatoria.",
-        timing: "Entro 30 min post-workout",
-        fatBurning: "Antocianine migliorano utilizzo grassi durante recupero"
+        benefits: "L-teanina + caffeina per focus. EGCG antiossidante potente.",
+        timing: "Mid-morning per concentrazione sostenuta",
+        fatBurning: "EGCG matcha attiva termogenesi +22%"
+      },
+      {
+        name: "VELVET BERRY DREAM",
+        time: "7 min",
+        servings: 1,
+        calories: 340,
+        type: "Beauty Luxury",
+        category: "Bellezza & Benessere",
+        ingredients: [
+          "Frutti bosco misti: 120g (congelati)",
+          "Latte mandorla premium: 120ml",
+          "Anacardi ammollati: 15g (10-12 pezzi)",
+          "Datteri Medjool: 1-2 denocciolati",
+          "Semi chia: 1 cucchiaino",
+          "Estratto vaniglia: 1/4 cucchiaino",
+          "Collagen powder: 10g (opzionale)"
+        ],
+        preparation: [
+          "Anacardi ammollati 30 min, sciacquati",
+          "Tutti ingredienti nel boccale insieme",
+          "Frullare Velocità 10, 90 secondi spatolando",
+          "Consistenza vellutata senza grumi",
+          "Collagen per effetto beauty (opzionale)",
+          "Cremosità incredibile dagli anacardi"
+        ],
+        bimbySteps: [
+          "Tutti ingredienti: Velocità 10, 90 secondi",
+          "Controllo cremosità, spatolare",
+          "Rifinitura vellutata: Velocità 8, 30 secondi"
+        ],
+        benefits: "Anacardi per grassi sani. Antiossidanti anti-aging intensi.",
+        timing: "Afternoon snack per energia e bellezza",
+        fatBurning: "Grassi monoinsaturi ottimizzano ormoni brucia-grassi"
       }
     ]
   };
 
   const categories = [
-    { key: "detox", label: "Detox Juices", icon: <Droplets className="w-4 h-4" /> },
-    { key: "proteiche", label: "Prep Proteiche", icon: <Zap className="w-4 h-4" /> },
-    { key: "superfood", label: "Superfood", icon: <Flame className="w-4 h-4" /> }
+    { key: "detox", label: "Detox", icon: <Droplets className="w-4 h-4" /> },
+    { key: "bowls", label: "Bowls", icon: <Zap className="w-4 h-4" /> },
+    { key: "proteiche", label: "Proteiche", icon: <Flame className="w-4 h-4" /> },
+    { key: "stellati", label: "Stellati", icon: <Sparkles className="w-4 h-4" /> }
   ];
 
   const currentRecipes = recipes[selectedCategory as keyof typeof recipes];
@@ -327,17 +330,17 @@ const RecipeSection = () => {
       </div>
 
       {/* Category Selection */}
-      <div className="flex space-x-2">
+      <div className="grid grid-cols-2 gap-2">
         {categories.map((category) => (
           <Button
             key={category.key}
             variant={selectedCategory === category.key ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedCategory(category.key)}
-            className="flex-1 flex items-center space-x-1"
+            className="flex items-center space-x-2 justify-center"
           >
             {category.icon}
-            <span className="text-xs">{category.label}</span>
+            <span className="text-sm">{category.label}</span>
           </Button>
         ))}
       </div>
