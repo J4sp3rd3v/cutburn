@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -28,6 +27,7 @@ interface UserProfile {
   lactoseIntolerant: boolean;
   targetCalories: number;
   targetWater: number;
+  created_at?: string;
 }
 
 export const useSupabaseProgressTracking = () => {
@@ -75,7 +75,8 @@ export const useSupabaseProgressTracking = () => {
             intermittentFasting: data.intermittent_fasting || true,
             lactoseIntolerant: data.lactose_intolerant || false,
             targetCalories: data.target_calories || 1700,
-            targetWater: data.target_water || 2500
+            targetWater: data.target_water || 2500,
+            created_at: data.created_at
           });
         }
       } catch (error) {

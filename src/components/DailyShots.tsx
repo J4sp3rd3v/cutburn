@@ -17,16 +17,32 @@ interface Shot {
 interface DailyShotsProps {
   shotsConsumed: string[];
   onTakeShot: (shotId: string) => void;
+  userWeight: number;
 }
 
-const DailyShots = ({ shotsConsumed, onTakeShot }: DailyShotsProps) => {
+const DailyShots = ({ shotsConsumed, onTakeShot, userWeight }: DailyShotsProps) => {
+  // Calculate personalized dosages based on user weight
+  const getPersonalizedIngredients = (baseIngredients: string, shotId: string) => {
+    const gingerDose = Math.round(userWeight * 0.07); // 0.07g per kg
+    const turmericDose = Math.round(userWeight * 0.05); // 0.05g per kg
+    
+    switch (shotId) {
+      case 'morning-ginger':
+        return `Zenzero fresco (${gingerDose}g) + Limone + Pepe nero`;
+      case 'evening-turmeric':
+        return `Curcuma fresca (${turmericDose}g) + Zenzero (${Math.round(gingerDose * 0.7)}g) + Pepe nero + Miele`;
+      default:
+        return baseIngredients;
+    }
+  };
+
   const shots: Shot[] = [
     {
       id: 'morning-ginger',
       name: 'Shot Zenzero Mattutino',
       time: '07:00-08:00',
       benefits: 'Attivazione metabolismo, termogenesi, digestione',
-      ingredients: 'Zenzero fresco (5g) + Limone + Pepe nero',
+      ingredients: getPersonalizedIngredients('Zenzero fresco + Limone + Pepe nero', 'morning-ginger'),
       taken: shotsConsumed.includes('morning-ginger')
     },
     {
@@ -34,7 +50,7 @@ const DailyShots = ({ shotsConsumed, onTakeShot }: DailyShotsProps) => {
       name: 'Shot Verde Pre-Workout',
       time: '30 min prima allenamento',
       benefits: 'Energia naturale, ossidazione grassi',
-      ingredients: 'Spirulina + Matcha + Lime + Zenzero',
+      ingredients: 'Spirulina (3g) + Matcha (2g) + Lime + Zenzero (2g)',
       taken: shotsConsumed.includes('pre-workout-green')
     },
     {
@@ -42,7 +58,7 @@ const DailyShots = ({ shotsConsumed, onTakeShot }: DailyShotsProps) => {
       name: 'Shot Curcuma Serale',
       time: '19:00-20:00',
       benefits: 'Antinfiammatorio, recupero muscolare',
-      ingredients: 'Curcuma fresca + Zenzero + Pepe nero + Miele',
+      ingredients: getPersonalizedIngredients('Curcuma fresca + Zenzero + Pepe nero + Miele', 'evening-turmeric'),
       taken: shotsConsumed.includes('evening-turmeric')
     }
   ];

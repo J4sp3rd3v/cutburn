@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -96,7 +95,7 @@ const Index = () => {
     ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userProfile.currentWeight) - (weeklyProgress[0]?.weight || userProfile.startWeight)
     : 0;
 
-  // Calcolo corretto dei giorni dall'iscrizione
+  // Fixed day calculation using created_at from userProfile or user
   const registrationDate = new Date(userProfile.created_at || user.created_at);
   const today = new Date();
   const daysSinceStart = Math.max(1, Math.ceil((today.getTime() - registrationDate.getTime()) / (1000 * 60 * 60 * 24)));
@@ -265,7 +264,7 @@ const Index = () => {
                 />
               </div>
 
-              {/* Daily Shots con dosaggi personalizzati */}
+              {/* Daily Shots with personalized dosages */}
               <DailyShots 
                 shotsConsumed={dailyProgress.shotsConsumed}
                 onTakeShot={addShot}
