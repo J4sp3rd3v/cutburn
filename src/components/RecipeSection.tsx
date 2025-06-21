@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles } from 'lucide-react';
+import { Clock, Users, ChefHat, Zap, Droplets, Flame } from 'lucide-react';
 
 const RecipeSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
