@@ -117,18 +117,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       console.log('🔄 Tentativo login per:', email);
       
-      // Credenziali demo
-      if (email === 'demo@cutburn.com' && password === 'demo123') {
-        console.log('✅ Login demo utente');
-        setUser({
-          id: 'demo_user',
-          email: 'demo@cutburn.com',
-          name: 'Utente Demo',
-          created_at: new Date().toISOString()
-        });
-        return true;
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -136,7 +124,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) {
         console.error('❌ Errore login Supabase:', error);
-        alert(`Errore login: ${error.message}`);
         return false;
       }
 
@@ -150,7 +137,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return false;
     } catch (error) {
       console.error('❌ Errore generale login:', error);
-      alert(`Errore di connessione: ${error}`);
       return false;
     } finally {
       setLoading(false);

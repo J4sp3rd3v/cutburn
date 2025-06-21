@@ -134,7 +134,7 @@ const Auth = () => {
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="La tua password"
+                        placeholder="Inserisci la tua password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10 pr-10"
@@ -236,16 +236,7 @@ const Auth = () => {
           </CardContent>
         </Card>
 
-        {/* Demo credentials */}
-        <div className="mt-4 p-4 bg-white/60 rounded-lg text-center">
-          <p className="text-xs text-gray-600 mb-2">
-            <strong>Credenziali demo per test:</strong>
-          </p>
-          <p className="text-xs text-gray-600">
-            Email: demo@cutburn.com<br />
-            Password: demo123
-          </p>
-        </div>
+
       </div>
     </div>
   );
