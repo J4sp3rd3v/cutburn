@@ -28,12 +28,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Controlla se c'è già un utente loggato
     const checkUser = async () => {
       try {
+        console.log('🔄 Controllo sessione esistente...');
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
+          console.log('✅ Sessione trovata per:', session.user.email);
+          console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
           await loadUserProfile(session.user);
+        } else {
+          console.log('ℹ️ Nessuna sessione attiva');
         }
       } catch (error) {
-        console.error('Error checking user session:', error);
+        console.error('❌ Errore controllo sessione:', error);
       } finally {
         setLoading(false);
       }
@@ -43,10 +48,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Ascolta i cambiamenti di autenticazione
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth state changed:', event);
+      if (session?.user) {
+        console.log('👤 Utente:', session.user.email);
+        console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
+      }
+
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('✅ Utente loggato');
         await loadUserProfile(session.user);
       } else if (event === 'SIGNED_OUT') {
+        console.log('👋 Utente disconnesso');
         setUser(null);
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        console.log('🔄 Token aggiornato');
+        await loadUserProfile(session.user);
       }
       setLoading(false);
     });

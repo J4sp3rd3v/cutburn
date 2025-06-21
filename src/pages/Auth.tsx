@@ -56,10 +56,11 @@ const Auth = () => {
       if (success) {
         navigate('/');
       } else {
-        setError('Errore durante la registrazione');
+        // Mostra messaggio specifico per conferma email
+        setError('⚠️ Controlla la tua email per confermare la registrazione. Se non ricevi l\'email, riprova con un\'altra email.');
       }
     } catch (err) {
-      setError('Errore durante la registrazione');
+      setError('Errore durante la registrazione. Riprova.');
     } finally {
       setLoading(false);
     }
