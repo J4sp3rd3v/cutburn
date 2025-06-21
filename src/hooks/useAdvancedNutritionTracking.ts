@@ -1,18 +1,7 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
-import { toast } from '@/hooks/use-toast';
 
-interface MealEntry {
-  id: string;
-  mealType: 'colazione' | 'pranzo' | 'spuntino' | 'cena';
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  timestamp: string;
-  eaten: boolean;
-}
+import { useState, useEffect } from 'react';
+import { useAuth } from './useAuth';
+import { useDailyMealGeneration } from './useDailyMealGeneration';
 
 interface AdvancedNutritionData {
   bmr: number;
@@ -28,12 +17,10 @@ interface AdvancedNutritionData {
 
 export const useAdvancedNutritionTracking = (userProfile: any) => {
   const { user } = useAuth();
-  const [todayMeals, setTodayMeals] = useState<MealEntry[]>([]);
   const [nutritionData, setNutritionData] = useState<AdvancedNutritionData | null>(null);
-  const [loading, setLoading] = useState(true);
 
   // Calcoli metabolici avanzati basati su studi 2024-2025
-  const calculateAdvancedNutrition = (): AdvancedNutritionData => {
+  const calculateAdvancedNutrition = (): AdvancedNutritionData | null => {
     if (!userProfile) return null;
 
     // BMR con equazione Mifflin-St Jeor (più accurata)
@@ -77,91 +64,20 @@ export const useAdvancedNutritionTracking = (userProfile: any) => {
     };
   };
 
-  // Carica pasti di oggi
+  // Calcola dati nutrizionali quando il profilo utente cambia
   useEffect(() => {
-    const loadTodayMeals = async () => {
-      if (!user) return;
-
-      const today = new Date().toISOString().split('T')[0];
-      
-      try {
-        const { data, error } = await supabase
-          .from('meal_entries')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('date', today)
-          .order('timestamp', { ascending: true });
-
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error loading meals:', error);
-          return;
-        }
-
-        if (data) {
-          setTodayMeals(data.map(meal => ({
-            id: meal.id,
-            mealType: meal.meal_type,
-            calories: meal.calories,
-            protein: meal.protein,
-            carbs: meal.carbs,
-            fat: meal.fat,
-            timestamp: meal.timestamp,
-            eaten: meal.eaten
-          })));
-        }
-      } catch (error) {
-        console.error('Error loading today meals:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadTodayMeals();
-    
-    // Calcola dati nutrizionali
     if (userProfile) {
       setNutritionData(calculateAdvancedNutrition());
     }
-  }, [user, userProfile]);
+  }, [userProfile]);
 
-  // Marca pasto come consumato
-  const markMealAsEaten = async (mealId: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('meal_entries')
-        .update({ eaten: true })
-        .eq('id', mealId);
-
-      if (error) {
-        console.error('Error updating meal:', error);
-        toast({
-          title: "Errore",
-          description: "Impossibile aggiornare il pasto",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Aggiorna stato locale
-      setTodayMeals(prev => 
-        prev.map(meal => 
-          meal.id === mealId ? { ...meal, eaten: true } : meal
-        )
-      );
-
-      const meal = todayMeals.find(m => m.id === mealId);
-      if (meal) {
-        toast({
-          title: "Pasto registrato! 🍽️",
-          description: `+${meal.calories}kcal aggiunte al tuo tracking`,
-        });
-      }
-    } catch (error) {
-      console.error('Error marking meal as eaten:', error);
-    }
-  };
+  // Use the new meal generation hook
+  const {
+    todayMeals,
+    loading,
+    markMealAsEaten,
+    refreshMeals
+  } = useDailyMealGeneration(userProfile, nutritionData);
 
   // Calcola totali giornalieri
   const getDailyTotals = () => {
@@ -181,6 +97,7 @@ export const useAdvancedNutritionTracking = (userProfile: any) => {
     nutritionData,
     dailyTotals: getDailyTotals(),
     loading,
-    markMealAsEaten
+    markMealAsEaten,
+    refreshMeals
   };
 };
