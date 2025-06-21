@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Target, Settings, Clock, TrendingDown, Scale } from 'lucide-react';
+import { User, Target, Settings, Clock, TrendingDown, Scale, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UserProfileProps {
   userStats: {
@@ -21,6 +22,8 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileProps) => {
+  const { signOut } = useAuth();
+  
   const [profile, setProfile] = useState({
     name: 'Marco',
     age: 30,
@@ -339,6 +342,25 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
           <p>• <strong>Idratazione:</strong> {userStats.targetWater}ml per metabolismo ottimale</p>
           <p>• <strong>Tracking:</strong> Peso giornaliero per monitoraggio preciso</p>
           <p>• <strong>Shot timing:</strong> Basato su cronobiologia per massimi benefici</p>
+        </div>
+      </Card>
+
+      {/* Logout Section */}
+      <Card className="p-4 border-red-200 bg-red-50">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-red-800 mb-1">Disconnetti Account</h3>
+            <p className="text-sm text-red-600">Uscire dall'applicazione</p>
+          </div>
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={signOut}
+            className="flex items-center space-x-2"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </Button>
         </div>
       </Card>
     </div>

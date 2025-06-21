@@ -1,73 +1,89 @@
-# Welcome to your Lovable project
+# CutBurn Pro - Fitness & Fat Loss Tracker
 
-## Project info
+Un'applicazione completa per il fitness e la perdita di peso con integrazione Supabase.
 
-**URL**: https://lovable.dev/projects/ab0575a7-d4d4-460f-bb02-e06d764cd5a8
+## 🚀 Configurazione rapida
 
-## How can I edit this code?
+### 1. Installazione
+```bash
+git clone https://github.com/J4sp3rd3v/cutburn.git
+cd cutburn
+npm install
+```
 
-There are several ways of editing your application.
+### 2. Configurazione Supabase
+1. Copia il file `.env.example` in `.env.local`:
+```bash
+cp .env.example .env.local
+```
 
-**Use Lovable**
+2. Modifica `.env.local` con le tue credenziali Supabase:
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ab0575a7-d4d4-460f-bb02-e06d764cd5a8) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 3. Avvio locale
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 📱 Deploy su Vercel
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 1. Collega il repository su Vercel
+1. Vai su [vercel.com](https://vercel.com)
+2. Importa il tuo repository GitHub
+3. Vercel rileverà automaticamente che è un progetto Vite
 
-**Use GitHub Codespaces**
+### 2. Configura le variabili d'ambiente su Vercel
+Nella dashboard di Vercel, aggiungi queste variabili d'ambiente:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `VITE_SUPABASE_URL`: Il tuo URL Supabase
+- `VITE_SUPABASE_ANON_KEY`: La tua chiave pubblica Supabase
 
-## What technologies are used for this project?
+### 3. Deploy
+Il deploy avverrà automaticamente ad ogni push su main.
 
-This project is built with:
+## 🔧 Tecnologie utilizzate
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **React** + **TypeScript** + **Vite**
+- **Supabase** per database e autenticazione
+- **Tailwind CSS** + **shadcn/ui** per l'interfaccia
+- **React Query** per la gestione dello stato
+- **React Router** per la navigazione
 
-## How can I deploy this project?
+## 📊 Funzionalità
 
-Simply open [Lovable](https://lovable.dev/projects/ab0575a7-d4d4-460f-bb02-e06d764cd5a8) and click on Share -> Publish.
+- **Dashboard personalizzato** con tracking calorico
+- **Tracciamento pasti** e macro nutrienti
+- **Sistema di supplementazione**
+- **Programmi di allenamento**
+- **Lista della spesa** intelligente
+- **Profilo utente** personalizzabile
+- **Tracking del progresso** settimanale
 
-## Can I connect a custom domain to my Lovable project?
+## 🏗️ Struttura del progetto
 
-Yes, you can!
+```
+src/
+├── components/        # Componenti UI riutilizzabili
+├── hooks/            # React hooks personalizzati
+├── integrations/     # Configurazioni Supabase
+├── pages/            # Pagine dell'applicazione
+└── lib/              # Utilities e helper functions
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🔐 Sicurezza
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Le credenziali Supabase sono gestite tramite variabili d'ambiente
+- Il file `.env.local` è ignorato da Git per la sicurezza
+- Utilizza sempre le variabili d'ambiente per le configurazioni sensibili
+
+## 🌐 URL live
+
+- **Vercel**: [cutburn.vercel.app](https://cutburn.vercel.app)
+
+## 📝 Note
+
+- L'applicazione è attualmente configurata con un utente demo
+- Per implementare l'autenticazione completa, rimuovere il mock user da `useAuth.tsx`
