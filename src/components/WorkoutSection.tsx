@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Target, Dumbbell, Play, Check } from 'lucide-react';
+import { Clock, Target, Dumbbell, Play, Check, Timer } from 'lucide-react';
+import ExerciseTimer from '@/components/ExerciseTimer';
 
 const WorkoutSection = () => {
   const [completedExercises, setCompletedExercises] = useState<string[]>([]);
   const [currentWorkout, setCurrentWorkout] = useState('petto');
+  const [showTimer, setShowTimer] = useState<string | null>(null);
 
   const workouts = {
     petto: {
@@ -20,6 +21,7 @@ const WorkoutSection = () => {
           name: 'Panca Piana con Manubri',
           sets: '4 x 8-10',
           rest: '90 sec',
+          restSeconds: 90,
           weight: '12kg per braccio',
           instructions: 'Scendere lentamente, spingere esplosivamente. Focus sul centro del petto.',
           muscles: 'Pettorale maggiore, deltoidi anteriori'
@@ -29,6 +31,7 @@ const WorkoutSection = () => {
           name: 'Panca Inclinata 30°',
           sets: '3 x 10-12',
           rest: '75 sec',
+          restSeconds: 75,
           weight: '10kg per braccio',
           instructions: 'Inclinazione 30°. Movimento controllato, massima contrazione in alto.',
           muscles: 'Pettorale superiore'
@@ -38,6 +41,7 @@ const WorkoutSection = () => {
           name: 'Croci su Panca',
           sets: '3 x 12-15',
           rest: '60 sec',
+          restSeconds: 60,
           weight: '8kg per braccio',
           instructions: 'Movimento ad arco, sentire lo stretch. Non bloccare i gomiti.',
           muscles: 'Pettorale, definizione'
@@ -47,6 +51,7 @@ const WorkoutSection = () => {
           name: 'Flessioni Diamante',
           sets: '3 x max',
           rest: '60 sec',
+          restSeconds: 60,
           weight: 'Corpo libero',
           instructions: 'Mani a diamante, corpo rigido. Focus sui tricipiti.',
           muscles: 'Tricipiti, pettorale interno'
@@ -63,6 +68,7 @@ const WorkoutSection = () => {
           name: 'Tapis Roulant HIIT',
           sets: '5 rounds',
           rest: '60 sec recovery',
+          restSeconds: 60,
           weight: 'Intensità variabile',
           instructions: '2 min a 7 km/h, 1 min a 12 km/h. Mantenere frequenza cardiaca 75-85% FCmax.',
           muscles: 'Sistema cardiovascolare'
@@ -72,6 +78,7 @@ const WorkoutSection = () => {
           name: 'Vogatore',
           sets: '4 x 500m',
           rest: '90 sec',
+          restSeconds: 90,
           weight: 'Resistenza media',
           instructions: 'Tecnica corretta: gambe, core, braccia. Ritmo costante.',
           muscles: 'Full body, dorso'
@@ -88,6 +95,7 @@ const WorkoutSection = () => {
           name: 'Plank Statico',
           sets: '4 x 45 sec',
           rest: '30 sec',
+          restSeconds: 30,
           weight: 'Corpo libero',
           instructions: 'Corpo perfettamente allineato. Respirazione controllata.',
           muscles: 'Core, stabilizzatori'
@@ -97,6 +105,7 @@ const WorkoutSection = () => {
           name: 'Bicycle Crunches',
           sets: '4 x 20 per lato',
           rest: '45 sec',
+          restSeconds: 45,
           weight: 'Corpo libero',
           instructions: 'Movimento controllato, gomito verso ginocchio opposto.',
           muscles: 'Addominali obliqui'
@@ -106,6 +115,7 @@ const WorkoutSection = () => {
           name: 'Leg Raises',
           sets: '3 x 15',
           rest: '60 sec',
+          restSeconds: 60,
           weight: 'Corpo libero',
           instructions: 'Gambe tese, movimento lento e controllato. Non toccare il suolo.',
           muscles: 'Addominali bassi'
@@ -140,7 +150,7 @@ const WorkoutSection = () => {
           Allenamento Mirato
         </h2>
         <p className="text-slate-600">
-          Focus ginecomastia • Sovraccarico progressivo • Definizione
+          Focus ginecomastia • Sovraccarico progressivo • Timer perfetti
         </p>
       </div>
 
@@ -174,8 +184,8 @@ const WorkoutSection = () => {
             <span>{workout.duration}</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Target className="w-4 h-4" />
-            <span>Focus mirato</span>
+            <Timer className="w-4 h-4" />
+            <span>Timer integrati</span>
           </div>
         </div>
         <div className="mt-2 text-sm opacity-90">{workout.focus}</div>
@@ -208,25 +218,48 @@ const WorkoutSection = () => {
                   </div>
                 </div>
               </div>
-              <Button
-                variant={completedExercises.includes(exercise.id) ? "default" : "outline"}
-                size="sm"
-                onClick={() => toggleExercise(exercise.id)}
-                className="flex items-center space-x-1"
-              >
-                {completedExercises.includes(exercise.id) ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    <span>✓</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4" />
-                    <span>Start</span>
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-col space-y-2">
+                <Button
+                  variant={completedExercises.includes(exercise.id) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => toggleExercise(exercise.id)}
+                  className="flex items-center space-x-1"
+                >
+                  {completedExercises.includes(exercise.id) ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      <span>Start</span>
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTimer(showTimer === exercise.id ? null : exercise.id)}
+                  className="flex items-center space-x-1"
+                >
+                  <Timer className="w-4 h-4" />
+                  <span>Timer</span>
+                </Button>
+              </div>
             </div>
+
+            {/* Exercise Timer */}
+            {showTimer === exercise.id && (
+              <div className="mt-4">
+                <ExerciseTimer 
+                  restTime={exercise.restSeconds}
+                  onComplete={() => {
+                    console.log(`Timer completato per ${exercise.name}`);
+                  }}
+                />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 gap-3">
               <div>

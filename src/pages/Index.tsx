@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +13,9 @@ import {
   ShoppingCart,
   TrendingDown,
   Clock,
-  Zap
+  Zap,
+  Droplets,
+  Flame
 } from 'lucide-react';
 import DashboardCard from '@/components/DashboardCard';
 import DietSection from '@/components/DietSection';
@@ -23,15 +24,26 @@ import SupplementSection from '@/components/SupplementSection';
 import WorkoutSection from '@/components/WorkoutSection';
 import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
+import DailyShots from '@/components/DailyShots';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [dailyProgress, setDailyProgress] = useState({
-    calories: { consumed: 1200, target: 1800 },
-    water: { consumed: 6, target: 8 },
-    workout: { completed: true },
-    supplements: { taken: 3, total: 4 }
-  });
+  const {
+    dailyProgress,
+    userStats,
+    addWater,
+    addCalories,
+    updateWeight,
+    addShot,
+    toggleWorkout,
+    getWeeklyProgress
+  } = useProgressTracking();
+
+  const weeklyProgress = getWeeklyProgress();
+  const weightChange = weeklyProgress.length >= 2 
+    ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userStats.currentWeight) - (weeklyProgress[0]?.weight || userStats.startWeight)
+    : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -92,7 +104,7 @@ const Index = () => {
                   Ciao Marco! 👋
                 </h2>
                 <p className="text-slate-600">
-                  Giorno 12 del tuo percorso CutBurn
+                  Giorno {Math.ceil((new Date().getTime() - new Date(userStats.startDate).getTime()) / (1000 * 60 * 60 * 24))} del tuo percorso CutBurn
                 </p>
               </div>
 
@@ -101,38 +113,56 @@ const Index = () => {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold">Obiettivo Giornaliero</h3>
                   <Badge variant="secondary" className="bg-white/20 text-white">
-                    -0.2kg questa settimana
+                    {weightChange >= 0 ? '+' : ''}{weightChange.toFixed(1)}kg questa settimana
                   </Badge>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span>Calorie rimanenti</span>
-                    <span className="font-bold">{dailyProgress.calories.target - dailyProgress.calories.consumed} kcal</span>
+                    <span className="font-bold">{userStats.targetCalories - dailyProgress.calories} kcal</span>
                   </div>
                   <Progress 
-                    value={(dailyProgress.calories.consumed / dailyProgress.calories.target) * 100} 
+                    value={(dailyProgress.calories / userStats.targetCalories) * 100} 
                     className="bg-white/20"
                   />
                 </div>
               </Card>
 
-              {/* Stats Grid */}
+              {/* Interactive Progress Cards */}
               <div className="grid grid-cols-2 gap-4">
+                <Card 
+                  className="p-4 bg-white/70 backdrop-blur-sm hover:bg-white/80 transition-all duration-200 cursor-pointer active:scale-95"
+                  onClick={addWater}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <Droplets className="w-5 h-5 text-blue-500" />
+                      <span className="text-sm font-medium text-slate-700">Acqua</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-lg font-bold text-slate-800">
+                      {dailyProgress.water}/{userStats.targetWater}ml
+                    </div>
+                    <div className="text-xs text-slate-500">Tocca per +500ml</div>
+                    <Progress value={(dailyProgress.water / userStats.targetWater) * 100} className="h-2" />
+                  </div>
+                </Card>
+
                 <DashboardCard
-                  title="Acqua"
-                  value={`${dailyProgress.water.consumed}/${dailyProgress.water.target}`}
-                  unit="bicchieri"
-                  progress={(dailyProgress.water.consumed / dailyProgress.water.target) * 100}
-                  icon={<Target className="w-5 h-5 text-blue-500" />}
-                />
-                <DashboardCard
-                  title="Integrazione"
-                  value={`${dailyProgress.supplements.taken}/${dailyProgress.supplements.total}`}
-                  unit="supplementi"
-                  progress={(dailyProgress.supplements.taken / dailyProgress.supplements.total) * 100}
-                  icon={<Zap className="w-5 h-5 text-orange-500" />}
+                  title="Calorie"
+                  value={`${dailyProgress.calories}/${userStats.targetCalories}`}
+                  unit="kcal consumate"
+                  progress={(dailyProgress.calories / userStats.targetCalories) * 100}
+                  icon={<Flame className="w-5 h-5 text-orange-500" />}
                 />
               </div>
+
+              {/* Daily Shots */}
+              <DailyShots 
+                shotsConsumed={dailyProgress.shotsConsumed}
+                onTakeShot={addShot}
+              />
 
               {/* Today's Status */}
               <Card className="p-4">
@@ -142,9 +172,19 @@ const Index = () => {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Workout Pettorale</span>
-                    <Badge variant={dailyProgress.workout.completed ? "default" : "secondary"}>
-                      {dailyProgress.workout.completed ? "✓ Completato" : "Da fare"}
+                    <span className="text-slate-600">Workout</span>
+                    <Button
+                      variant={dailyProgress.workoutCompleted ? "default" : "outline"}
+                      size="sm"
+                      onClick={toggleWorkout}
+                    >
+                      {dailyProgress.workoutCompleted ? "✓ Completato" : "Da fare"}
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">Peso attuale</span>
+                    <Badge variant="outline">
+                      {userStats.currentWeight}kg
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -155,6 +195,23 @@ const Index = () => {
                   </div>
                 </div>
               </Card>
+
+              {/* Weekly Progress Chart */}
+              {weeklyProgress.length > 1 && (
+                <Card className="p-4">
+                  <h3 className="font-semibold mb-3">📊 Progressi Peso Settimanali</h3>
+                  <div className="space-y-2">
+                    {weeklyProgress.slice(-5).map((day, index) => (
+                      <div key={day.date} className="flex justify-between items-center">
+                        <span className="text-sm text-slate-600">
+                          {new Date(day.date).toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric' })}
+                        </span>
+                        <span className="font-semibold">{day.weight}kg</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="diet" className="mt-4">
@@ -178,7 +235,11 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="profile" className="mt-4">
-              <UserProfile />
+              <UserProfile 
+                userStats={userStats}
+                onUpdateWeight={updateWeight}
+                weeklyProgress={weeklyProgress}
+              />
             </TabsContent>
           </div>
         </Tabs>

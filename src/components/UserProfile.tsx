@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,15 +6,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Target, Settings, Clock, TrendingDown } from 'lucide-react';
+import { User, Target, Settings, Clock, TrendingDown, Scale } from 'lucide-react';
 
-const UserProfile = () => {
+interface UserProfileProps {
+  userStats: {
+    targetWater: number;
+    targetCalories: number;
+    currentWeight: number;
+    startWeight: number;
+    startDate: string;
+  };
+  onUpdateWeight: (weight: number) => void;
+  weeklyProgress: Array<{ date: string; weight: number }>;
+}
+
+const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileProps) => {
   const [profile, setProfile] = useState({
     name: 'Marco',
     age: 30,
     height: 173,
-    currentWeight: 69,
-    targetWeight: 65,
     activityLevel: 'moderate',
     intermittentFasting: true,
     lactoseIntolerant: true,
@@ -23,23 +32,33 @@ const UserProfile = () => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [newWeight, setNewWeight] = useState(userStats.currentWeight.toString());
 
   const handleSave = () => {
     setIsEditing(false);
-    // Here you would typically save to backend/storage
     console.log('Profile saved:', profile);
+  };
+
+  const handleWeightUpdate = () => {
+    const weight = parseFloat(newWeight);
+    if (weight > 0 && weight < 300) {
+      onUpdateWeight(weight);
+    }
   };
 
   const calculateBMI = () => {
     const heightInMeters = profile.height / 100;
-    return (profile.currentWeight / (heightInMeters * heightInMeters)).toFixed(1);
+    return (userStats.currentWeight / (heightInMeters * heightInMeters)).toFixed(1);
   };
 
   const getBodyFatEstimate = () => {
-    // Simple estimation based on BMI and age for males
     const bmi = parseFloat(calculateBMI());
     const estimate = (1.39 * bmi) + (0.16 * profile.age) - 19.34;
     return Math.max(8, Math.min(25, estimate)).toFixed(1);
+  };
+
+  const getTotalWeightLoss = () => {
+    return (userStats.startWeight - userStats.currentWeight).toFixed(1);
   };
 
   return (
@@ -49,7 +68,7 @@ const UserProfile = () => {
           Profilo Utente
         </h2>
         <p className="text-slate-600">
-          Personalizzazione • Obiettivi • Preferenze
+          Personalizzazione • Obiettivi • Progressi
         </p>
       </div>
 
@@ -67,16 +86,59 @@ const UserProfile = () => {
         
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold">{profile.currentWeight}</div>
+            <div className="text-2xl font-bold">{userStats.currentWeight}</div>
             <div className="text-sm opacity-90">Peso attuale</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold">{profile.targetWeight}</div>
-            <div className="text-sm opacity-90">Obiettivo</div>
+            <div className="text-2xl font-bold">{userStats.startWeight}</div>
+            <div className="text-sm opacity-90">Peso iniziale</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold">{calculateBMI()}</div>
             <div className="text-sm opacity-90">BMI</div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Weight Update */}
+      <Card className="p-4">
+        <h3 className="font-semibold mb-3 flex items-center">
+          <Scale className="w-4 h-4 mr-2 text-slate-600" />
+          Aggiornamento Peso Giornaliero
+        </h3>
+        <div className="flex space-x-2">
+          <Input
+            type="number"
+            step="0.1"
+            value={newWeight}
+            onChange={(e) => setNewWeight(e.target.value)}
+            placeholder="Inserisci peso (kg)"
+            className="flex-1"
+          />
+          <Button onClick={handleWeightUpdate}>
+            Aggiorna
+          </Button>
+        </div>
+        <div className="mt-2 text-sm text-slate-600">
+          Ultimo aggiornamento: {new Date().toLocaleDateString('it-IT')}
+        </div>
+      </Card>
+
+      {/* Progress Summary */}
+      <Card className="p-4 bg-emerald-50 border-emerald-200">
+        <h3 className="font-semibold text-emerald-800 mb-3">🎯 Risultati Ottenuti</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-emerald-600">
+              -{getTotalWeightLoss()}kg
+            </div>
+            <div className="text-sm text-emerald-700">Persi in totale</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-emerald-600">
+              {Math.ceil((new Date().getTime() - new Date(userStats.startDate).getTime()) / (1000 * 60 * 60 * 24))}
+            </div>
+            <div className="text-sm text-emerald-700">Giorni di percorso</div>
           </div>
         </div>
       </Card>
@@ -94,12 +156,39 @@ const UserProfile = () => {
           </div>
           <div className="text-center bg-slate-50 rounded-lg p-3">
             <div className="text-lg font-bold text-blue-600">
-              {(profile.currentWeight * (1 - parseFloat(getBodyFatEstimate()) / 100)).toFixed(1)}kg
+              {(userStats.currentWeight * (1 - parseFloat(getBodyFatEstimate()) / 100)).toFixed(1)}kg
             </div>
             <div className="text-sm text-slate-600">Massa magra</div>
           </div>
         </div>
       </Card>
+
+      {/* Weekly Progress Chart */}
+      {weeklyProgress.length > 1 && (
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3">📈 Andamento Peso (Ultimi 7 giorni)</h3>
+          <div className="space-y-2">
+            {weeklyProgress.slice(-7).map((day, index) => (
+              <div key={day.date} className="flex justify-between items-center">
+                <span className="text-sm text-slate-600">
+                  {new Date(day.date).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'short' })}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="font-semibold">{day.weight}kg</span>
+                  {index > 0 && (
+                    <Badge 
+                      variant={day.weight < weeklyProgress[weeklyProgress.length - index - 1]?.weight ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {day.weight < weeklyProgress[weeklyProgress.length - index - 1]?.weight ? '↓' : '↑'}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Settings */}
       <Card className="p-4">
@@ -131,12 +220,12 @@ const UserProfile = () => {
               />
             </div>
             <div>
-              <Label htmlFor="weight">Peso attuale (kg)</Label>
+              <Label htmlFor="age">Età</Label>
               <Input
-                id="weight"
+                id="age"
                 type="number"
-                value={profile.currentWeight}
-                onChange={(e) => setProfile({...profile, currentWeight: parseInt(e.target.value)})}
+                value={profile.age}
+                onChange={(e) => setProfile({...profile, age: parseInt(e.target.value)})}
                 disabled={!isEditing}
               />
             </div>
@@ -246,10 +335,10 @@ const UserProfile = () => {
       <Card className="p-4 bg-emerald-50 border-emerald-200">
         <h3 className="font-semibold text-emerald-800 mb-2">🎯 Approccio Scientifico</h3>
         <div className="text-sm text-emerald-700 space-y-1">
-          <p>• <strong>Deficit calorico:</strong> 500 kcal/giorno per -0.5kg/settimana</p>
-          <p>• <strong>Proteine:</strong> 1.8g/kg (mantenimento massa magra)</p>
-          <p>• <strong>Allenamento:</strong> 3-4x/settimana per stimolo anabolico</p>
-          <p>• <strong>Idratazione:</strong> 35ml/kg peso corporeo</p>
+          <p>• <strong>Deficit calorico:</strong> {userStats.targetCalories} kcal/giorno ottimale</p>
+          <p>• <strong>Idratazione:</strong> {userStats.targetWater}ml per metabolismo ottimale</p>
+          <p>• <strong>Tracking:</strong> Peso giornaliero per monitoraggio preciso</p>
+          <p>• <strong>Shot timing:</strong> Basato su cronobiologia per massimi benefici</p>
         </div>
       </Card>
     </div>
