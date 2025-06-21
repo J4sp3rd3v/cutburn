@@ -14,7 +14,7 @@ const WorkoutSection = () => {
     petto: {
       name: 'Petto & Tricipiti',
       duration: '45 min',
-      focus: 'Riduzione grasso pettorale, definizione',
+      focus: 'Sviluppo torace, definizione muscolare',
       exercises: [
         {
           id: 'bench-press',
@@ -24,7 +24,7 @@ const WorkoutSection = () => {
           restSeconds: 90,
           weight: '12kg per braccio',
           instructions: 'Scendere lentamente, spingere esplosivamente. Focus sul centro del petto.',
-          muscles: 'Pettorale maggiore, deltoidi anteriori'
+          muscles: 'Torace, deltoidi anteriori'
         },
         {
           id: 'incline-press',
@@ -34,7 +34,7 @@ const WorkoutSection = () => {
           restSeconds: 75,
           weight: '10kg per braccio',
           instructions: 'Inclinazione 30°. Movimento controllato, massima contrazione in alto.',
-          muscles: 'Pettorale superiore'
+          muscles: 'Torace superiore'
         },
         {
           id: 'flyes',
@@ -44,7 +44,7 @@ const WorkoutSection = () => {
           restSeconds: 60,
           weight: '8kg per braccio',
           instructions: 'Movimento ad arco, sentire lo stretch. Non bloccare i gomiti.',
-          muscles: 'Pettorale, definizione'
+          muscles: 'Torace, definizione'
         },
         {
           id: 'push-ups',
@@ -54,7 +54,7 @@ const WorkoutSection = () => {
           restSeconds: 60,
           weight: 'Corpo libero',
           instructions: 'Mani a diamante, corpo rigido. Focus sui tricipiti.',
-          muscles: 'Tricipiti, pettorale interno'
+          muscles: 'Tricipiti, torace interno'
         }
       ]
     },

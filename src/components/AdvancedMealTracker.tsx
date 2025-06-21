@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,12 +44,12 @@ const AdvancedMealTracker = ({
 
   return (
     <div className="space-y-4">
-      {/* Deficit Status - Specifico per grasso pettorale */}
+      {/* Deficit Status - Deficit calorico aggressivo */}
       <Card className="p-4 bg-gradient-to-r from-red-600 to-orange-600 text-white">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <TrendingDown className="w-5 h-5" />
-            <h3 className="font-semibold">Deficit Pettorale Aggressivo</h3>
+            <h3 className="font-semibold">Deficit Calorico Aggressivo</h3>
           </div>
           <Badge variant="secondary" className="bg-white/20 text-white">
             -{nutritionData?.aggressiveDeficit}kcal
@@ -67,8 +66,8 @@ const AdvancedMealTracker = ({
             <div className="opacity-90 text-xs">perdita/sett</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-bold">{(nutritionData?.pectoralFatLossRate * 1000).toFixed(0)}g</div>
-            <div className="opacity-90 text-xs">grasso pett/sett</div>
+            <div className="text-lg font-bold">{(nutritionData?.expectedWeeklyLoss * 1000).toFixed(0)}g</div>
+            <div className="opacity-90 text-xs">grasso/sett</div>
           </div>
         </div>
         
@@ -160,7 +159,7 @@ const AdvancedMealTracker = ({
       {optimalMealTime && (
         <Card className="p-3 bg-gradient-to-r from-orange-100 to-yellow-100 border-orange-200">
           <div className="text-sm text-orange-800">
-            <strong>💫 TIMING PERFETTO:</strong> È il momento ottimale per {optimalMealTime} secondo i tuoi ritmi circadiani per massima lipolisi pettorale!
+            <strong>💫 TIMING PERFETTO:</strong> È il momento ottimale per {optimalMealTime} secondo i tuoi ritmi circadiani per massima lipolisi!
           </div>
         </Card>
       )}

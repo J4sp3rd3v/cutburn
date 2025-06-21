@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -24,7 +23,7 @@ interface AdvancedNutritionData {
   fatTarget: number;
   carbTarget: number;
   expectedWeeklyLoss: number;
-  pectoralFatLossRate: number;
+  fatLossRate: number;
 }
 
 export const useAdvancedNutritionTracking = (userProfile: any) => {
@@ -51,20 +50,19 @@ export const useAdvancedNutritionTracking = (userProfile: any) => {
     
     const tdee = bmr * (activityMultipliers[userProfile.activityLevel] || 1.55);
     
-    // Deficit aggressivo per grasso pettorale (25-30% più 200kcal extra)
-    const baseDeficit = tdee * 0.30; // 30% deficit aggressivo
-    const pectoralBonus = 200; // Extra deficit per grasso pettorale ostinato
-    const aggressiveDeficit = baseDeficit + pectoralBonus;
-    const targetCalories = Math.round(tdee - aggressiveDeficit);
+    // Deficit aggressivo per fat loss (25-30% più 200kcal extra)
+    const aggressiveDeficitPercentage = 0.27; // 27% del TDEE
+    const extraBonus = 200; // Extra deficit per fat loss accelerato
+    const aggressiveDeficit = Math.round(tdee * aggressiveDeficitPercentage) + extraBonus;
     
-    // Macro ottimizzate per preservazione massa + lipolisi pettorale
+    // Macro ottimizzate per preservazione massa + lipolisi ottimale
     const proteinTarget = Math.round(userProfile.currentWeight * 2.6); // 2.6g/kg per preservare massa
-    const fatTarget = Math.round((targetCalories * 0.25) / 9); // 25% grassi per ormoni
+    const fatTarget = Math.round(userProfile.currentWeight * 0.6); // 0.6g/kg
+    const targetCalories = Math.round(tdee - aggressiveDeficit);
     const carbTarget = Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4);
     
-    // Previsioni perdita peso scientifiche
-    const expectedWeeklyLoss = aggressiveDeficit / 1100; // 7700kcal = 1kg grasso
-    const pectoralFatLossRate = expectedWeeklyLoss * 0.65; // 65% dal grasso ostinato pettorale
+    const expectedWeeklyLoss = Math.round((aggressiveDeficit * 7 / 7700) * 100) / 100; // kg/settimana
+    const fatLossRate = expectedWeeklyLoss * 0.65; // 65% dal grasso ostinato
     
     return {
       bmr: Math.round(bmr),
@@ -75,7 +73,7 @@ export const useAdvancedNutritionTracking = (userProfile: any) => {
       fatTarget,
       carbTarget,
       expectedWeeklyLoss: Number(expectedWeeklyLoss.toFixed(2)),
-      pectoralFatLossRate: Number(pectoralFatLossRate.toFixed(2))
+      fatLossRate: Number(fatLossRate.toFixed(2))
     };
   };
 
