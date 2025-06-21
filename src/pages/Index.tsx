@@ -29,6 +29,9 @@ import WorkoutSection from '@/components/WorkoutSection';
 import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import DailyShots from '@/components/DailyShots';
+import AdvancedMealTracker from '@/components/AdvancedMealTracker';
+import PectoralFatLossProtocol from '@/components/PectoralFatLossProtocol';
+import { useAdvancedNutritionTracking } from '@/hooks/useAdvancedNutritionTracking';
 
 const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -46,6 +49,15 @@ const Index = () => {
     toggleWorkout,
     getWeeklyProgress
   } = useSupabaseProgressTracking();
+
+  // Nuovo hook per tracking avanzato
+  const {
+    todayMeals,
+    nutritionData,
+    dailyTotals,
+    loading: mealsLoading,
+    markMealAsEaten
+  } = useAdvancedNutritionTracking(userProfile);
 
   const [weeklyProgress, setWeeklyProgress] = useState<Array<{ date: string; weight: number }>>([]);
 
@@ -100,32 +112,24 @@ const Index = () => {
   const today = new Date();
   const daysSinceStart = Math.max(1, Math.ceil((today.getTime() - registrationDate.getTime()) / (1000 * 60 * 60 * 24)));
 
-  // Calcolo deficit calorico personalizzato basato su peso e obiettivi
-  const calculatePersonalizedCalories = () => {
-    const bmr = userProfile.height && userProfile.age 
-      ? (10 * userProfile.currentWeight) + (6.25 * userProfile.height) - (5 * userProfile.age) + 5
-      : 1680;
-    
-    const activityMultiplier = {
-      sedentary: 1.2,
-      light: 1.375,
-      moderate: 1.55,
-      active: 1.725,
-      very_active: 1.9
-    }[userProfile.activityLevel] || 1.55;
-    
-    const tdee = bmr * activityMultiplier;
-    const aggressiveDeficit = Math.round(tdee - (tdee * 0.25)); // 25% deficit per cut rapido
-    
+  // Calcolo deficit calorico ottimizzato per grasso pettorale
+  const calculateOptimalDeficit = () => {
+    if (!userProfile || !nutritionData) return {
+      bmr: 1680,
+      tdee: 2600,
+      targetCalories: 1700,
+      deficit: 900
+    };
+
     return {
-      bmr: Math.round(bmr),
-      tdee: Math.round(tdee),
-      targetCalories: aggressiveDeficit,
-      deficit: Math.round(tdee - aggressiveDeficit)
+      bmr: nutritionData.bmr,
+      tdee: nutritionData.tdee,
+      targetCalories: nutritionData.targetCalories,
+      deficit: nutritionData.aggressiveDeficit
     };
   };
 
-  const calorieData = calculatePersonalizedCalories();
+  const calorieData = calculateOptimalDeficit();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -134,10 +138,10 @@ const Index = () => {
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center">
                 <TrendingDown className="w-4 h-4 text-white" />
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
                 CutBurn Pro
               </h1>
             </div>
@@ -167,15 +171,18 @@ const Index = () => {
       <main className="max-w-md mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="px-4 pt-4">
-            <TabsList className="grid w-full grid-cols-6 bg-white/70 backdrop-blur-sm">
+            <TabsList className="grid w-full grid-cols-7 bg-white/70 backdrop-blur-sm text-xs">
               <TabsTrigger value="dashboard" className="text-xs">
                 <Target className="w-4 h-4" />
               </TabsTrigger>
-              <TabsTrigger value="diet" className="text-xs">
+              <TabsTrigger value="meals" className="text-xs">
                 <Utensils className="w-4 h-4" />
               </TabsTrigger>
-              <TabsTrigger value="recipes" className="text-xs">
-              <Calendar className="w-4 h-4" />
+              <TabsTrigger value="protocol" className="text-xs">
+                <TrendingDown className="w-4 h-4" />
+              </TabsTrigger>
+              <TabsTrigger value="diet" className="text-xs">
+                <Calendar className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="supplements" className="text-xs">
                 <Zap className="w-4 h-4" />
@@ -193,17 +200,17 @@ const Index = () => {
             <TabsContent value="dashboard" className="mt-4 space-y-4">
               <div className="text-center py-4">
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                  Ciao {userProfile.name}! 👋
+                  Ciao {userProfile.name}! 🔥
                 </h2>
                 <p className="text-slate-600">
-                  Giorno {daysSinceStart} del tuo percorso CutBurn
+                  Giorno {daysSinceStart} - Protocollo Grasso Pettorale
                 </p>
               </div>
 
-              {/* Enhanced Daily Overview con deficit personalizzato */}
-              <Card className="p-4 bg-gradient-to-r from-blue-500 to-emerald-500 text-white">
+              {/* Enhanced Deficit Status */}
+              <Card className="p-4 bg-gradient-to-r from-red-500 to-orange-500 text-white">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold">Deficit Personalizzato</h3>
+                  <h3 className="font-semibold">Deficit Aggressivo Pettorale</h3>
                   <Badge variant="secondary" className="bg-white/20 text-white">
                     -{calorieData.deficit} kcal/giorno
                   </Badge>
@@ -225,16 +232,16 @@ const Index = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span>Calorie rimanenti oggi</span>
-                    <span className="font-bold">{calorieData.targetCalories - dailyProgress.calories} kcal</span>
+                    <span className="font-bold">{dailyTotals.remainingCalories} kcal</span>
                   </div>
                   <Progress 
-                    value={(dailyProgress.calories / calorieData.targetCalories) * 100} 
+                    value={Math.max(0, (dailyTotals.calories / calorieData.targetCalories) * 100)} 
                     className="bg-white/20"
                   />
                 </div>
               </Card>
 
-              {/* Interactive Progress Cards */}
+              {/* Quick Actions */}
               <div className="grid grid-cols-2 gap-4">
                 <Card 
                   className="p-4 bg-white/70 backdrop-blur-sm hover:bg-white/80 transition-all duration-200 cursor-pointer active:scale-95"
@@ -257,29 +264,29 @@ const Index = () => {
 
                 <DashboardCard
                   title="Calorie"
-                  value={`${dailyProgress.calories}/${calorieData.targetCalories}`}
+                  value={`${dailyTotals.calories}/${calorieData.targetCalories}`}
                   unit="kcal consumate"
-                  progress={(dailyProgress.calories / calorieData.targetCalories) * 100}
+                  progress={(dailyTotals.calories / calorieData.targetCalories) * 100}
                   icon={<Flame className="w-5 h-5 text-orange-500" />}
                 />
               </div>
 
-              {/* Daily Shots with personalized dosages */}
+              {/* Daily Shots */}
               <DailyShots 
                 shotsConsumed={dailyProgress.shotsConsumed}
                 onTakeShot={addShot}
                 userWeight={userProfile.currentWeight}
               />
 
-              {/* Today's Status */}
+              {/* Status Section */}
               <Card className="p-4">
                 <h3 className="font-semibold mb-3 flex items-center">
                   <Clock className="w-4 h-4 mr-2 text-slate-600" />
-                  Stato Giornaliero
+                  Stato Protocollo
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Workout</span>
+                    <span className="text-slate-600">Workout Pettorali</span>
                     <Button
                       variant={dailyProgress.workoutCompleted ? "default" : "outline"}
                       size="sm"
@@ -295,16 +302,16 @@ const Index = () => {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Digiuno 16:8</span>
-                    <Badge variant="outline">
-                      Finestra: 12:00-20:00
+                    <span className="text-slate-600">Deficit giornaliero</span>
+                    <Badge variant="default" className="bg-red-500">
+                      -{calorieData.deficit}kcal
                     </Badge>
                   </div>
-                  {weightChange !== 0 && (
+                  {nutritionData && (
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-600">Variazione settimanale</span>
-                      <Badge variant={weightChange < 0 ? "default" : "secondary"}>
-                        {weightChange >= 0 ? '+' : ''}{weightChange.toFixed(1)}kg
+                      <span className="text-slate-600">Perdita prevista</span>
+                      <Badge variant="outline">
+                        {nutritionData.expectedWeeklyLoss}kg/settimana
                       </Badge>
                     </div>
                   )}
@@ -329,12 +336,28 @@ const Index = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="diet" className="mt-4">
-              <DietSection userProfile={userProfile} />
+            {/* Nuovo Tab Meals con tracking avanzato */}
+            <TabsContent value="meals" className="mt-4">
+              {!mealsLoading && (
+                <AdvancedMealTracker
+                  meals={todayMeals}
+                  nutritionData={nutritionData}
+                  dailyTotals={dailyTotals}
+                  onMarkMealAsEaten={markMealAsEaten}
+                />
+              )}
             </TabsContent>
 
-            <TabsContent value="recipes" className="mt-4">
-              <RecipeSection />
+            {/* Nuovo Tab Protocol */}
+            <TabsContent value="protocol" className="mt-4">
+              <PectoralFatLossProtocol 
+                userWeight={userProfile.currentWeight}
+                currentBodyFat={15} // Default, poi possiamo renderlo dinamico
+              />
+            </TabsContent>
+
+            <TabsContent value="diet" className="mt-4">
+              <DietSection userProfile={userProfile} />
             </TabsContent>
 
             <TabsContent value="supplements" className="mt-4">
