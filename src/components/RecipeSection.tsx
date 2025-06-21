@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Users, ChefHat, Zap, Droplets, Flame, Sparkles } from 'lucide-react';
 
 const RecipeSection = () => {
-  const [selectedCategory, setSelectedCategory] = useState("detox");
+  const [selectedCategory, setSelectedCategory] = useState("bowls");
 
   const recipes = {
     detox: [
@@ -1289,115 +1289,13 @@ const RecipeSection = () => {
         timing: "Spuntino 10:00 o 16:00. Post-workout con verdure crude.",
         fatBurning: "Proteine aumentano termogenesi +25% per 3 ore"
       }
-    ],
-    stellati: [
-      {
-        name: "EMERALD GLOW Supreme",
-        time: "6 min",
-        servings: 1,
-        calories: 180,
-        type: "Detox Reale",
-        category: "Luxury wellness",
-        ingredients: [
-          "Cetriolo: 80g (1/2 piccolo pelato)",
-          "Spinaci freschi: 50g",
-          "Mela verde: 80g (1/2 senza torsolo)",
-          "Pompelmo rosa: 50g (2 spicchi a vivo)",
-          "Acqua cocco: 150ml",
-          "Lime: 1 cucchiaio succo",
-          "Spirulina: 1 cucchiaino (5g)",
-          "Menta fresca: 6 foglie"
-        ],
-        preparation: [
-          "Cetriolo, mela, spinaci e menta nel boccale",
-          "Tritare grossolanamente: Velocità 7, 5 secondi",
-          "Aggiungere pompelmo, acqua cocco, lime, spirulina",
-          "Frullare Velocità 10, 90 secondi per consistenza liscia",
-          "Regolare acqua cocco per fluidità desiderata",
-          "Filtrare opzionale per succo liscio"
-        ],
-        bimbySteps: [
-          "Verdure + menta: Velocità 7, 5 secondi",
-          "Tutti ingredienti: Velocità 10, 90 secondi",
-          "Controllo fluidità, aggiunta liquidi"
-        ],
-        benefits: "Pompelmo rosa per metabolismo lipidi. Clorofilla detox epatico.",
-        timing: "Mid-morning per detox profondo",
-        fatBurning: "Naringina pompelmo attiva lipasi +20%"
-      },
-      {
-        name: "MATCHA ZEN GARDEN",
-        time: "5 min",
-        servings: 1,
-        calories: 310,
-        type: "Focus & Calma",
-        category: "Concentrazione",
-        ingredients: [
-          "Banana congelata: 100g (1 media)",
-          "Latte d'avena: 150ml",
-          "Matcha cerimoniale: 1 cucchiaino (3g)",
-          "Burro mandorle: 15g",
-          "Spirulina: 1/2 cucchiaino (3g)",
-          "Miele/agave: 1 cucchiaino"
-        ],
-        preparation: [
-          "Banana congelata nel boccale con latte d'avena",
-          "Matcha, burro mandorle, spirulina, miele",
-          "Frullare Velocità 10, 75 secondi spatolando",
-          "Consistenza densa e omogenea",
-          "Colore verde intenso caratteristico",
-          "Servire in bicchiere alto con cannuccia"
-        ],
-        bimbySteps: [
-          "Banana + latte: Velocità 8, 30 secondi",
-          "Matcha + grassi: Velocità 10, 45 secondi",
-          "Mantecatura finale: Velocità 6, 15 secondi"
-        ],
-        benefits: "L-teanina + caffeina per focus. EGCG antiossidante potente.",
-        timing: "Mid-morning per concentrazione sostenuta",
-        fatBurning: "EGCG matcha attiva termogenesi +22%"
-      },
-      {
-        name: "VELVET BERRY DREAM",
-        time: "7 min",
-        servings: 1,
-        calories: 340,
-        type: "Beauty Luxury",
-        category: "Bellezza & Benessere",
-        ingredients: [
-          "Frutti bosco misti: 120g (congelati)",
-          "Latte mandorla premium: 120ml",
-          "Anacardi ammollati: 15g (10-12 pezzi)",
-          "Datteri Medjool: 1-2 denocciolati",
-          "Semi chia: 1 cucchiaino",
-          "Estratto vaniglia: 1/4 cucchiaino",
-          "Collagen powder: 10g (opzionale)"
-        ],
-        preparation: [
-          "Anacardi ammollati 30 min, sciacquati",
-          "Tutti ingredienti nel boccale insieme",
-          "Frullare Velocità 10, 90 secondi spatolando",
-          "Consistenza vellutata senza grumi",
-          "Collagen per effetto beauty (opzionale)",
-          "Cremosità incredibile dagli anacardi"
-        ],
-        bimbySteps: [
-          "Tutti ingredienti: Velocità 10, 90 secondi",
-          "Controllo cremosità, spatolare",
-          "Rifinitura vellutata: Velocità 8, 30 secondi"
-        ],
-        benefits: "Anacardi per grassi sani. Antiossidanti anti-aging intensi.",
-        timing: "Afternoon snack per energia e bellezza",
-        fatBurning: "Grassi monoinsaturi ottimizzano ormoni brucia-grassi"
-      }
     ]
   };
 
   const categories = [
     { key: "detox", label: "Detox", icon: <Droplets className="w-4 h-4" /> },
     { key: "bowls", label: "Bowls", icon: <Zap className="w-4 h-4" /> },
-    { key: "proteiche", label: "Proteiche", icon: <Flame className="w-4 h-4" /> },
-    { key: "stellati", label: "Stellati", icon: <Sparkles className="w-4 h-4" /> }
+    { key: "proteiche", label: "Proteiche", icon: <Flame className="w-4 h-4" /> }
   ];
 
   const currentRecipes = recipes[selectedCategory as keyof typeof recipes];
