@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
-import { useDailyMealGeneration } from './useDailyMealGeneration';
 
 interface AdvancedNutritionData {
   bmr: number;
@@ -71,33 +70,8 @@ export const useAdvancedNutritionTracking = (userProfile: any) => {
     }
   }, [userProfile]);
 
-  // Use the new meal generation hook
-  const {
-    todayMeals,
-    loading,
-    markMealAsEaten,
-    refreshMeals
-  } = useDailyMealGeneration(userProfile, nutritionData);
-
-  // Calcola totali giornalieri
-  const getDailyTotals = () => {
-    const eatenMeals = todayMeals.filter(meal => meal.eaten);
-    
-    return {
-      calories: eatenMeals.reduce((sum, meal) => sum + meal.calories, 0),
-      protein: eatenMeals.reduce((sum, meal) => sum + meal.protein, 0),
-      carbs: eatenMeals.reduce((sum, meal) => sum + meal.carbs, 0),
-      fat: eatenMeals.reduce((sum, meal) => sum + meal.fat, 0),
-      remainingCalories: nutritionData ? nutritionData.targetCalories - eatenMeals.reduce((sum, meal) => sum + meal.calories, 0) : 0
-    };
-  };
-
   return {
-    todayMeals,
     nutritionData,
-    dailyTotals: getDailyTotals(),
-    loading,
-    markMealAsEaten,
-    refreshMeals
+    loading: false
   };
 };
