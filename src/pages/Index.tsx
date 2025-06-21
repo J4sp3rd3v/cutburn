@@ -15,7 +15,8 @@ import {
   Clock,
   Zap,
   Droplets,
-  Flame
+  Flame,
+  ChefHat
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
@@ -29,6 +30,7 @@ import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import DailyShots from '@/components/DailyShots';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
+import RecipeSection from '@/components/RecipeSection';
 
 const Index = () => {
   const { user } = useAuth();
@@ -126,7 +128,7 @@ const Index = () => {
                 <Target className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="meals" className="text-xs">
-                <Utensils className="w-4 h-4" />
+                <ChefHat className="w-4 h-4" />
               </TabsTrigger>
               <TabsTrigger value="diet" className="text-xs">
                 <Calendar className="w-4 h-4" />
@@ -282,14 +284,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="meals" className="mt-4">
-              {!mealsLoading && (
-                <AdvancedMealTracker
-                  meals={todayMeals}
-                  nutritionData={nutritionData}
-                  dailyTotals={dailyTotals}
-                  onMarkMealAsEaten={markMealAsEaten}
-                />
-              )}
+              <RecipeSection />
             </TabsContent>
 
             <TabsContent value="diet" className="mt-4">
