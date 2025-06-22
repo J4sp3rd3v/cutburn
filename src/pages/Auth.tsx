@@ -17,6 +17,7 @@ const Auth = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
+  const [loadingMessage, setLoadingMessage] = useState('');
   
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -25,22 +26,39 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setLoadingMessage('Connessione a CutBurn...');
 
     try {
       console.log('🔄 Inizio processo di login...');
       
+      setLoadingMessage('Verifica credenziali...');
       const success = await signIn(email, password);
       
       if (success) {
         console.log('✅ Login riuscito, reindirizzamento...');
-        navigate('/');
+        setLoadingMessage('Login completato! Caricamento dashboard...');
+        
+        // Piccolo delay per assicurarsi che l'autenticazione sia completata
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else {
         console.log('❌ Login fallito');
         setError('Email o password non corretti. Verifica le tue credenziali.');
+        setLoadingMessage('');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('❌ Errore durante handleLogin:', err);
-      setError('Errore durante il login. Controlla la connessione e riprova.');
+      
+      // Gestione errori specifica per timeout
+      if (err.message?.includes('timeout') || err.message?.includes('Timeout')) {
+        setError('⏱️ Connessione lenta. Controlla la tua connessione internet e riprova.');
+      } else if (err.message?.includes('Network')) {
+        setError('🌐 Errore di rete. Verifica la connessione e riprova.');
+      } else {
+        setError('❌ Errore durante il login. Controlla la connessione e riprova.');
+      }
+      setLoadingMessage('');
     } finally {
       setLoading(false);
     }
@@ -161,7 +179,7 @@ const Auth = () => {
                     className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600" 
                     disabled={loading}
                   >
-                    {loading ? 'Accesso in corso...' : 'Accedi'}
+                    {loading ? (loadingMessage || 'Accesso in corso...') : 'Accedi'}
                   </Button>
                 </form>
               </TabsContent>
