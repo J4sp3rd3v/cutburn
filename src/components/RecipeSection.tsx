@@ -66,19 +66,20 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       }
       
       if (step.toLowerCase().includes('precision-cut')) {
-        modifiedStep = modifiedStep.replace(/precision-cut/gi, 'taglio a cubetti regolari');
+        modifiedStep = modifiedStep.replace(/precision-cut/gi, 'taglio a cubetti regolari con coltello');
       }
       
       if (step.toLowerCase().includes('microplane')) {
-        modifiedStep = modifiedStep.replace(/microplane/gi, 'grattugia fine');
+        modifiedStep = modifiedStep.replace(/microplane/gi, 'grattugia fine da cucina');
       }
       
       if (step.toLowerCase().includes('estrazione lenta')) {
-        modifiedStep = modifiedStep.replace(/estrazione lenta/gi, 'frullatura normale');
+        modifiedStep = modifiedStep.replace(/estrazione lenta.*?(\d+) min.*?Vel (\d+)/gi, 
+          'frullatura normale $1 min / Vel $2');
       }
       
       if (step.toLowerCase().includes('doppio filtraggio')) {
-        modifiedStep = modifiedStep.replace(/doppio filtraggio/gi, 'filtraggio con colino fine');
+        modifiedStep = modifiedStep.replace(/doppio filtraggio/gi, 'filtraggio con colino fine da cucina');
       }
       
       if (step.toLowerCase().includes('bicchiere di cristallo')) {
@@ -86,7 +87,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       }
       
       if (step.toLowerCase().includes('cristalli commestibili')) {
-        modifiedStep = modifiedStep.replace(/cristalli commestibili/gi, 'decorazione con foglie di menta');
+        modifiedStep = modifiedStep.replace(/cristalli commestibili/gi, 'decorazione con foglie di menta fresca');
       }
       
       if (step.toLowerCase().includes('garza fine')) {
@@ -94,9 +95,69 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       }
       
       if (step.toLowerCase().includes('setaccio fine')) {
-        modifiedStep = modifiedStep.replace(/setaccio fine/gi, 'colino normale');
+        modifiedStep = modifiedStep.replace(/setaccio fine/gi, 'colino normale da cucina');
       }
-      
+
+      // Sostituzioni specifiche per ricette stellate
+      if (step.toLowerCase().includes('julienne')) {
+        modifiedStep = modifiedStep.replace(/julienne/gi, 'taglio a bastoncini sottili');
+      }
+
+      if (step.toLowerCase().includes('ammollare.*?2h')) {
+        modifiedStep = modifiedStep.replace(/ammollare.*?2h/gi, 'ammollare 30 min in acqua calda');
+      }
+
+      if (step.toLowerCase().includes('infusione')) {
+        modifiedStep = modifiedStep.replace(/infusione con.*?latte cocco caldo/gi, 'mescolare direttamente nel latte');
+      }
+
+      if (step.toLowerCase().includes('passare al setaccio')) {
+        modifiedStep = modifiedStep.replace(/passare al setaccio fine/gi, 'filtrare con colino normale');
+      }
+
+      if (step.toLowerCase().includes('boccale preriscaldato')) {
+        modifiedStep = modifiedStep.replace(/boccale preriscaldato/gi, 'boccale normale');
+      }
+
+      if (step.toLowerCase().includes('bowl preriscaldato')) {
+        modifiedStep = modifiedStep.replace(/bowl preriscaldato/gi, 'bowl normale');
+      }
+
+      if (step.toLowerCase().includes('bowl raffreddato')) {
+        modifiedStep = modifiedStep.replace(/bowl raffreddato.*?15 min/gi, 'bowl normale');
+      }
+
+      // Sostituzioni TM6 → TM5
+      if (step.toLowerCase().includes('tm6')) {
+        modifiedStep = modifiedStep.replace(/TM6/gi, 'TM5');
+      }
+
+      if (step.toLowerCase().includes('velocità 10')) {
+        modifiedStep = modifiedStep.replace(/Velocità 10/gi, 'Velocità 9 (max TM5)');
+        modifiedStep = modifiedStep.replace(/Vel 10/gi, 'Vel 9');
+      }
+
+      // Decorazioni e presentazioni elaborate
+      if (step.toLowerCase().includes('plating artistico')) {
+        modifiedStep = modifiedStep.replace(/plating artistico geometrico/gi, 'decorazione semplice');
+      }
+
+      if (step.toLowerCase().includes('spirale dorata')) {
+        modifiedStep = modifiedStep.replace(/spirale dorata/gi, 'disposizione circolare');
+      }
+
+      if (step.toLowerCase().includes('geometrie')) {
+        modifiedStep = modifiedStep.replace(/in geometrie/gi, 'sparsi sopra');
+      }
+
+      if (step.toLowerCase().includes('calice cristallo')) {
+        modifiedStep = modifiedStep.replace(/calice cristallo/gi, 'bicchiere normale');
+      }
+
+      if (step.toLowerCase().includes('petali rosa')) {
+        modifiedStep = modifiedStep.replace(/petali rosa.*?regale/gi, 'decorazione con menta fresca');
+      }
+
       return modifiedStep;
     });
   };
@@ -117,6 +178,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       
       if (ingredient.toLowerCase().includes('manuka')) {
         modifiedIngredient = modifiedIngredient.replace(/manuka/gi, 'millefiori');
+        modifiedIngredient = modifiedIngredient.replace(/UMF 15\+/gi, '');
       }
       
       if (ingredient.toLowerCase().includes('bourbon')) {
@@ -126,7 +188,100 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       if (ingredient.toLowerCase().includes('himalaya')) {
         modifiedIngredient = modifiedIngredient.replace(/himalaya/gi, 'marino');
       }
-      
+
+      // Sostituzioni specifiche ingredienti stellati
+      if (ingredient.toLowerCase().includes('giapponese')) {
+        modifiedIngredient = modifiedIngredient.replace(/giapponese/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('biologici triple-lavati')) {
+        modifiedIngredient = modifiedIngredient.replace(/biologici triple-lavati/gi, 'freschi lavati');
+      }
+
+      if (ingredient.toLowerCase().includes('inglese')) {
+        modifiedIngredient = modifiedIngredient.replace(/inglese/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('kaffir')) {
+        modifiedIngredient = modifiedIngredient.replace(/kaffir/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('santo.*?tulsi')) {
+        modifiedIngredient = modifiedIngredient.replace(/santo.*?\(Tulsi\)/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('piperita')) {
+        modifiedIngredient = modifiedIngredient.replace(/piperita/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('hawaiana')) {
+        modifiedIngredient = modifiedIngredient.replace(/hawaiana/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('selvaggi.*?biologici')) {
+        modifiedIngredient = modifiedIngredient.replace(/selvaggi.*?biologici/gi, 'surgelati');
+      }
+
+      if (ingredient.toLowerCase().includes('more di gelso.*?rare')) {
+        modifiedIngredient = modifiedIngredient.replace(/more di gelso.*?\(rare.*?\)/gi, 'more normali');
+      }
+
+      if (ingredient.toLowerCase().includes('collagene marino')) {
+        modifiedIngredient = modifiedIngredient.replace(/collagene marino/gi, 'proteine in polvere');
+      }
+
+      if (ingredient.toLowerCase().includes('vaniglia bourbon')) {
+        modifiedIngredient = modifiedIngredient.replace(/vaniglia bourbon.*?\(semi\)/gi, 'estratto vaniglia');
+      }
+
+      if (ingredient.toLowerCase().includes('cacao crudo')) {
+        modifiedIngredient = modifiedIngredient.replace(/cacao crudo/gi, 'cacao normale');
+      }
+
+      if (ingredient.toLowerCase().includes('pistacchi siciliani')) {
+        modifiedIngredient = modifiedIngredient.replace(/pistacchi siciliani/gi, 'pistacchi normali');
+      }
+
+      if (ingredient.toLowerCase().includes('petali rosa edibili')) {
+        modifiedIngredient = modifiedIngredient.replace(/petali rosa edibili/gi, 'foglie di menta');
+      }
+
+      if (ingredient.toLowerCase().includes('cocco grattugiato fresco')) {
+        modifiedIngredient = modifiedIngredient.replace(/cocco grattugiato fresco/gi, 'cocco rapé');
+      }
+
+      if (ingredient.toLowerCase().includes('cannella ceylon')) {
+        modifiedIngredient = modifiedIngredient.replace(/ceylon/gi, 'normale');
+      }
+
+      if (ingredient.toLowerCase().includes('fiori calendula')) {
+        modifiedIngredient = modifiedIngredient.replace(/fiori calendula/gi, 'decorazione con menta');
+      }
+
+      if (ingredient.toLowerCase().includes('microgreens')) {
+        modifiedIngredient = modifiedIngredient.replace(/microgreens.*?decorazione/gi, 'rucola baby per decorazione');
+      }
+
+      if (ingredient.toLowerCase().includes('olio evo premium')) {
+        modifiedIngredient = modifiedIngredient.replace(/premium/gi, 'extravergine normale');
+      }
+
+      if (ingredient.toLowerCase().includes('acqua filtrata')) {
+        modifiedIngredient = modifiedIngredient.replace(/filtrata/gi, 'del rubinetto');
+      }
+
+      if (ingredient.toLowerCase().includes('sale rosa himalaya')) {
+        modifiedIngredient = modifiedIngredient.replace(/rosa himalaya/gi, 'fino da cucina');
+      }
+
+      if (ingredient.toLowerCase().includes('acqua di rose')) {
+        modifiedIngredient = modifiedIngredient.replace(/acqua di rose/gi, 'estratto vaniglia (2 gocce)');
+      }
+
+      if (ingredient.toLowerCase().includes('zafferano')) {
+        modifiedIngredient = modifiedIngredient.replace(/zafferano.*?pistilli/gi, 'curcuma (per colore)');
+      }
+
       return modifiedIngredient;
     });
   };
@@ -1774,7 +1929,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
           </Badge>
           <Badge variant="outline" className="flex items-center space-x-1">
             <ChefHat className="w-3 h-3" />
-            <span>Bimby TM6</span>
+            <span>{homeCookingMode ? 'Bimby TM5' : 'Bimby TM6'}</span>
           </Badge>
           {homeCookingMode && (
             <Badge variant="outline" className="flex items-center space-x-1 bg-green-100 text-green-700">
@@ -1818,8 +1973,8 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
           </div>
           <p className="text-xs text-blue-700">
             {homeCookingMode 
-              ? '🏠 Ricette semplificate: sottovuoto → padella, ingredienti premium → normali, tecniche avanzate → casalinghe'
-              : '⭐ Ricette originali: tecniche stellate, ingredienti premium, cotture professionali per risultati ottimali'
+              ? '🏠 Ricette semplificate: TM6→TM5, sottovuoto→padella, ingredienti premium→normali, tecniche avanzate→casalinghe'
+              : '⭐ Ricette originali: TM6, tecniche stellate, ingredienti premium, cotture professionali per risultati ottimali'
             }
           </p>
         </div>
@@ -1934,7 +2089,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
             <div className="mb-4">
               <h4 className="font-medium text-slate-700 mb-2 flex items-center">
                 <ChefHat className="w-4 h-4 mr-1" />
-                Bimby TM6:
+                {homeCookingMode ? 'Bimby TM5:' : 'Bimby TM6:'}
               </h4>
               <div className="bg-slate-50 rounded-lg p-3">
                 {(homeCookingMode ? replaceAdvancedTechniques(recipe.bimbySteps) : recipe.bimbySteps).map((step, idx) => (
