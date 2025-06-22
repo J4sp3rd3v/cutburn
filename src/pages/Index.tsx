@@ -284,7 +284,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="meals" className="mt-4">
-              <RecipeSection />
+              <RecipeSection userProfile={userProfile} />
             </TabsContent>
 
             <TabsContent value="diet" className="mt-4">
@@ -300,7 +300,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="shopping" className="mt-4">
-              <ShoppingList />
+              <ShoppingList userProfile={userProfile} />
             </TabsContent>
 
             <TabsContent value="profile" className="mt-4">
