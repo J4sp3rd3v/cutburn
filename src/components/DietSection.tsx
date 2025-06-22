@@ -202,7 +202,7 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
             protein: Math.round(nutrition.proteinTarget * 0.40),
             carbs: 0,
             fat: Math.round(nutrition.fatTarget * 0.20),
-            preparation: `Cottura sottovuoto 56°C x 15min con ${currentIngredients.herbs[0]}, olio EVO, limone biologico.`,
+            preparation: `Marinatura 2h con ${currentIngredients.herbs[0]}, olio EVO, limone. Cottura in padella antiaderente 4-5min per lato a fuoco medio.`,
             benefits: "Proteine ad alto VB per sintesi muscolare. Riduzione cortisolo e CRP.",
             seasonal: true
           },

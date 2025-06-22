@@ -21,6 +21,7 @@ interface RecipeSectionProps {
 const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
   const [selectedDay, setSelectedDay] = useState(0);
+  const [homeCookingMode, setHomeCookingMode] = useState(true); // Modalità casa di default
   
   // Controllo intolleranza lattosio
   const isLactoseIntolerant = userProfile?.lactoseIntolerant || false;
@@ -50,6 +51,83 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       }
       
       return ingredient;
+    });
+  };
+
+  // Funzione per sostituire tecniche avanzate con alternative casalinghe
+  const replaceAdvancedTechniques = (steps: string[]): string[] => {
+    return steps.map(step => {
+      let modifiedStep = step;
+      
+      // Sostituzioni per tecniche avanzate
+      if (step.toLowerCase().includes('sottovuoto')) {
+        modifiedStep = step.replace(/sottovuoto.*?(\d+)°C.*?(\d+)min/gi, 
+          'marinatura 2h poi cottura in padella antiaderente a fuoco medio $2 min per lato');
+      }
+      
+      if (step.toLowerCase().includes('precision-cut')) {
+        modifiedStep = modifiedStep.replace(/precision-cut/gi, 'taglio a cubetti regolari');
+      }
+      
+      if (step.toLowerCase().includes('microplane')) {
+        modifiedStep = modifiedStep.replace(/microplane/gi, 'grattugia fine');
+      }
+      
+      if (step.toLowerCase().includes('estrazione lenta')) {
+        modifiedStep = modifiedStep.replace(/estrazione lenta/gi, 'frullatura normale');
+      }
+      
+      if (step.toLowerCase().includes('doppio filtraggio')) {
+        modifiedStep = modifiedStep.replace(/doppio filtraggio/gi, 'filtraggio con colino fine');
+      }
+      
+      if (step.toLowerCase().includes('bicchiere di cristallo')) {
+        modifiedStep = modifiedStep.replace(/bicchiere di cristallo/gi, 'bicchiere normale');
+      }
+      
+      if (step.toLowerCase().includes('cristalli commestibili')) {
+        modifiedStep = modifiedStep.replace(/cristalli commestibili/gi, 'decorazione con foglie di menta');
+      }
+      
+      if (step.toLowerCase().includes('garza fine')) {
+        modifiedStep = modifiedStep.replace(/garza fine/gi, 'colino a maglie fini');
+      }
+      
+      if (step.toLowerCase().includes('setaccio fine')) {
+        modifiedStep = modifiedStep.replace(/setaccio fine/gi, 'colino normale');
+      }
+      
+      return modifiedStep;
+    });
+  };
+
+  // Funzione per aggiungere alternative casalinghe agli ingredienti
+  const addHomeCookingAlternatives = (ingredients: string[]): string[] => {
+    return ingredients.map(ingredient => {
+      let modifiedIngredient = ingredient;
+      
+      // Sostituzioni per ingredienti premium con alternative
+      if (ingredient.toLowerCase().includes('premium') || ingredient.toLowerCase().includes('artigianale')) {
+        modifiedIngredient = ingredient.replace(/premium|artigianale/gi, 'qualità normale');
+      }
+      
+      if (ingredient.toLowerCase().includes('alfonso')) {
+        modifiedIngredient = modifiedIngredient.replace(/alfonso/gi, 'normale');
+      }
+      
+      if (ingredient.toLowerCase().includes('manuka')) {
+        modifiedIngredient = modifiedIngredient.replace(/manuka/gi, 'millefiori');
+      }
+      
+      if (ingredient.toLowerCase().includes('bourbon')) {
+        modifiedIngredient = modifiedIngredient.replace(/bourbon/gi, 'normale');
+      }
+      
+      if (ingredient.toLowerCase().includes('himalaya')) {
+        modifiedIngredient = modifiedIngredient.replace(/himalaya/gi, 'marino');
+      }
+      
+      return modifiedIngredient;
     });
   };
 
@@ -1698,6 +1776,52 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
             <ChefHat className="w-3 h-3" />
             <span>Bimby TM6</span>
           </Badge>
+          {homeCookingMode && (
+            <Badge variant="outline" className="flex items-center space-x-1 bg-green-100 text-green-700">
+              <span>🏠</span>
+              <span>Modalità Casa</span>
+            </Badge>
+          )}
+        </div>
+
+        {/* Toggle Modalità Casa/Pro */}
+        <div className="flex items-center justify-center space-x-2 mb-4">
+          <div className="flex items-center space-x-2 bg-slate-100 rounded-lg p-2">
+            <span className={`text-sm font-medium ${!homeCookingMode ? 'text-slate-400' : 'text-slate-700'}`}>
+              🏠 Casa
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setHomeCookingMode(!homeCookingMode)}
+              className={`px-3 py-1 h-8 rounded-md transition-all ${
+                homeCookingMode 
+                  ? 'bg-green-500 text-white hover:bg-green-600' 
+                  : 'bg-orange-500 text-white hover:bg-orange-600'
+              }`}
+            >
+              {homeCookingMode ? '✓ Attiva' : '⭐ Pro'}
+            </Button>
+            <span className={`text-sm font-medium ${homeCookingMode ? 'text-slate-400' : 'text-slate-700'}`}>
+              ⭐ Pro
+            </span>
+          </div>
+        </div>
+
+        {/* Spiegazione modalità */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="text-blue-600">ℹ️</span>
+            <span className="font-medium text-blue-800 text-sm">
+              {homeCookingMode ? 'Modalità Casa Attiva' : 'Modalità Pro Attiva'}
+            </span>
+          </div>
+          <p className="text-xs text-blue-700">
+            {homeCookingMode 
+              ? '🏠 Ricette semplificate: sottovuoto → padella, ingredienti premium → normali, tecniche avanzate → casalinghe'
+              : '⭐ Ricette originali: tecniche stellate, ingredienti premium, cotture professionali per risultati ottimali'
+            }
+          </p>
         </div>
       </div>
 
@@ -1782,7 +1906,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
                 )}
               </h4>
               <div className="grid grid-cols-1 gap-1">
-                {replaceLactoseIngredients(recipe.ingredients).map((ingredient, idx) => (
+                {(homeCookingMode ? addHomeCookingAlternatives(replaceLactoseIngredients(recipe.ingredients)) : replaceLactoseIngredients(recipe.ingredients)).map((ingredient, idx) => (
                   <div key={idx} className="text-sm text-slate-600 flex">
                     <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                     {ingredient}
@@ -1795,7 +1919,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
             <div className="mb-4">
               <h4 className="font-medium text-slate-700 mb-2">Preparazione:</h4>
               <ol className="space-y-1">
-                {recipe.preparation.map((step, idx) => (
+                {(homeCookingMode ? replaceAdvancedTechniques(recipe.preparation) : recipe.preparation).map((step, idx) => (
                   <li key={idx} className="text-sm text-slate-600 flex">
                     <span className="text-blue-500 font-medium mr-2 flex-shrink-0">
                       {idx + 1}.
@@ -1813,7 +1937,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
                 Bimby TM6:
               </h4>
               <div className="bg-slate-50 rounded-lg p-3">
-                {recipe.bimbySteps.map((step, idx) => (
+                {(homeCookingMode ? replaceAdvancedTechniques(recipe.bimbySteps) : recipe.bimbySteps).map((step, idx) => (
                   <div key={idx} className="text-sm text-slate-700 mb-1">
                     • {step}
                   </div>
