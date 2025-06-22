@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Users, ChefHat, Zap, Droplets, Flame, Dna, Calendar } from 'lucide-react';
 
 interface UserProfile {
+  lactoseIntolerant?: boolean;
   currentWeight: number;
   targetWeight: number;
   height: number;
@@ -20,6 +20,38 @@ interface RecipeSectionProps {
 
 const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
+  const [selectedDay, setSelectedDay] = useState(0);
+  
+  // Controllo intolleranza lattosio
+  const isLactoseIntolerant = userProfile?.lactoseIntolerant || false;
+  
+  // Funzione per sostituire ingredienti con lattosio
+  const replaceLactoseIngredients = (ingredients: string[]): string[] => {
+    if (!isLactoseIntolerant) return ingredients;
+    
+    return ingredients.map(ingredient => {
+      const lowerIngredient = ingredient.toLowerCase();
+      
+      // Sostituzioni per intolleranza al lattosio
+      if (lowerIngredient.includes('yogurt greco')) {
+        return ingredient.replace(/yogurt greco/gi, 'yogurt di cocco');
+      }
+      if (lowerIngredient.includes('latte cocco')) {
+        return ingredient; // Già lactose-free
+      }
+      if (lowerIngredient.includes('latte mandorla')) {
+        return ingredient; // Già lactose-free
+      }
+      if (lowerIngredient.includes('ricotta')) {
+        return ingredient.replace(/ricotta/gi, 'tofu cremoso');
+      }
+      if (lowerIngredient.includes('burrata') || lowerIngredient.includes('mozzarella')) {
+        return ingredient.replace(/burrata|mozzarella/gi, 'avocado cremoso');
+      }
+      
+      return ingredient;
+    });
+  };
 
   const recipes = {
     detox: [
@@ -1741,9 +1773,16 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
 
             {/* Ingredients */}
             <div className="mb-4">
-              <h4 className="font-medium text-slate-700 mb-2">Ingredienti:</h4>
+              <h4 className="font-medium text-slate-700 mb-2 flex items-center space-x-2">
+                <span>Ingredienti:</span>
+                {isLactoseIntolerant && (
+                  <Badge variant="outline" className="text-xs bg-green-100 text-green-700">
+                    LACTOSE FREE
+                  </Badge>
+                )}
+              </h4>
               <div className="grid grid-cols-1 gap-1">
-                {recipe.ingredients.map((ingredient, idx) => (
+                {replaceLactoseIngredients(recipe.ingredients).map((ingredient, idx) => (
                   <div key={idx} className="text-sm text-slate-600 flex">
                     <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                     {ingredient}

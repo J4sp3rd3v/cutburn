@@ -112,16 +112,16 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
   // Seasonal ingredients database (aggiornato per ogni stagione)
   const seasonalIngredients = {
     primavera: {
-      vegetables: ['asparagi', 'carciofi', 'piselli', 'fave', 'spinaci novelli', 'ravanelli', 'rucola selvaggia'],
-      fruits: ['fragole', 'albicocche', 'ciliegie', 'kiwi', 'mele annurche'],
-      herbs: ['menta', 'basilico fresco', 'prezzemolo', 'erba cipollina'],
-      proteins: ['agnello', 'capretto', 'branzino', 'orata', 'ricotta di capra']
+      vegetables: ['asparagi', 'carciofi', 'piselli', 'fave', 'spinaci novelli'],
+      fruits: ['fragole', 'albicocche', 'ciliegie', 'nespole'],
+      herbs: ['basilico', 'prezzemolo', 'menta', 'erba cipollina'],
+      proteins: ['agnello', 'capretto', 'branzino', 'orata', 'tofu biologico']
     },
     estate: {
-      vegetables: ['zucchine', 'pomodori cuore di bue', 'peperoni', 'melanzane', 'cetrioli', 'rucola', 'basilico'],
-      fruits: ['pesche', 'melone', 'anguria', 'prugne', 'fichi', 'more', 'lamponi'],
-      herbs: ['origano', 'timo', 'rosmarino', 'maggiorana'],
-      proteins: ['tonno', 'spigola', 'sgombro', 'mozzarella di bufala', 'burrata']
+      vegetables: ['zucchine', 'melanzane', 'pomodori', 'peperoni', 'cetrioli'],
+      fruits: ['pesche', 'meloni', 'angurie', 'susine', 'fichi'],
+      herbs: ['origano', 'timo', 'salvia', 'rosmarino'],
+      proteins: ['tonno', 'spigola', 'sgombro', 'tempeh', 'seitan']
     },
     autunno: {
       vegetables: ['zucca delica', 'cavolo nero', 'broccoli', 'cavolfiori', 'rape rosse', 'porcini', 'castagne'],

@@ -12,6 +12,7 @@ interface UserProfile {
   age: number;
   activityLevel: string;
   goal: string;
+  lactoseIntolerant?: boolean;
 }
 
 interface ShoppingListProps {
@@ -19,7 +20,7 @@ interface ShoppingListProps {
 }
 
 const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
   const [selectedWeek, setSelectedWeek] = useState(1);
 
   const month = new Date().getMonth() + 1;
@@ -27,68 +28,44 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
                 month >= 6 && month <= 8 ? 'estate' : 
                 month >= 9 && month <= 11 ? 'autunno' : 'inverno';
 
-  // *** CALCOLI 14 GIORNI COMPLETI - BASE SCIENTIFICA ***
-  const calculate14DayNeeds = () => {
-    const weight = userProfile.currentWeight;
-    
-    // ANALISI PROTOCOLLI CICLO 14 GIORNI:
-    // - Giorni High-Protein: 0,1,7,8 (4 giorni) = 3.2g/kg proteine
-    // - Giorni Low-Carb: 2,4,6,9,11,13 (6 giorni) = 2.8g/kg proteine + grassi alti
-    // - Giorni OMAD: 3,10 (2 giorni) = 1 pasto concentrato
-    // - Giorni Ketogenici: 5,12 (2 giorni) = 2.0g/kg proteine + keto ratios
-    
-    const highProteinDays = 4;
-    const lowCarbDays = 6;
-    const omadDays = 2;
-    const ketoDays = 2;
-    
-    // PROTEINE - distribuzione per protocolli
-    const proteinHighDays = weight * 3.2 * highProteinDays; // 3.2g/kg nei giorni high-protein
-    const proteinLowCarbDays = weight * 2.8 * lowCarbDays; // 2.8g/kg nei giorni low-carb
-    const proteinOmadDays = weight * 2.5 * omadDays; // 2.5g/kg nei giorni OMAD
-    const proteinKetoDays = weight * 2.0 * ketoDays; // 2.0g/kg nei giorni keto
-    const totalProtein14Days = proteinHighDays + proteinLowCarbDays + proteinOmadDays + proteinKetoDays;
-    
-    // VERDURE - volume variabile per protocolli
-    const vegetables14Days = weight * 2.5 * 14; // Costante 2.5g/kg tutti i giorni
-    
-    // GRASSI - alto nei giorni keto e low-carb
-    const fatsHighDays = weight * 1.5 * (lowCarbDays + ketoDays); // 1.5g/kg giorni lipidici
-    const fatsNormalDays = weight * 0.8 * (highProteinDays + omadDays); // 0.8g/kg giorni normali
-    const totalFats14Days = fatsHighDays + fatsNormalDays;
-    
-    // CARBOIDRATI - solo giorni necessari
-    const carbsWorkoutDays = weight * 1.2 * 6; // 6 giorni workout nella settimana x2
-    
-    // INGREDIENTI STAGIONALI - rotazione per evitare noia
-    const seasonalVariety = 14; // Giorni diversi richiedono varietà
-    
-    return {
-      // Proteine totali 14 giorni
-      whey14Days: Math.round(weight * 0.4 * 14), // 0.4g/kg whey ogni giorno
-      animalProtein14Days: Math.round(totalProtein14Days * 0.7), // 70% da fonti animali
-      eggs14Days: Math.ceil(weight * 0.4 * 14 / 6), // Uova per 14 giorni
-      
-      // Verdure e stagionali
-      vegetables14Days: Math.round(vegetables14Days),
-      seasonalFruits14Days: Math.round(weight * 0.8 * 14), // Frutta stagionale
-      
-      // Grassi essenziali
-      fats14Days: Math.round(totalFats14Days),
-      nuts14Days: Math.round(weight * 0.2 * 14), // Noci/mandorle
-      
-      // Carboidrati strategici
-      carbs14Days: Math.round(carbsWorkoutDays),
-      
-      // Supplementi ciclo completo
-      supplements14Days: 14,
-      
-      weight: weight,
-      protocolDays: { highProteinDays, lowCarbDays, omadDays, ketoDays }
-    };
+  // Controllo intolleranza lattosio dal profilo
+  const isLactoseIntolerant = userProfile?.lactoseIntolerant || false;
+  
+  console.log('🥛 Controllo intolleranza lattosio:', isLactoseIntolerant);
+
+  const toggleItem = (itemName: string) => {
+    setCheckedItems(prev => ({
+      ...prev,
+      [itemName]: !prev[itemName]
+    }));
   };
 
-  const needs = calculate14DayNeeds();
+  // Sistema di riduzione costi - versione economica
+  const [economicMode, setEconomicMode] = useState(false);
+
+  const getShoppingNeeds = () => {
+    const weight = userProfile?.currentWeight || 75;
+    
+    // Calcoli scientifici personalizzati per 14 giorni
+    const needs = {
+      // Proteine totali necessarie per 14 giorni
+      animalProtein14Days: Math.round(weight * 2.8 * 14), // 2.8g/kg per 14 giorni
+      highProteinDays: Math.round(weight * 3.2 * 4), // 4 giorni high-protein
+      
+      // Grassi per ormoni
+      healthyFats14Days: Math.round(weight * 1.6 * 14), // 1.6g/kg per 14 giorni
+      
+      // Verdure detox
+      vegetables14Days: Math.round(weight * 8 * 14), // 8g/kg verdure
+      
+      // Supplementi
+      supplementDays: 14
+    };
+
+    return needs;
+  };
+
+  const needs = getShoppingNeeds();
 
   // *** LISTA SPESA 14 GIORNI COMPLETI - TUTTI I PROTOCOLLI ***
   const groceryList = {
@@ -125,31 +102,47 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       },
       { 
         name: 'Uova biologiche pastorali', 
-        qty: `${needs.eggs14Days} pz`, 
-        price: `${(needs.eggs14Days * 0.35).toFixed(2)}€`, 
+        qty: `${Math.ceil(needs.animalProtein14Days * 0.4 * 14 / 6)} pz`, 
+        price: `${(Math.ceil(needs.animalProtein14Days * 0.4 * 14 / 6) * 0.35).toFixed(2)}€`, 
         category: 'proteine',
         badge: 'COLINA-BRAIN',
-        calculation: `${needs.weight}kg × 0.4g × 14gg ÷ 6g/uovo = ${needs.eggs14Days} uova totali`,
+        calculation: `${needs.animalProtein14Days}g × 40% proteine = ${Math.ceil(needs.animalProtein14Days * 0.4 * 14 / 6)} proteine`,
         days: '14 giorni - Tutti i protocolli'
       },
+      // Proteine in polvere - controllo intolleranza lattosio
       { 
-        name: 'Whey Isolato Grass-Fed', 
-        qty: `${needs.whey14Days}g`, 
-        price: `${(needs.whey14Days * 0.035).toFixed(2)}€`, 
+        name: isLactoseIntolerant ? 'Proteine Vegetali Isolate' : 'Whey Isolato Grass-Fed', 
+        qty: `${Math.round(needs.animalProtein14Days * 0.4 * 14)}g`, 
+        price: `${(Math.round(needs.animalProtein14Days * 0.4 * 14) * (isLactoseIntolerant ? 0.045 : 0.035)).toFixed(2)}€`, 
         category: 'proteine',
-        badge: 'LEUCINA-mTOR',
-        calculation: `${needs.weight}kg × 0.4g × 14gg = ${needs.whey14Days}g whey totale`,
-        days: '14 giorni - 2-3 shake/giorno'
+        badge: isLactoseIntolerant ? 'PLANT-PROTEIN' : 'LEUCINA-mTOR',
+        calculation: `${needs.animalProtein14Days}g × 40% proteine = ${Math.round(needs.animalProtein14Days * 0.4 * 14)}g proteine`,
+        days: isLactoseIntolerant ? '14 giorni - LACTOSE FREE shake' : '14 giorni - 2-3 shake/giorno'
       },
-      { 
-        name: 'Ricotta biologica vaccina', 
-        qty: `${Math.round(needs.animalProtein14Days * 0.15 / 0.11)}g`, // 15% da ricotta
-        price: `${(Math.round(needs.animalProtein14Days * 0.15 / 0.11) * 0.008).toFixed(2)}€`, 
-        category: 'proteine',
-        badge: 'CASEINA-SLOW',
-        calculation: `Proteine lente serali: ${Math.round(needs.animalProtein14Days * 0.15)}g`,
-        days: 'Giorni OMAD + Pre-sonno'
-      },
+      // Proteine serali - solo se non intollerante al lattosio
+      ...(isLactoseIntolerant ? [] : [
+        { 
+          name: 'Ricotta biologica vaccina', 
+          qty: `${Math.round(needs.animalProtein14Days * 0.15 / 0.11)}g`, // 15% da ricotta
+          price: `${(Math.round(needs.animalProtein14Days * 0.15 / 0.11) * 0.008).toFixed(2)}€`, 
+          category: 'proteine',
+          badge: 'CASEINA-SLOW',
+          calculation: `Proteine lente serali: ${Math.round(needs.animalProtein14Days * 0.15)}g`,
+          days: 'Giorni OMAD + Pre-sonno'
+        }
+      ]),
+      // Sostituto proteico per intolleranti al lattosio
+      ...(isLactoseIntolerant ? [
+        { 
+          name: 'Tofu biologico extra-firm', 
+          qty: `${Math.round(needs.animalProtein14Days * 0.15 / 0.08)}g`, // 15% proteine da tofu, 8% proteine nel tofu
+          price: `${(Math.round(needs.animalProtein14Days * 0.15 / 0.08) * 0.012).toFixed(2)}€`, 
+          category: 'proteine',
+          badge: 'PLANT-PROTEIN',
+          calculation: `Proteine vegetali: ${Math.round(needs.animalProtein14Days * 0.15)}g`,
+          days: 'Giorni OMAD + Pre-sonno - LACTOSE FREE'
+        }
+      ] : []),
 
       // ===============================================
       // 🥬 VERDURE STAGIONALI - VOLUME + MICRONUTRIENTI
@@ -223,47 +216,47 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       // ===============================================
       { 
         name: 'Olio EVO biologico Toscano', 
-        qty: `${Math.round(needs.fats14Days * 0.35)}ml`, 
-        price: `${(needs.fats14Days * 0.35 * 0.018).toFixed(2)}€`, 
+        qty: `${Math.round(needs.healthyFats14Days * 0.35)}ml`, 
+        price: `${(needs.healthyFats14Days * 0.35 * 0.018).toFixed(2)}€`, 
         category: 'grassi',
         badge: 'POLIFENOLI',
-        calculation: `${needs.fats14Days}g × 35% EVO = ${Math.round(needs.fats14Days * 0.35)}ml`,
+        calculation: `${needs.healthyFats14Days}g × 35% EVO = ${Math.round(needs.healthyFats14Days * 0.35)}ml`,
         days: '14 giorni - Condimento base'
       },
       { 
         name: 'Mandorle siciliane crude', 
-        qty: `${Math.round(needs.nuts14Days * 0.45)}g`, 
-        price: `${(needs.nuts14Days * 0.45 * 0.022).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.45)}g`, 
+        price: `${(needs.animalProtein14Days * 0.45 * 0.022).toFixed(2)}€`, 
         category: 'grassi',
         badge: 'MAGNESIO-300',
-        calculation: `${needs.nuts14Days}g × 45% mandorle = ${Math.round(needs.nuts14Days * 0.45)}g`,
+        calculation: `${needs.animalProtein14Days}g × 45% mandorle = ${Math.round(needs.animalProtein14Days * 0.45)}g`,
         days: '14 giorni - Snack + colazioni'
       },
       { 
         name: 'Noci brasiliane premium', 
-        qty: `${Math.round(needs.nuts14Days * 0.25)}g`, 
-        price: `${(needs.nuts14Days * 0.25 * 0.035).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.25)}g`, 
+        price: `${(needs.animalProtein14Days * 0.25 * 0.035).toFixed(2)}€`, 
         category: 'grassi',
         badge: 'SELENIO-TIROIDE',
-        calculation: `Selenio per T3/T4: ${Math.round(needs.nuts14Days * 0.25)}g`,
+        calculation: `Selenio per T3/T4: ${Math.round(needs.animalProtein14Days * 0.25)}g`,
         days: 'Pre-workout giorni allenamento'
       },
       { 
         name: 'Avocado Hass biologici', 
-        qty: `${Math.ceil(needs.fats14Days * 0.25 / 15)} pz`, // 15g grassi per avocado
-        price: `${(Math.ceil(needs.fats14Days * 0.25 / 15) * 1.2).toFixed(2)}€`, 
+        qty: `${Math.ceil(needs.healthyFats14Days * 0.25 / 15)} pz`, // 15g grassi per avocado
+        price: `${(Math.ceil(needs.healthyFats14Days * 0.25 / 15) * 1.2).toFixed(2)}€`, 
         category: 'grassi',
         badge: 'ACIDO-OLEICO',
-        calculation: `Ormoni notturni: ${Math.ceil(needs.fats14Days * 0.25 / 15)} avocado`,
+        calculation: `Ormoni notturni: ${Math.ceil(needs.healthyFats14Days * 0.25 / 15)} avocado`,
         days: 'Cene per testosterone'
       },
       { 
         name: 'Olio cocco vergine biologico', 
-        qty: `${Math.round(needs.fats14Days * 0.15)}ml`, 
-        price: `${(needs.fats14Days * 0.15 * 0.025).toFixed(2)}€`, 
+        qty: `${Math.round(needs.healthyFats14Days * 0.15)}ml`, 
+        price: `${(needs.healthyFats14Days * 0.15 * 0.025).toFixed(2)}€`, 
         category: 'grassi',
         badge: 'MCT-NATURALI',
-        calculation: `Chetoni immediati: ${Math.round(needs.fats14Days * 0.15)}ml`,
+        calculation: `Chetoni immediati: ${Math.round(needs.healthyFats14Days * 0.15)}ml`,
         days: 'Giorni Keto (5,12) + mattine'
       },
 
@@ -272,20 +265,20 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       // ===============================================
       { 
         name: `${season === 'primavera' ? 'Fragole' : season === 'estate' ? 'Pesche' : season === 'autunno' ? 'Mele' : 'Arance'} biologiche`, 
-        qty: `${Math.round(needs.seasonalFruits14Days * 0.60)}g`, 
-        price: `${(needs.seasonalFruits14Days * 0.60 * 0.005).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.60)}g`, 
+        price: `${(needs.animalProtein14Days * 0.60 * 0.005).toFixed(2)}€`, 
         category: 'frutta',
         badge: 'VITAMINA-C',
-        calculation: `Frutta principale stagione: ${Math.round(needs.seasonalFruits14Days * 0.60)}g`,
+        calculation: `Frutta principale stagione: ${Math.round(needs.animalProtein14Days * 0.60)}g`,
         days: 'Post-workout + smoothie mattina'
       },
       { 
         name: `${season === 'primavera' ? 'Kiwi' : season === 'estate' ? 'Melone' : season === 'autunno' ? 'Pere' : 'Mandarini'}`, 
-        qty: `${Math.round(needs.seasonalFruits14Days * 0.40)}g`, 
-        price: `${(needs.seasonalFruits14Days * 0.40 * 0.006).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.40)}g`, 
+        price: `${(needs.animalProtein14Days * 0.40 * 0.006).toFixed(2)}€`, 
         category: 'frutta',
         badge: 'DIGESTIVI',
-        calculation: `Frutta secondaria: ${Math.round(needs.seasonalFruits14Days * 0.40)}g`,
+        calculation: `Frutta secondaria: ${Math.round(needs.animalProtein14Days * 0.40)}g`,
         days: 'Variazione gusto + enzimi'
       },
       { 
@@ -303,20 +296,20 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       // ===============================================
       { 
         name: 'Riso basmati integrale', 
-        qty: `${Math.round(needs.carbs14Days * 0.60)}g`, 
-        price: `${(needs.carbs14Days * 0.60 * 0.003).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.60)}g`, 
+        price: `${(needs.animalProtein14Days * 0.60 * 0.003).toFixed(2)}€`, 
         category: 'carboidrati',
         badge: 'AMILOSIO-LENTO',
-        calculation: `Post-workout: ${Math.round(needs.carbs14Days * 0.60)}g riso secco`,
+        calculation: `Post-workout: ${Math.round(needs.animalProtein14Days * 0.60)}g riso secco`,
         days: 'Solo giorni High-Protein + workout'
       },
       { 
         name: 'Patate dolci biologiche', 
-        qty: `${Math.round(needs.carbs14Days * 0.40 * 4)}g`, // 25% carbs nella patata dolce
-        price: `${(needs.carbs14Days * 0.40 * 4 * 0.002).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.40 * 4)}g`, // 25% carbs nella patata dolce
+        price: `${(needs.animalProtein14Days * 0.40 * 4 * 0.002).toFixed(2)}€`, 
         category: 'carboidrati',
         badge: 'ANTOCIANINE',
-        calculation: `Sera recovery: ${Math.round(needs.carbs14Days * 0.40)}g carbs netti`,
+        calculation: `Sera recovery: ${Math.round(needs.animalProtein14Days * 0.40)}g carbs netti`,
         days: 'Cene post-workout per glicogeno'
       },
 
@@ -352,11 +345,11 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       },
       { 
         name: 'MCT Oil C8 puro', 
-        qty: `${Math.round(needs.weight * 0.2 * 14)}ml`, 
-        price: `${(needs.weight * 0.2 * 14 * 0.025).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days * 0.2 * 14)}ml`, 
+        price: `${(needs.animalProtein14Days * 0.2 * 14 * 0.025).toFixed(2)}€`, 
         category: 'supplementi',
         badge: 'CHETOGENICO-PURE',
-        calculation: `Termogenesi: ${needs.weight}kg × 0.2ml × 14gg = ${Math.round(needs.weight * 0.2 * 14)}ml`,
+        calculation: `Termogenesi: ${Math.round(needs.animalProtein14Days * 0.2 * 14)}ml`,
         days: 'Giorni Keto (5,12) + mattine Low-Carb'
       },
       { 
@@ -365,7 +358,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
         price: '18.20€', 
         category: 'supplementi',
         badge: 'SONNO-RECOVERY',
-        calculation: `${Math.round(needs.weight * 5)}mg magnesio × 14 giorni`,
+        calculation: `${Math.round(needs.animalProtein14Days * 5)}mg magnesio × 14 giorni`,
         days: '14 giorni - 45min pre-sonno'
       },
       { 
@@ -379,11 +372,11 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       },
       { 
         name: 'Creatina Monoidrato', 
-        qty: `${Math.round(needs.weight > 75 ? 5 * 14 : 3 * 14)}g`, 
-        price: `${(Math.round(needs.weight > 75 ? 5 * 14 : 3 * 14) * 0.02).toFixed(2)}€`, 
+        qty: `${Math.round(needs.animalProtein14Days > 75 ? 5 * 14 : 3 * 14)}g`, 
+        price: `${(Math.round(needs.animalProtein14Days > 75 ? 5 * 14 : 3 * 14) * 0.02).toFixed(2)}€`, 
         category: 'supplementi',
         badge: 'FORZA-POTENZA',
-        calculation: `${needs.weight > 75 ? '5g' : '3g'}/die × 14 giorni = ${Math.round(needs.weight > 75 ? 5 * 14 : 3 * 14)}g`,
+        calculation: `${needs.animalProtein14Days > 75 ? '5g' : '3g'}/die × 14 giorni = ${Math.round(needs.animalProtein14Days > 75 ? 5 * 14 : 3 * 14)}g`,
         days: '14 giorni - Post-workout'
       },
 
@@ -445,7 +438,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
         price: '28.50€', 
         category: 'bevande',
         badge: 'EGCG-TERMOGENICO',
-        calculation: `${Math.round(needs.weight * 0.05)}g × 14 giorni = termogenesi +18%`,
+        calculation: `${Math.round(needs.animalProtein14Days * 0.05)}g × 14 giorni = termogenesi +18%`,
         days: '14 giorni - Mattina + pre-workout'
       },
       { 
@@ -454,7 +447,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
         price: '18.90€', 
         category: 'bevande',
         badge: 'CAFFEINA-LIPOLISI',
-        calculation: `${Math.round(needs.weight * 6)}mg caffeina target × 14 giorni`,
+        calculation: `${Math.round(needs.animalProtein14Days * 6)}mg caffeina target × 14 giorni`,
         days: '14 giorni - Digiuno intermittente + pre-workout'
       },
       { 
@@ -463,7 +456,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
         price: '8.40€', 
         category: 'bevande',
         badge: 'IDRATAZIONE-PURA',
-        calculation: `${Math.round(needs.weight * 35)}ml × 14 giorni = ${Math.round(needs.weight * 35 * 14 / 1000)}L`,
+        calculation: `${Math.round(needs.animalProtein14Days * 35)}ml × 14 giorni = ${Math.round(needs.animalProtein14Days * 35 * 14 / 1000)}L`,
         days: '14 giorni - Base idratazione'
       }
     ]
@@ -471,14 +464,6 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
 
   const currentList = groceryList.ciclo14giorni;
   const totalPrice = currentList.reduce((sum, item) => sum + parseFloat(item.price.replace('€', '')), 0);
-
-  const toggleItem = (itemName: string) => {
-    setCheckedItems(prev => 
-      prev.includes(itemName) 
-        ? prev.filter(item => item !== itemName)
-        : [...prev, itemName]
-    );
-  };
 
   const categories = [
     { key: 'proteine', label: '🥩 Proteine 14 Giorni', color: 'bg-red-100 text-red-800', icon: '💪' },
@@ -508,18 +493,23 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
             <span>Budget: {totalPrice.toFixed(2)}€</span>
           </Badge>
           <Badge variant="outline" className="flex items-center space-x-1 bg-blue-50">
-            <span>💪 {needs.weight}kg</span>
+            <span>💪 {Math.round(needs.animalProtein14Days)}g</span>
           </Badge>
+          {isLactoseIntolerant && (
+            <Badge variant="outline" className="flex items-center space-x-1 bg-green-50 text-green-700">
+              <span>🥛 LACTOSE FREE</span>
+            </Badge>
+          )}
         </div>
         <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3 text-sm">
           <div className="font-semibold text-slate-800 mb-1">🧬 Calcoli Ciclo 14 Giorni Completo</div>
           <div className="text-slate-600 text-xs mb-1">
-            Proteine: {Math.round(needs.animalProtein14Days + needs.whey14Days)}g totali • 
+            Proteine: {Math.round(needs.animalProtein14Days)}g totali • 
             Verdure: {Math.round(needs.vegetables14Days/1000)}kg • 
-            Grassi: {Math.round(needs.fats14Days)}g
+            Grassi: {Math.round(needs.healthyFats14Days)}g
           </div>
           <div className="text-slate-500 text-xs">
-            Protocolli: {needs.protocolDays.highProteinDays}gg High-Protein • {needs.protocolDays.lowCarbDays}gg Low-Carb • {needs.protocolDays.ketoDays}gg Keto • {needs.protocolDays.omadDays}gg OMAD
+            Protocolli: {needs.highProteinDays}gg High-Protein • {Math.round(needs.animalProtein14Days - needs.highProteinDays)}g Low-Carb
           </div>
         </div>
       </div>
@@ -546,13 +536,13 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-start space-x-3 flex-1">
                       <Checkbox
-                        checked={checkedItems.includes(item.name)}
+                        checked={checkedItems[item.name] || false}
                         onCheckedChange={() => toggleItem(item.name)}
                         className="mt-1"
                       />
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className={`font-medium ${checkedItems.includes(item.name) ? 'line-through text-slate-500' : 'text-slate-800'}`}>
+                          <span className={`font-medium ${checkedItems[item.name] ? 'line-through text-slate-500' : 'text-slate-800'}`}>
                             {item.name}
                           </span>
                           {(item as any).badge && (
@@ -588,7 +578,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
           <div>
             <h3 className="font-bold text-slate-800">💰 Riepilogo Ciclo 14 Giorni</h3>
             <p className="text-sm text-slate-600">
-              {checkedItems.length} di {currentList.length} prodotti selezionati
+              {Object.keys(checkedItems).length} di {currentList.length} prodotti selezionati
             </p>
             <p className="text-xs text-slate-500">
               Tutti i protocolli • Ingredienti stagionali • Anti-ginecomastia
@@ -603,7 +593,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
           </div>
         </div>
         <div className="mt-3 text-xs text-slate-600 bg-white rounded p-2">
-          <strong>🎯 RISULTATO GARANTITO:</strong> Body recomposition scientifica con {needs.protocolDays.highProteinDays} giorni High-Protein, {needs.protocolDays.lowCarbDays} giorni Low-Carb, {needs.protocolDays.ketoDays} giorni Keto e {needs.protocolDays.omadDays} giorni OMAD
+          <strong>🎯 RISULTATO GARANTITO:</strong> Body recomposition scientifica con {needs.highProteinDays} giorni High-Protein, {Math.round(needs.animalProtein14Days - needs.highProteinDays)}g Low-Carb
         </div>
       </Card>
     </div>
