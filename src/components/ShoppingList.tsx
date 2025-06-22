@@ -17,9 +17,10 @@ interface UserProfile {
 
 interface ShoppingListProps {
   userProfile: UserProfile;
+  homeCookingMode?: boolean;
 }
 
-const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
+const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile, homeCookingMode = true }) => {
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
   const [selectedWeek, setSelectedWeek] = useState(1);
 
@@ -433,12 +434,12 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
       // ☕ BEVANDE FUNZIONALI
       // ===============================================
       { 
-        name: 'Tè verde Matcha premium', 
-        qty: '100g', 
-        price: '28.50€', 
+        name: homeCookingMode ? 'Tè verde in bustine' : 'Tè verde Matcha premium', 
+        qty: homeCookingMode ? '50 bustine' : '100g', 
+        price: homeCookingMode ? '8.50€' : '28.50€', 
         category: 'bevande',
         badge: 'EGCG-TERMOGENICO',
-        calculation: `${Math.round(needs.animalProtein14Days * 0.05)}g × 14 giorni = termogenesi +18%`,
+        calculation: homeCookingMode ? '2 bustine/die × 14 giorni = antiossidanti' : `${Math.round(needs.animalProtein14Days * 0.05)}g × 14 giorni = termogenesi +18%`,
         days: '14 giorni - Mattina + pre-workout'
       },
       { 

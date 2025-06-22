@@ -282,6 +282,127 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         modifiedIngredient = modifiedIngredient.replace(/zafferano.*?pistilli/gi, 'curcuma (per colore)');
       }
 
+      // Sostituzioni per superfood e ingredienti esotici difficili da reperire
+      if (ingredient.toLowerCase().includes('spirulina')) {
+        modifiedIngredient = modifiedIngredient.replace(/spirulina.*?cucchiaino/gi, 'spinaci baby extra (per colore verde)');
+        modifiedIngredient = modifiedIngredient.replace(/spirulina blu/gi, 'mirtilli extra (per colore blu)');
+        modifiedIngredient = modifiedIngredient.replace(/spirulina hawaiana/gi, 'spinaci baby');
+      }
+
+      if (ingredient.toLowerCase().includes('chlorella')) {
+        modifiedIngredient = modifiedIngredient.replace(/chlorella.*?cucchiaino/gi, 'spinaci baby tritati finemente');
+      }
+
+      if (ingredient.toLowerCase().includes('açaí')) {
+        modifiedIngredient = modifiedIngredient.replace(/açaí.*?surgelato/gi, 'mirtilli surgelati');
+        modifiedIngredient = modifiedIngredient.replace(/açaí.*?polvere/gi, 'mirtilli surgelati tritati');
+        modifiedIngredient = modifiedIngredient.replace(/açaí.*?puro/gi, 'mirtilli + more surgelate');
+      }
+
+      if (ingredient.toLowerCase().includes('matcha')) {
+        modifiedIngredient = modifiedIngredient.replace(/matcha.*?cucchiaino/gi, 'tè verde in bustina (contenuto di 2 bustine)');
+        modifiedIngredient = modifiedIngredient.replace(/tè verde matcha/gi, 'tè verde normale');
+      }
+
+      if (ingredient.toLowerCase().includes('maca')) {
+        modifiedIngredient = modifiedIngredient.replace(/maca.*?polvere/gi, 'cacao amaro in polvere (per energia)');
+        modifiedIngredient = modifiedIngredient.replace(/maca.*?cucchiaino/gi, 'caffè solubile (1/4 cucchiaino)');
+      }
+
+      if (ingredient.toLowerCase().includes('tahina')) {
+        modifiedIngredient = modifiedIngredient.replace(/tahina/gi, 'burro di arachidi naturale');
+      }
+
+      if (ingredient.toLowerCase().includes('tempeh')) {
+        modifiedIngredient = modifiedIngredient.replace(/tempeh/gi, 'tofu compatto');
+      }
+
+      if (ingredient.toLowerCase().includes('seitan')) {
+        modifiedIngredient = modifiedIngredient.replace(/seitan/gi, 'petto di pollo a fette');
+      }
+
+      if (ingredient.toLowerCase().includes('superfood') || ingredient.toLowerCase().includes('supergreens')) {
+        modifiedIngredient = modifiedIngredient.replace(/superfood.*?cucchiaino/gi, 'spinaci baby + prezzemolo tritati');
+        modifiedIngredient = modifiedIngredient.replace(/supergreens.*?polvere/gi, 'rucola + spinaci tritati finemente');
+      }
+
+      if (ingredient.toLowerCase().includes('bacche goji')) {
+        modifiedIngredient = modifiedIngredient.replace(/bacche goji/gi, 'uvetta sultanina');
+      }
+
+      if (ingredient.toLowerCase().includes('semi chia')) {
+        modifiedIngredient = modifiedIngredient.replace(/semi chia/gi, 'semi di lino macinati');
+      }
+
+      if (ingredient.toLowerCase().includes('semi lino macinati')) {
+        modifiedIngredient = modifiedIngredient.replace(/semi lino macinati/gi, 'semi di girasole tritati');
+      }
+
+      if (ingredient.toLowerCase().includes('semi canapa')) {
+        modifiedIngredient = modifiedIngredient.replace(/semi canapa/gi, 'semi di girasole');
+      }
+
+      if (ingredient.toLowerCase().includes('burro anacardi')) {
+        modifiedIngredient = modifiedIngredient.replace(/burro anacardi/gi, 'burro di arachidi');
+      }
+
+      if (ingredient.toLowerCase().includes('burro mandorle')) {
+        modifiedIngredient = modifiedIngredient.replace(/burro mandorle/gi, 'burro di arachidi');
+      }
+
+      if (ingredient.toLowerCase().includes('latte mandorla artigianale')) {
+        modifiedIngredient = modifiedIngredient.replace(/latte mandorla artigianale/gi, 'latte di soia');
+      }
+
+      if (ingredient.toLowerCase().includes('bevanda mandorla') || ingredient.toLowerCase().includes('latte mandorla')) {
+        modifiedIngredient = modifiedIngredient.replace(/bevanda mandorla|latte mandorla/gi, 'latte di soia');
+      }
+
+      if (ingredient.toLowerCase().includes('bevanda cocco') || ingredient.toLowerCase().includes('latte cocco')) {
+        modifiedIngredient = modifiedIngredient.replace(/bevanda cocco|latte cocco/gi, 'latte intero (o di soia se intollerante)');
+      }
+
+      if (ingredient.toLowerCase().includes('acqua cocco')) {
+        modifiedIngredient = modifiedIngredient.replace(/acqua cocco/gi, 'acqua normale + pizzico di sale');
+      }
+
+      if (ingredient.toLowerCase().includes('olio mct')) {
+        modifiedIngredient = modifiedIngredient.replace(/olio mct/gi, 'olio di oliva extravergine');
+      }
+
+      if (ingredient.toLowerCase().includes('olio cocco')) {
+        modifiedIngredient = modifiedIngredient.replace(/olio cocco/gi, 'burro normale (o olio EVO)');
+      }
+
+      if (ingredient.toLowerCase().includes('sciroppo acero')) {
+        modifiedIngredient = modifiedIngredient.replace(/sciroppo acero/gi, 'miele normale');
+      }
+
+      if (ingredient.toLowerCase().includes('datteri medjoul')) {
+        modifiedIngredient = modifiedIngredient.replace(/datteri medjoul/gi, 'datteri normali');
+      }
+
+      if (ingredient.toLowerCase().includes('granola artigianale')) {
+        modifiedIngredient = modifiedIngredient.replace(/granola artigianale/gi, 'muesli normale');
+      }
+
+      if (ingredient.toLowerCase().includes('polline api')) {
+        modifiedIngredient = modifiedIngredient.replace(/polline api/gi, 'miele (1/4 cucchiaino)');
+      }
+
+      if (ingredient.toLowerCase().includes('cardamomo.*?baccelli')) {
+        modifiedIngredient = modifiedIngredient.replace(/cardamomo.*?\(semi\)/gi, 'cannella in polvere');
+        modifiedIngredient = modifiedIngredient.replace(/cardamomo.*?baccelli/gi, 'cannella in polvere');
+      }
+
+      if (ingredient.toLowerCase().includes('pepe nero.*?macinato fresco')) {
+        modifiedIngredient = modifiedIngredient.replace(/pepe nero.*?macinato fresco/gi, 'pepe nero normale');
+      }
+
+      if (ingredient.toLowerCase().includes('stevia')) {
+        modifiedIngredient = modifiedIngredient.replace(/stevia.*?gocce/gi, 'zucchero (1/2 cucchiaino)');
+      }
+
       return modifiedIngredient;
     });
   };
