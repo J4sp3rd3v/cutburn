@@ -403,11 +403,12 @@ export const useProgressTracking = () => {
       } else {
         console.log('⚠️ Profilo non trovato nel database - nuovo utente o errore:', profileError?.message);
         
-        // Per nuovi utenti, crea un profilo di base
-        const defaultProfile: UserProfile = {
+        // Per nuovi utenti, crea un profilo vuoto su Supabase
+        console.log('🆕 Nuovo utente rilevato, creazione profilo vuoto su Supabase...');
+        const newProfile: UserProfile = {
           id: user.id,
-          name: user.name || user.email?.split('@')[0] || 'Utente',
-          age: 0, // Valori vuoti per nuovo utente
+          name: user.name || user.email?.split('@')[0] || '',
+          age: 0,
           height: 0,
           currentWeight: 0,
           startWeight: 0,
@@ -416,38 +417,29 @@ export const useProgressTracking = () => {
           goal: 'fat-loss',
           intermittentFasting: false,
           lactoseIntolerant: false,
-          targetCalories: 1800,
-          targetWater: 2500,
+          targetCalories: 0, // ZERO - nessun valore demo
+          targetWater: 0, // ZERO - nessun valore demo
           created_at: user.created_at
         };
         
-        setUserProfile(defaultProfile);
-        console.log('✅ Profilo di base creato per nuovo utente');
+        // Salva immediatamente su Supabase (NON localStorage)
+        try {
+          await saveProfileToSupabase(newProfile);
+          setUserProfile(newProfile);
+          console.log('✅ Nuovo profilo creato e salvato SOLO su Supabase');
+        } catch (error) {
+          console.error('❌ ERRORE CRITICO: Impossibile creare profilo su Supabase:', error);
+          // NON creare profilo locale - deve funzionare solo con Supabase
+          throw new Error('Impossibile creare profilo utente su database');
+        }
       }
       
     } catch (error) {
       console.error('❌ Errore caricamento dati da Supabase:', error);
       
-      // Fallback: crea sempre un profilo di base per evitare blocchi
-      const fallbackProfile: UserProfile = {
-        id: user.id,
-        name: user.name || user.email?.split('@')[0] || 'Utente',
-        age: 0,
-        height: 0,
-        currentWeight: 0,
-        startWeight: 0,
-        targetWeight: 0,
-        activityLevel: 'moderate',
-        goal: 'fat-loss',
-        intermittentFasting: false,
-        lactoseIntolerant: false,
-        targetCalories: 1800,
-        targetWater: 2500,
-        created_at: user.created_at
-      };
-      
-      setUserProfile(fallbackProfile);
-      console.log('✅ Profilo fallback creato dopo errore');
+      // NESSUN FALLBACK - L'app deve funzionare SOLO con dati Supabase
+      console.error('❌ ERRORE CRITICO: Impossibile caricare profilo da Supabase');
+      throw new Error('Database non raggiungibile. Riprova più tardi.');
     } finally {
       // NON modificare loading qui, è già gestito nell'useEffect principale
       // setLoading(false); // RIMOSSO
@@ -457,49 +449,37 @@ export const useProgressTracking = () => {
 
   // Inizializza il profilo utente con i dati dell'utente autenticato
   useEffect(() => {
-    if (user && !userProfile) {
-      console.log('🔄 Inizializzazione profilo per utente:', user.email);
-      
-      // Sempre crea un profilo di base IMMEDIATAMENTE per evitare blocchi
-      const baseProfile: UserProfile = {
-        id: user.id,
-        name: user.name || user.email?.split('@')[0] || 'Utente',
-        age: 0,
-        height: 0,
-        currentWeight: 0,
-        startWeight: 0,
-        targetWeight: 0,
-        activityLevel: 'moderate',
-        goal: 'fat-loss',
-        intermittentFasting: false,
-        lactoseIntolerant: false,
-        targetCalories: 1800,
-        targetWater: 2500,
-        created_at: user.created_at
-      };
-      
-      setUserProfile(baseProfile);
-      setLoading(false); // IMPORTANTE: Imposta loading a false SUBITO
-      console.log('✅ Profilo base creato immediatamente');
-      
-      // POI, se online, prova a caricare dati da Supabase in background
-      if (isOnline) {
-        console.log('🌐 Tentativo caricamento dati da Supabase in background...');
-        loadDataFromSupabase().catch(error => {
-          console.warn('⚠️ Errore caricamento background, continuo con profilo base:', error);
-        });
+    const initializeUser = async () => {
+      if (user && !userProfile) {
+        console.log('🔄 Inizializzazione profilo per utente:', user.email);
+        
+        // NESSUN profilo temporaneo - SOLO dati reali da Supabase
+        console.log('🔄 Caricamento OBBLIGATORIO da Supabase...');
+        
+        try {
+          await loadDataFromSupabase();
+          setLoading(false);
+          console.log('✅ Profilo caricato con successo da Supabase');
+        } catch (error) {
+          console.error('❌ ERRORE CRITICO: Impossibile caricare da Supabase:', error);
+          setLoading(false);
+          // NON impostare nessun profilo - l'app deve mostrare errore
+          throw new Error('Impossibile caricare dati utente. Verifica la connessione.');
+        }
+      } else if (user && userProfile && userProfile.name !== user.name) {
+        // Aggiorna il nome se è cambiato
+        const updatedProfile = { ...userProfile, name: user.name, id: user.id };
+        setUserProfile(updatedProfile);
+        saveProfileWithOfflineSupport(updatedProfile);
+        console.log('🔄 Nome utente aggiornato:', user.name);
+      } else if (user && userProfile) {
+        // Utente e profilo già presenti, assicurati che loading sia false
+        setLoading(false);
+        console.log('✅ Utente e profilo già disponibili');
       }
-    } else if (user && userProfile && userProfile.name !== user.name) {
-      // Aggiorna il nome se è cambiato
-      const updatedProfile = { ...userProfile, name: user.name, id: user.id };
-      setUserProfile(updatedProfile);
-      saveProfileWithOfflineSupport(updatedProfile);
-      console.log('🔄 Nome utente aggiornato:', user.name);
-    } else if (user && userProfile) {
-      // Utente e profilo già presenti, assicurati che loading sia false
-      setLoading(false);
-      console.log('✅ Utente e profilo già disponibili');
-    }
+    };
+
+    initializeUser();
   }, [user]);
 
   // Check for day change on app start
@@ -535,6 +515,7 @@ export const useProgressTracking = () => {
   }, [user, isOnline]);
 
   const today = new Date().toISOString().split('T')[0];
+  // NESSUN valore di default - solo dati da Supabase
   const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress>(`dailyProgress_${today}`, {
     date: today,
     water: 0,
@@ -600,8 +581,47 @@ export const useProgressTracking = () => {
   const updateProfile = async (profileData: Partial<UserProfile>) => {
     if (!userProfile) return;
 
-    // Update profile with new data
+    // Update profile with new data and calculate targets based on real data
     const updatedProfile = { ...userProfile, ...profileData };
+    
+    // Calcola automaticamente calorie e acqua target SOLO se ci sono dati reali
+    if (updatedProfile.age > 0 && updatedProfile.height > 0 && updatedProfile.currentWeight > 0) {
+      // Calcolo BMR (Basal Metabolic Rate) con formula Mifflin-St Jeor
+      const bmr = updatedProfile.goal === 'muscle-gain' 
+        ? 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age + 5
+        : 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age - 161;
+      
+      // Fattore attività
+      const activityMultiplier = {
+        'sedentary': 1.2,
+        'light': 1.375,
+        'moderate': 1.55,
+        'active': 1.725,
+        'very-active': 1.9
+      }[updatedProfile.activityLevel] || 1.55;
+      
+      // Calorie target basate su obiettivo
+      const maintenanceCalories = bmr * activityMultiplier;
+      updatedProfile.targetCalories = Math.round(
+        updatedProfile.goal === 'fat-loss' ? maintenanceCalories - 500 :
+        updatedProfile.goal === 'muscle-gain' ? maintenanceCalories + 300 :
+        maintenanceCalories
+      );
+      
+      // Acqua target: 35ml per kg di peso corporeo
+      updatedProfile.targetWater = Math.round(updatedProfile.currentWeight * 35);
+      
+      console.log('📊 Target calcolati automaticamente:', {
+        calories: updatedProfile.targetCalories,
+        water: updatedProfile.targetWater
+      });
+    } else {
+      // Se non ci sono dati sufficienti, mantieni a 0
+      updatedProfile.targetCalories = 0;
+      updatedProfile.targetWater = 0;
+      console.log('⚠️ Dati insufficienti per calcolare target');
+    }
+    
     setUserProfile(updatedProfile);
 
     console.log('🔄 Aggiornamento profilo:', updatedProfile);
