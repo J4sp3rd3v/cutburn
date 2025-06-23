@@ -12,6 +12,9 @@ interface UserProfile {
   age: number;
   activityLevel: string;
   goal: string;
+  lactoseIntolerant?: boolean;
+  intermittentFasting?: boolean;
+  workoutDays?: number;
 }
 
 interface DietSectionProps {
@@ -58,9 +61,24 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
 
   const todayProtocol = cycleProtocols[currentCycleDay as keyof typeof cycleProtocols];
 
-  // Calcoli metabolici personalizzati
+  // Calcoli metabolici personalizzati basati su profilo reale
   const calculatePersonalizedNutrition = () => {
+    // Verifica che il profilo sia completo
+    if (!userProfile.currentWeight || !userProfile.height || !userProfile.age) {
+      // Valori di fallback per profili incompleti
+      return {
+        bmr: 1800,
+        tdee: 2200,
+        targetCalories: 1650,
+        proteinTarget: 140,
+        fatTarget: 60,
+        carbTarget: 80,
+        deficit: 550
+      };
+    }
+
     const bmr = (10 * userProfile.currentWeight) + (6.25 * userProfile.height) - (5 * userProfile.age) + 5;
+    
     const activityMultiplier = {
       sedentary: 1.2,
       light: 1.375,
@@ -70,9 +88,31 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
     }[userProfile.activityLevel] || 1.55;
     
     const tdee = bmr * activityMultiplier;
-    const targetCalories = Math.round(tdee * 0.75); // 25% deficit aggressivo
-    const proteinTarget = Math.round(userProfile.currentWeight * 2.4); // 2.4g/kg per preservare massa
-    const fatTarget = Math.round((targetCalories * 0.30) / 9); // 30% da grassi
+    
+    // Deficit personalizzato per obiettivo
+    const deficitPercentage = {
+      'fat-loss': 0.25,        // 25% deficit aggressivo
+      'muscle-gain': -0.10,    // 10% surplus
+      'maintenance': 0,        // Mantenimento
+      'recomp': 0.15          // 15% deficit moderato
+    }[userProfile.goal] || 0.25;
+    
+    const targetCalories = Math.round(tdee * (1 - deficitPercentage));
+    
+    // Proteine personalizzate per obiettivo
+    const proteinMultipliers = {
+      'fat-loss': 2.8,         // 2.8g/kg per preservare massa
+      'muscle-gain': 3.2,      // 3.2g/kg per crescita
+      'maintenance': 2.0,      // 2.0g/kg mantenimento
+      'recomp': 3.0           // 3.0g/kg ricomposizione
+    };
+    
+    const proteinTarget = Math.round(userProfile.currentWeight * (proteinMultipliers[userProfile.goal as keyof typeof proteinMultipliers] || 2.8));
+    
+    // Grassi: 28% delle calorie per ormoni
+    const fatTarget = Math.round((targetCalories * 0.28) / 9);
+    
+    // Carboidrati: resto delle calorie
     const carbTarget = Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4);
 
     return {
@@ -137,17 +177,88 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
     }
   };
 
-  // Pasti dinamici con calcoli personalizzati
+  // Funzione per sostituire ingredienti con lattosio
+  const replaceLactoseIngredients = (ingredient: string) => {
+    if (!userProfile.lactoseIntolerant) return ingredient;
+    
+    const lactoseReplacements: { [key: string]: string } = {
+      'ricotta': 'tofu cremoso',
+      'yogurt greco': 'yogurt di cocco',
+      'mozzarella': 'avocado cremoso',
+      'burrata': 'hummus di tahini',
+      'gorgonzola': 'crema di anacardi',
+      'pecorino': 'lievito nutrizionale',
+      'taleggio': 'crema di mandorle',
+      'whey isolate': 'proteine vegetali isolate'
+    };
+    
+    for (const [dairy, replacement] of Object.entries(lactoseReplacements)) {
+      if (ingredient.toLowerCase().includes(dairy)) {
+        return ingredient.replace(dairy, replacement);
+      }
+    }
+    
+    return ingredient;
+  };
+
+  // Variazione giornaliera reale basata su ciclo + giorno settimana
+  const getDailyVariation = () => {
+    const dayOfWeek = new Date().getDay();
+    const isWorkoutDay = userProfile.workoutDays ? 
+      dayOfWeek <= userProfile.workoutDays : 
+      [1, 3, 5].includes(dayOfWeek);
+    
+    // Variazione carboidrati basata su protocollo del giorno
+    const carbMultiplier = {
+      'HIGH_PROTEIN': isWorkoutDay ? 1.2 : 0.8,
+      'LOW_CARB': 0.3,
+      'KETOGENIC': 0.1,
+      'OMAD': isWorkoutDay ? 1.5 : 0.5
+    }[todayProtocol.type] || 1.0;
+    
+    // Variazione proteine basata su obiettivo
+    const proteinMultiplier = {
+      'HIGH_PROTEIN': 1.3,
+      'LOW_CARB': 1.1,
+      'KETOGENIC': 1.0,
+      'OMAD': 1.2
+    }[todayProtocol.type] || 1.0;
+    
+    // Variazione grassi (inversa ai carboidrati)
+    const fatMultiplier = {
+      'HIGH_PROTEIN': 0.9,
+      'LOW_CARB': 1.4,
+      'KETOGENIC': 1.8,
+      'OMAD': 1.1
+    }[todayProtocol.type] || 1.0;
+    
+    return {
+      carbMultiplier,
+      proteinMultiplier,
+      fatMultiplier,
+      isWorkoutDay,
+      protocolType: todayProtocol.type
+    };
+  };
+
+  // Pasti dinamici con calcoli personalizzati e variazione giornaliera
   const getDynamicMeals = () => {
     const currentIngredients = seasonalIngredients[season];
-    const dayOfWeek = new Date().getDay();
-    const isWorkoutDay = [1, 3, 5].includes(dayOfWeek);
+    const variation = getDailyVariation();
+    
+    // Calcoli adattati per il giorno
+    const adaptedNutrition = {
+      targetCalories: nutrition.targetCalories,
+      proteinTarget: Math.round(nutrition.proteinTarget * variation.proteinMultiplier),
+      fatTarget: Math.round(nutrition.fatTarget * variation.fatMultiplier),
+      carbTarget: Math.round(nutrition.carbTarget * variation.carbMultiplier)
+    };
 
     return {
       colazione: {
         name: "Colazione Metabolica",
         time: "07:00-08:30",
-        calories: Math.round(nutrition.targetCalories * 0.20),
+        calories: Math.round(adaptedNutrition.targetCalories * 0.20),
         timing: "Peak cortisol + sensibilità insulinica massima",
         hormones: "Ottimizzazione testosterone + utilizzo GH notturno",
         season: season,
@@ -155,21 +266,21 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           {
             name: `Smoothie proteico ${season}`,
             amount: "300ml",
-            calories: Math.round(nutrition.targetCalories * 0.12),
-            protein: Math.round(nutrition.proteinTarget * 0.25),
-            carbs: isWorkoutDay ? 15 : 8,
+            calories: Math.round(adaptedNutrition.targetCalories * 0.12),
+            protein: Math.round(adaptedNutrition.proteinTarget * 0.25),
+            carbs: variation.isWorkoutDay ? 15 : 8,
             fat: 3,
-            preparation: `Whey isolate ${Math.round(userProfile.currentWeight * 0.4)}g + ${currentIngredients.fruits[0]} 100g + cannella Ceylon + caffè espresso doppio. Frullare con ghiaccio.`,
+            preparation: `${replaceLactoseIngredients('Whey isolate')} ${Math.round(userProfile.currentWeight * 0.4)}g + ${currentIngredients.fruits[0]} 100g + cannella Ceylon + caffè espresso doppio. Frullare con ghiaccio.`,
             benefits: "Stimolazione mTOR per sintesi proteica. Caffeina dosata per ossidazione grassi.",
             seasonal: true
           },
           {
             name: "Mandorle siciliane",
             amount: `${Math.round(userProfile.currentWeight * 0.15)}g`,
-            calories: Math.round(nutrition.targetCalories * 0.05),
+            calories: Math.round(adaptedNutrition.targetCalories * 0.05),
             protein: 3,
             carbs: 2,
-            fat: Math.round(nutrition.fatTarget * 0.15),
+            fat: Math.round(adaptedNutrition.fatTarget * 0.15),
             preparation: "Mandorle crude biologiche, ricche vitamina E e magnesio.",
             benefits: "Grassi monoinsaturi per produzione testosterone. Magnesio per 300+ enzimi.",
             seasonal: false
@@ -218,14 +329,14 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
             seasonal: true
           },
           {
-            name: isWorkoutDay ? "Riso basmati integrale" : "Cavolfiore riso",
-            amount: isWorkoutDay ? `${Math.round(userProfile.currentWeight * 0.6)}g secco` : "150g",
-            calories: isWorkoutDay ? Math.round(nutrition.targetCalories * 0.09) : 25,
-            protein: isWorkoutDay ? 4 : 3,
-            carbs: isWorkoutDay ? Math.round(nutrition.carbTarget * 0.4) : 5,
+            name: variation.isWorkoutDay ? "Riso basmati integrale" : "Cavolfiore riso",
+            amount: variation.isWorkoutDay ? `${Math.round(userProfile.currentWeight * 0.6)}g secco` : "150g",
+            calories: variation.isWorkoutDay ? Math.round(adaptedNutrition.targetCalories * 0.09) : 25,
+            protein: variation.isWorkoutDay ? 4 : 3,
+            carbs: variation.isWorkoutDay ? Math.round(adaptedNutrition.carbTarget * 0.4) : 5,
             fat: 1,
-            preparation: isWorkoutDay ? "Basmati con curcuma + pepe nero + cardamomo" : "Cavolfiore tritato saltato con spezie",
-            benefits: isWorkoutDay ? "Amilosio per rilascio glucosio controllato" : "Fibra prebiotica + volume saziante",
+            preparation: variation.isWorkoutDay ? "Basmati con curcuma + pepe nero + cardamomo" : "Cavolfiore tritato saltato con spezie",
+            benefits: variation.isWorkoutDay ? "Amilosio per rilascio glucosio controllato" : "Fibra prebiotica + volume saziante",
             seasonal: false
           }
         ]
@@ -369,6 +480,46 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
         <div className="text-sm opacity-90">{todayProtocol.description}</div>
         <div className="mt-2 text-xs opacity-75">
           📅 {new Date().toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </div>
+      </Card>
+
+      {/* Variazione Giornaliera Personalizzata */}
+      <Card className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+        <div className="flex items-center space-x-2 mb-3">
+          <Scale className="w-5 h-5 text-indigo-600" />
+          <h3 className="font-semibold text-indigo-800">Adattamento Giornaliero per {userProfile.currentWeight}kg</h3>
+        </div>
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <div className="text-center bg-white/50 rounded-lg p-2">
+            <div className="text-lg font-bold text-red-600">{Math.round(nutrition.proteinTarget * getDailyVariation().proteinMultiplier)}g</div>
+            <div className="text-xs text-slate-600">Proteine oggi</div>
+            <div className="text-xs text-indigo-600">
+              {getDailyVariation().proteinMultiplier > 1 ? '↑' : getDailyVariation().proteinMultiplier < 1 ? '↓' : '='} 
+              {Math.round((getDailyVariation().proteinMultiplier - 1) * 100)}%
+            </div>
+          </div>
+          <div className="text-center bg-white/50 rounded-lg p-2">
+            <div className="text-lg font-bold text-blue-600">{Math.round(nutrition.carbTarget * getDailyVariation().carbMultiplier)}g</div>
+            <div className="text-xs text-slate-600">Carboidrati oggi</div>
+            <div className="text-xs text-indigo-600">
+              {getDailyVariation().carbMultiplier > 1 ? '↑' : getDailyVariation().carbMultiplier < 1 ? '↓' : '='} 
+              {Math.round((getDailyVariation().carbMultiplier - 1) * 100)}%
+            </div>
+          </div>
+          <div className="text-center bg-white/50 rounded-lg p-2">
+            <div className="text-lg font-bold text-green-600">{Math.round(nutrition.fatTarget * getDailyVariation().fatMultiplier)}g</div>
+            <div className="text-xs text-slate-600">Grassi oggi</div>
+            <div className="text-xs text-indigo-600">
+              {getDailyVariation().fatMultiplier > 1 ? '↑' : getDailyVariation().fatMultiplier < 1 ? '↓' : '='} 
+              {Math.round((getDailyVariation().fatMultiplier - 1) * 100)}%
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 text-xs text-indigo-700 bg-white/30 rounded p-2">
+          <strong>Oggi:</strong> {getDailyVariation().isWorkoutDay ? '🏋️ Giorno allenamento' : '🧘 Giorno riposo'} • 
+          <strong> Protocollo:</strong> {getDailyVariation().protocolType} • 
+          <strong> Obiettivo:</strong> {userProfile.goal}
+          {userProfile.lactoseIntolerant && <> • <strong>Dieta:</strong> 🥛 Lactose-Free</>}
         </div>
       </Card>
 

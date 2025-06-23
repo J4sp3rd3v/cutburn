@@ -12,9 +12,11 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  isNewUser: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string, name: string) => Promise<boolean>;
   signOut: () => Promise<void>;
+  markProfileCompleted: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
 
   // Evita disconnessioni durante la navigazione
   useEffect(() => {
@@ -347,6 +350,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           created_at: data.user.created_at
         });
 
+        // Segna come nuovo utente per redirect al profilo
+        setIsNewUser(true);
+        console.log('✅ Nuovo utente registrato - redirect al profilo necessario');
+
         return true;
       } else if (data.user && !data.session) {
         console.log('📧 Conferma email richiesta');
@@ -373,8 +380,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const markProfileCompleted = () => {
+    setIsNewUser(false);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, isNewUser, signIn, signUp, signOut, markProfileCompleted }}>
       {children}
     </AuthContext.Provider>
   );

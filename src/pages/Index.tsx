@@ -33,9 +33,17 @@ import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 import RecipeSection from '@/components/RecipeSection';
 
 const Index = () => {
-  const { user } = useAuth();
+  const { user, isNewUser, markProfileCompleted } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  // Redirect automatico al profilo per nuovi utenti
+  useEffect(() => {
+    if (isNewUser && user) {
+      console.log('🔄 Nuovo utente rilevato - redirect al profilo per setup iniziale');
+      setActiveTab("profile");
+    }
+  }, [isNewUser, user]);
   
   const {
     dailyProgress,
