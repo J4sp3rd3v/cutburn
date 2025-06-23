@@ -561,6 +561,22 @@ export const useProgressTracking = () => {
     });
   };
 
+  const updateProfile = (profileData: Partial<UserProfile>) => {
+    if (!userProfile) return;
+
+    // Update profile with new data
+    const updatedProfile = { ...userProfile, ...profileData };
+    setUserProfile(updatedProfile);
+    saveProfileWithOfflineSupport(updatedProfile);
+
+    console.log('✅ Profilo aggiornato:', updatedProfile);
+    
+    toast({
+      title: "Profilo aggiornato",
+      description: `Le modifiche sono state salvate ${!isOnline ? '(saranno sincronizzate online)' : ''}`,
+    });
+  };
+
   const addShot = (shotType: string) => {
     const newShots = [...dailyProgress.shotsConsumed, shotType];
     const newProgress = { ...dailyProgress, shotsConsumed: newShots };
@@ -596,6 +612,7 @@ export const useProgressTracking = () => {
     addWater,
     addCalories,
     updateWeight,
+    updateProfile,
     addShot,
     toggleWorkout,
     getWeeklyProgress: () => weeklyProgress,

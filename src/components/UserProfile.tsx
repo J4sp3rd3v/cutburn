@@ -19,22 +19,24 @@ interface UserProfileProps {
     startDate: string;
   };
   onUpdateWeight: (weight: number) => void;
+  onUpdateProfile: (profileData: Partial<any>) => void;
   weeklyProgress: Array<{ date: string; weight: number }>;
+  currentProfile: any;
 }
 
-const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileProps) => {
+const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgress, currentProfile }: UserProfileProps) => {
   const { signOut, user, isNewUser, markProfileCompleted } = useAuth();
   
   const [profile, setProfile] = useState({
-    name: user?.name || 'Utente',
-    age: isNewUser ? 0 : 30,
-    height: isNewUser ? 0 : 173,
-    currentWeight: isNewUser ? 0 : 75,
-    targetWeight: isNewUser ? 0 : 70,
-    activityLevel: 'moderate',
-    intermittentFasting: false,
-    lactoseIntolerant: false,
-    goal: 'fat-loss',
+    name: currentProfile?.name || user?.name || 'Utente',
+    age: currentProfile?.age || 0,
+    height: currentProfile?.height || 0,
+    currentWeight: currentProfile?.currentWeight || 0,
+    targetWeight: currentProfile?.targetWeight || 0,
+    activityLevel: currentProfile?.activityLevel || 'moderate',
+    intermittentFasting: currentProfile?.intermittentFasting || false,
+    lactoseIntolerant: currentProfile?.lactoseIntolerant || false,
+    goal: currentProfile?.goal || 'fat-loss',
     workoutDays: 3,
     experience: 'beginner'
   });
@@ -43,15 +45,24 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
   const [newWeight, setNewWeight] = useState(userStats.currentWeight.toString());
   const [profileComplete, setProfileComplete] = useState(!isNewUser);
 
-  // Aggiorna il profilo quando cambia l'utente
+  // Aggiorna il profilo quando cambia l'utente o currentProfile
   useEffect(() => {
-    if (user?.name) {
-      setProfile(prev => ({
-        ...prev,
-        name: user.name
-      }));
+    if (currentProfile) {
+      setProfile({
+        name: currentProfile.name || user?.name || 'Utente',
+        age: currentProfile.age || 0,
+        height: currentProfile.height || 0,
+        currentWeight: currentProfile.currentWeight || 0,
+        targetWeight: currentProfile.targetWeight || 0,
+        activityLevel: currentProfile.activityLevel || 'moderate',
+        intermittentFasting: currentProfile.intermittentFasting || false,
+        lactoseIntolerant: currentProfile.lactoseIntolerant || false,
+        goal: currentProfile.goal || 'fat-loss',
+        workoutDays: 3,
+        experience: 'beginner'
+      });
     }
-  }, [user]);
+  }, [currentProfile, user]);
 
   // Calcoli scientifici personalizzati
   const calculatePersonalizedMetrics = () => {
@@ -154,20 +165,32 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
     setIsEditing(false);
     setProfileComplete(true);
     
+    // Prepara i dati del profilo da salvare
+    const profileToSave: any = {
+      name: profile.name,
+      age: profile.age,
+      height: profile.height,
+      currentWeight: profile.currentWeight,
+      targetWeight: profile.targetWeight,
+      activityLevel: profile.activityLevel,
+      intermittentFasting: profile.intermittentFasting,
+      lactoseIntolerant: profile.lactoseIntolerant,
+      goal: profile.goal,
+      targetCalories: metrics.targetCalories,
+      targetWater: metrics.waterTarget
+    };
+    
     if (isNewUser) {
       // Per nuovi utenti, imposta startWeight = currentWeight (nessuna perdita iniziale)
-      const updatedProfile = {
-        ...profile,
-        startWeight: profile.currentWeight
-      };
-      setProfile(updatedProfile);
-      
+      profileToSave.startWeight = profile.currentWeight;
       markProfileCompleted();
-      console.log('✅ Profilo nuovo utente completato:', updatedProfile);
-      console.log('📊 Metriche calcolate:', metrics);
+      console.log('✅ Profilo nuovo utente completato:', profileToSave);
     }
     
-    console.log('💾 Profilo salvato:', profile);
+    // Salva il profilo usando la funzione passata dal parent
+    onUpdateProfile(profileToSave);
+    console.log('💾 Profilo salvato:', profileToSave);
+    console.log('📊 Metriche calcolate:', metrics);
   };
 
   const calculateBMI = () => {

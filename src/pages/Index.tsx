@@ -120,6 +120,7 @@ const Index = () => {
     addWater,
     addCalories,
     updateWeight,
+    updateProfile,
     addShot,
     toggleWorkout,
     getWeeklyProgress,
@@ -489,7 +490,9 @@ const Index = () => {
                   startDate: userProfile.created_at || user.created_at
                 }}
                 onUpdateWeight={updateWeight}
+                onUpdateProfile={updateProfile}
                 weeklyProgress={weeklyProgress}
+                currentProfile={userProfile}
               />
             </TabsContent>
           </div>
