@@ -27,12 +27,12 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
   
   const [profile, setProfile] = useState({
     name: user?.name || 'Utente',
-    age: 30,
-    height: 173,
-    currentWeight: 75,
-    targetWeight: 70,
+    age: isNewUser ? 0 : 30,
+    height: isNewUser ? 0 : 173,
+    currentWeight: isNewUser ? 0 : 75,
+    targetWeight: isNewUser ? 0 : 70,
     activityLevel: 'moderate',
-    intermittentFasting: true,
+    intermittentFasting: false,
     lactoseIntolerant: false,
     goal: 'fat-loss',
     workoutDays: 3,
@@ -155,8 +155,15 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
     setProfileComplete(true);
     
     if (isNewUser) {
+      // Per nuovi utenti, imposta startWeight = currentWeight (nessuna perdita iniziale)
+      const updatedProfile = {
+        ...profile,
+        startWeight: profile.currentWeight
+      };
+      setProfile(updatedProfile);
+      
       markProfileCompleted();
-      console.log('✅ Profilo nuovo utente completato:', profile);
+      console.log('✅ Profilo nuovo utente completato:', updatedProfile);
       console.log('📊 Metriche calcolate:', metrics);
     }
     
@@ -175,7 +182,16 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
   };
 
   const getTotalWeightLoss = () => {
+    // Se è un nuovo utente o non ha ancora perso peso, non mostrare statistiche
+    if (isNewUser || userStats.startWeight === userStats.currentWeight) {
+      return "0.0";
+    }
     return (userStats.startWeight - userStats.currentWeight).toFixed(1);
+  };
+
+  const hasRealProgress = () => {
+    // Controlla se l'utente ha progressi reali (non è nuovo e ha cambiato peso)
+    return !isNewUser && userStats.startWeight !== userStats.currentWeight;
   };
 
   const getBMICategory = (bmi: number) => {
@@ -223,22 +239,28 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
         
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold">{profile.currentWeight}</div>
+            <div className="text-2xl font-bold">
+              {profile.currentWeight || (isNewUser ? "---" : "75")}
+            </div>
             <div className="text-sm opacity-90">Peso attuale</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold">{profile.targetWeight}</div>
+            <div className="text-2xl font-bold">
+              {profile.targetWeight || (isNewUser ? "---" : "70")}
+            </div>
             <div className="text-sm opacity-90">Peso obiettivo</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold">{calculateBMI()}</div>
+            <div className="text-2xl font-bold">
+              {profile.currentWeight && profile.height ? calculateBMI() : "---"}
+            </div>
             <div className="text-sm opacity-90">BMI</div>
           </div>
         </div>
       </Card>
 
       {/* Metriche Scientifiche Personalizzate */}
-      {profileComplete && (
+      {profileComplete && profile.currentWeight && profile.height && profile.age && (
         <Card className="p-4 bg-emerald-50 border-emerald-200">
           <h3 className="font-semibold text-emerald-800 mb-3">🧬 Metriche Scientifiche Personalizzate</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
@@ -539,6 +561,34 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
               <div className="text-sm text-slate-600">Grasso corporeo stimato</div>
             </div>
           </div>
+          
+          {/* Mostra statistiche progressi solo se ha dati reali */}
+          {hasRealProgress() && (
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <h4 className="font-medium text-slate-700 mb-3">📈 Progressi</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center bg-green-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-green-600">-{getTotalWeightLoss()}kg</div>
+                  <div className="text-sm text-slate-600">Peso perso</div>
+                </div>
+                <div className="text-center bg-blue-50 rounded-lg p-3">
+                  <div className="text-lg font-bold text-blue-600">{weeklyProgress.length}</div>
+                  <div className="text-sm text-slate-600">Giorni tracciati</div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Messaggio per utenti nuovi */}
+          {!hasRealProgress() && (
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <div className="text-center bg-slate-50 rounded-lg p-4">
+                <div className="text-slate-500 text-sm">
+                  📊 Le statistiche di progresso appariranno quando inizierai a tracciare i tuoi cambiamenti di peso
+                </div>
+              </div>
+            </div>
+          )}
         </Card>
       )}
 

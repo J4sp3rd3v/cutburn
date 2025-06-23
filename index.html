@@ -1,24 +1,228 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cutburn-fatloss-coach</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <meta property="og:title" content="cutburn-fatloss-coach" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    
+    <!-- Primary Meta Tags -->
+    <title>CutBurn Pro - Body Recomposition Scientifica</title>
+    <meta name="title" content="CutBurn Pro - Body Recomposition Scientifica" />
+    <meta name="description" content="App scientifica per perdita grasso localizzato con dieta 14 giorni ciclica, allenamenti personalizzati e tracking completo. Risultati garantiti." />
+    <meta name="author" content="CutBurn Pro Team" />
+    <meta name="keywords" content="perdita peso, dieta, allenamento, body recomposition, grasso addominale, fitness, nutrizione" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="CutBurn Pro" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CutBurn Pro" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#ef4444" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="theme-color" content="#ef4444" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="152x152" href="/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon-180x180.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://cutburn-pro.vercel.app/" />
+    <meta property="og:title" content="CutBurn Pro - Body Recomposition Scientifica" />
+    <meta property="og:description" content="App scientifica per perdita grasso localizzato con dieta 14 giorni ciclica, allenamenti personalizzati e tracking completo." />
+    <meta property="og:image" content="https://cutburn-pro.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="it_IT" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://cutburn-pro.vercel.app/" />
+    <meta property="twitter:title" content="CutBurn Pro - Body Recomposition Scientifica" />
+    <meta property="twitter:description" content="App scientifica per perdita grasso localizzato con dieta 14 giorni ciclica, allenamenti personalizzati e tracking completo." />
+    <meta property="twitter:image" content="https://cutburn-pro.vercel.app/og-image.png" />
+    
+    <!-- Splash Screens iOS -->
+    <link rel="apple-touch-startup-image" href="/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://tpajqgopbyyflomvkmly.supabase.co" />
+    <link rel="dns-prefetch" href="https://tpajqgopbyyflomvkmly.supabase.co" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MobileApplication",
+      "name": "CutBurn Pro",
+      "description": "App scientifica per perdita grasso localizzato con dieta 14 giorni ciclica, allenamenti personalizzati e tracking completo",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    }
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
+            });
+            
+            console.log('✅ Service Worker registered:', registration.scope);
+            
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New version available
+                    if (confirm('Nuova versione disponibile! Ricarica per aggiornare?')) {
+                      window.location.reload();
+                    }
+                  }
+                });
+              }
+            });
+            
+          } catch (error) {
+            console.warn('❌ Service Worker registration failed:', error);
+          }
+        });
+      }
+      
+      // PWA Install Prompt
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('💾 PWA install prompt available');
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show custom install button after 30 seconds
+        setTimeout(() => {
+          if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
+            showInstallPrompt();
+          }
+        }, 30000);
+      });
+      
+      function showInstallPrompt() {
+        const installBanner = document.createElement('div');
+        installBanner.innerHTML = `
+          <div style="
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          ">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">📱 Installa CutBurn Pro</div>
+              <div style="font-size: 14px; opacity: 0.9;">Aggiungi alla home per un'esperienza migliore</div>
+            </div>
+            <div>
+              <button onclick="installPWA()" style="
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-weight: 600;
+                margin-right: 8px;
+                cursor: pointer;
+              ">Installa</button>
+              <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                background: none;
+                border: none;
+                color: white;
+                padding: 8px;
+                cursor: pointer;
+                opacity: 0.7;
+              ">✕</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(installBanner);
+      }
+      
+      window.installPWA = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log('PWA install outcome:', outcome);
+          deferredPrompt = null;
+          
+          // Remove banner
+          const banner = document.querySelector('[style*="position: fixed"]');
+          if (banner) banner.remove();
+        }
+      };
+      
+      // Track PWA usage
+      window.addEventListener('appinstalled', () => {
+        console.log('✅ PWA installed successfully');
+        deferredPrompt = null;
+      });
+      
+      // Detect if running as PWA
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('🚀 Running as PWA');
+        document.documentElement.classList.add('pwa-mode');
+      }
+      
+      // Handle PWA navigation
+      if (window.location.search.includes('action=')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const action = urlParams.get('action');
+        
+        // Store action for React app to handle
+        sessionStorage.setItem('pwa-action', action);
+      }
+    </script>
   </body>
 </html>

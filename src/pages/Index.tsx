@@ -36,13 +36,37 @@ const Index = () => {
   const { user, loading: authLoading, isNewUser, markProfileCompleted } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [redirectTimer, setRedirectTimer] = useState<NodeJS.Timeout | null>(null);
 
-  // Redirect al login se non autenticato
+  // Redirect al login se non autenticato - con ritardo per permettere il recupero della sessione
   useEffect(() => {
-    if (!authLoading && !user) {
-      console.log('❌ Utente non autenticato - redirect al login');
-      navigate('/auth');
+    // Cancella timer precedente se esiste
+    if (redirectTimer) {
+      clearTimeout(redirectTimer);
     }
+
+    if (!authLoading && !user) {
+      // Attendi 3 secondi prima del redirect per dare tempo al recupero della sessione
+      const timer = setTimeout(() => {
+        console.log('❌ Utente non autenticato dopo timeout - redirect al login');
+        navigate('/auth');
+      }, 3000);
+      
+      setRedirectTimer(timer);
+    } else if (user) {
+      // Se l'utente è trovato, cancella il timer
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+        setRedirectTimer(null);
+      }
+    }
+
+    // Cleanup
+    return () => {
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+      }
+    };
   }, [user, authLoading, navigate]);
 
   // Redirect automatico al profilo per nuovi utenti
@@ -52,6 +76,40 @@ const Index = () => {
       setActiveTab("profile");
     }
   }, [isNewUser, user]);
+
+  // Gestione azioni PWA
+  useEffect(() => {
+    const pwaAction = sessionStorage.getItem('pwa-action');
+    if (pwaAction && user) {
+      console.log('🚀 Azione PWA rilevata:', pwaAction);
+      
+      switch (pwaAction) {
+        case 'weight':
+        case 'track-weight':
+          setActiveTab("profile");
+          // Trigger weight input focus after component mounts
+          setTimeout(() => {
+            const weightInput = document.querySelector('input[type="number"]') as HTMLInputElement;
+            if (weightInput) weightInput.focus();
+          }, 1000);
+          break;
+        case 'diet':
+        case 'view-diet':
+          setActiveTab("diet");
+          break;
+        case 'workout':
+          setActiveTab("workout");
+          break;
+        case 'dashboard':
+        default:
+          setActiveTab("dashboard");
+          break;
+      }
+      
+      // Clear the action
+      sessionStorage.removeItem('pwa-action');
+    }
+  }, [user]);
   
   const {
     dailyProgress,
@@ -90,9 +148,14 @@ const Index = () => {
           <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <TrendingDown className="w-6 h-6 text-white animate-pulse" />
           </div>
-          <p className="text-slate-600">
-            {authLoading ? "Verifica autenticazione..." : "Caricamento dati..."}
+          <p className="text-slate-600 mb-2">
+            {authLoading ? "Recupero sessione..." : "Caricamento dati..."}
           </p>
+          {authLoading && (
+            <p className="text-slate-500 text-sm">
+              Controllo se sei già loggato...
+            </p>
+          )}
         </div>
       </div>
     );
@@ -103,7 +166,7 @@ const Index = () => {
     return null;
   }
 
-  const weightChange = weeklyProgress.length >= 2 
+  const weightChange = !isNewUser && weeklyProgress.length >= 2 
     ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userProfile.currentWeight) - (weeklyProgress[0]?.weight || userProfile.startWeight)
     : 0;
 
@@ -285,8 +348,8 @@ const Index = () => {
                 </div>
               </Card>
 
-              {/* Weekly Progress Chart */}
-              {weeklyProgress.length > 1 && (
+              {/* Weekly Progress Chart - Solo per utenti con progressi reali */}
+              {!isNewUser && weeklyProgress.length > 1 && (
                 <Card className="p-4">
                   <h3 className="font-semibold mb-3">📊 Progressi Peso Settimanali</h3>
                   <div className="space-y-2">
@@ -298,6 +361,20 @@ const Index = () => {
                         <span className="font-semibold">{day.weight}kg</span>
                       </div>
                     ))}
+                  </div>
+                </Card>
+              )}
+              
+              {/* Messaggio incoraggiamento per nuovi utenti */}
+              {isNewUser && (
+                <Card className="p-4 bg-gradient-to-r from-emerald-50 to-blue-50 border-emerald-200">
+                  <div className="text-center">
+                    <div className="text-2xl mb-2">🎯</div>
+                    <h3 className="font-semibold text-emerald-800 mb-2">Inizia il tuo percorso!</h3>
+                    <p className="text-sm text-emerald-700">
+                      Completa il tuo profilo e inizia a tracciare i progressi. 
+                      I tuoi risultati appariranno qui man mano che procedi!
+                    </p>
                   </div>
                 </Card>
               )}

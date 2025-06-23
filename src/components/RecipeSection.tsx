@@ -2039,7 +2039,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: "1 litro (4 porzioni da 250ml)",
         calories: "45 kcal totali",
         type: "Estratto Termogenico",
-        recipeType: "salate", // dolci/salate
         category: "LIPOLISI ESTREMA - ESTRATTORE",
         efficacy: "98%",
         badge: "1L TERMOGENICO",
@@ -2084,7 +2083,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: "1 litro (4 porzioni da 250ml)",
         calories: "38 kcal totali",
         type: "Estratto Freddo Termogenico",
-        recipeType: "salate", // dolci/salate
         category: "BROWN FAT ACTIVATION - ESTRATTORE",
         efficacy: "92%",
         badge: "1L CRYO-BURN",
@@ -2129,7 +2127,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: "1 litro (4 porzioni da 250ml)",
         calories: "52 kcal totali",
         type: "Estratto Performance Nitrico",
-        recipeType: "salate", // dolci/salate
         category: "PUMP + TERMOGENESI - ESTRATTORE",
         efficacy: "96%",
         badge: "1L NITRO-PUMP",
@@ -2174,7 +2171,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 85,
         type: "Smoothie Bruciagrassi",
-        recipeType: "salate", // dolci/salate
         category: "Pre-workout Termogenico",
         efficacy: "95%",
         badge: "EXTREME BURN",
@@ -2211,7 +2207,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 110,
         type: "Frullato Energizzante",
-        recipeType: "dolci", // dolci/salate
         category: "Morning Energy Kick",
         efficacy: "90%",
         badge: "ENERGY BLAST",
@@ -2285,7 +2280,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 180,
         type: "Frullato Proteico",
-        recipeType: "dolci", // dolci/salate
         category: "Post-Workout Recovery",
         efficacy: "92%",
         badge: "MUSCLE FUEL",
@@ -2323,7 +2317,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 120,
         type: "Smoothie Antiossidante",
-        recipeType: "dolci", // dolci/salate
         category: "Recovery & Anti-aging",
         efficacy: "85%",
         badge: "YOUTH ELIXIR",
@@ -2360,7 +2353,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 65,
         type: "Estratto Idratante",
-        recipeType: "salate", // dolci/salate
         category: "Hydration & Electrolytes",
         efficacy: "90%",
         badge: "HYDRO BOOST",
@@ -2397,7 +2389,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 140,
         type: "Smoothie Stellato Premium",
-        recipeType: "salate", // dolci/salate
         category: "Luxury Fat Burner",
         efficacy: "98%",
         badge: "MICHELIN STAR",
@@ -2437,7 +2428,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 160,
         type: "Frullato Stellato Antiossidante",
-        recipeType: "dolci", // dolci/salate
         category: "Royal Antioxidant Therapy",
         efficacy: "96%",
         badge: "ROYAL TREATMENT",
@@ -2477,7 +2467,6 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 95,
         type: "Estratto Stellato Detox",
-        recipeType: "salate", // dolci/salate
         category: "Platinum Detox Therapy",
         efficacy: "94%",
         badge: "PLATINUM PURE",

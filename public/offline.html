@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - CutBurn Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 32px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        p {
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .features {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .features h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #f1f5f9;
+        }
+        
+        .features ul {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .features li {
+            padding: 4px 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        .features li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .icon {
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            🔥
+        </div>
+        
+        <h1>Sei Offline</h1>
+        <p>Non c'è connessione internet, ma puoi ancora utilizzare alcune funzionalità di CutBurn Pro.</p>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="retryConnection()">
+                Riprova Connessione
+            </button>
+            <a href="/" class="btn btn-secondary">
+                Torna alla Dashboard
+            </a>
+        </div>
+        
+        <div class="features">
+            <h3>Funzionalità Offline Disponibili:</h3>
+            <ul>
+                <li>Visualizza dati salvati localmente</li>
+                <li>Traccia progressi (sincronizzati al ritorno online)</li>
+                <li>Consulta ricette e allenamenti</li>
+                <li>Calcola macronutrienti personalizzati</li>
+                <li>Visualizza protocollo dieta 14 giorni</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function retryConnection() {
+            const btn = document.querySelector('.btn-primary');
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+            
+            // Test connection
+            fetch('/', { method: 'HEAD', cache: 'no-cache' })
+                .then(() => {
+                    btn.textContent = 'Connesso! Reindirizzamento...';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                })
+                .catch(() => {
+                    btn.textContent = 'Ancora Offline';
+                    setTimeout(() => {
+                        btn.textContent = 'Riprova Connessione';
+                        btn.disabled = false;
+                    }, 2000);
+                });
+        }
+        
+        // Auto-retry every 30 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                fetch('/', { method: 'HEAD', cache: 'no-cache' })
+                    .then(() => {
+                        // Connection restored, redirect
+                        window.location.href = '/';
+                    })
+                    .catch(() => {
+                        // Still offline
+                    });
+            }
+        }, 30000);
+        
+        // Listen for online event
+        window.addEventListener('online', () => {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html> 

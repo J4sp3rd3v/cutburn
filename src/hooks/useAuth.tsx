@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
 
-  // Debug: controlla localStorage all'avvio
+  // Debug: controlla localStorage all'avvio e gestisce riapetura app
   useEffect(() => {
     const checkLocalStorage = () => {
       const authToken = localStorage.getItem('cutburn-supabase-auth-token');
@@ -36,12 +36,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const parsed = JSON.parse(authToken);
           console.log('📅 Token expires_at:', parsed.expires_at ? new Date(parsed.expires_at * 1000).toLocaleString() : 'Non specificato');
           console.log('👤 Token user email:', parsed.user?.email || 'Non disponibile');
+          
+          // Se il token è presente e valido, forza il controllo della sessione
+          if (parsed.user && parsed.expires_at && parsed.expires_at * 1000 > Date.now()) {
+            console.log('✅ Token valido trovato in localStorage - forzo controllo sessione');
+            // Imposta un flag per indicare che dovremmo avere una sessione valida
+            sessionStorage.setItem('expected-session', 'true');
+          }
         } catch (e) {
           console.warn('⚠️ Errore parsing token localStorage:', e);
         }
       }
     };
+    
     checkLocalStorage();
+    
+    // Gestisce il caso di riapetura dell'app
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        console.log('🔄 App riaperta da cache - verifica sessione');
+        checkLocalStorage();
+      }
+    };
+    
+    window.addEventListener('pageshow', handlePageShow);
+    
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+    };
   }, []);
 
   // Evita disconnessioni durante la navigazione
@@ -75,10 +97,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [user]);
 
   useEffect(() => {
-    // Controlla se c'è già un utente loggato con retry
+    // Controlla se c'è già un utente loggato con retry e timeout più lungo
     const checkUser = async () => {
       let attempts = 0;
-      const maxAttempts = 3;
+      const maxAttempts = 5; // Aumentato da 3 a 5
       
       while (attempts < maxAttempts) {
         try {
@@ -90,7 +112,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (error) {
             console.warn(`⚠️ Errore controllo sessione tentativo ${attempts}:`, error);
             if (attempts < maxAttempts) {
-              await new Promise(resolve => setTimeout(resolve, 1000));
+              // Attesa progressiva: 1s, 2s, 3s, 4s
+              await new Promise(resolve => setTimeout(resolve, attempts * 1000));
               continue;
             } else {
               // Dopo tutti i tentativi falliti, considera l'utente non autenticato
@@ -105,6 +128,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('✅ Sessione trovata per:', session.user.email);
             console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
             console.log('⏰ Sessione scade:', new Date(session.expires_at! * 1000).toLocaleString());
+            
+            // Rimuovi il flag di sessione attesa
+            sessionStorage.removeItem('expected-session');
             
             // Verifica che la sessione non sia scaduta
             if (session.expires_at && session.expires_at * 1000 < Date.now()) {
@@ -121,7 +147,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               await loadUserProfile(session.user);
             }
           } else {
+            // Controlla se ci aspettavamo una sessione
+            const expectedSession = sessionStorage.getItem('expected-session');
+            if (expectedSession && attempts < maxAttempts) {
+              console.log('⚠️ Sessione attesa ma non trovata, riprovo...');
+              await new Promise(resolve => setTimeout(resolve, attempts * 1000));
+              continue;
+            }
             console.log('ℹ️ Nessuna sessione attiva');
+            sessionStorage.removeItem('expected-session');
             setUser(null);
           }
           break; // Successo, esci dal loop
@@ -129,7 +163,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error) {
           console.error(`❌ Errore controllo sessione tentativo ${attempts}:`, error);
           if (attempts < maxAttempts) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Attesa progressiva
+            await new Promise(resolve => setTimeout(resolve, attempts * 1000));
           } else {
             // Dopo tutti i tentativi falliti
             console.log('❌ Controllo sessione completamente fallito');
@@ -163,8 +198,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           console.log('🔄 Token aggiornato - sessione estesa');
           await loadUserProfile(session.user);
+        } else if (event === 'INITIAL_SESSION' && session?.user) {
+          console.log('🔄 Sessione iniziale recuperata');
+          await loadUserProfile(session.user);
         } else {
-          // Altri eventi (INITIAL_SESSION, etc.)
+          // Altri eventi
           setLoading(false);
         }
       } catch (error) {
