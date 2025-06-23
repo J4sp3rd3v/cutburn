@@ -1649,6 +1649,262 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         benefits: "Clorofilla concentrata + grassi omega-3. Detox luxury.",
         timing: "Lunch detox 12:00-13:00",
         fatBurning: "Chlorella + avocado sinergia metabolica +25%"
+      },
+      
+      // === BOWL SALATE GOURMET - ISPIRATE AI MIGLIORI BAR HEALTHY ===
+      {
+        name: "🥑 AVOCADO TOAST BOWL - Stile Californiano",
+        time: "8 min",
+        servings: 1,
+        calories: "385",
+        type: "Bowl Salata Gourmet",
+        category: "BRUNCH CALIFORNIANO",
+        ingredients: [
+          "Avocado maturo: 1 intero (150g)",
+          "Pane integrale tostato: 2 fette spesse",
+          "Uovo bio: 1 (pochè o sodo)",
+          "Pomodorini ciliegino: 100g (8-10 pezzi)",
+          "Rucola selvatica: 50g (2 manciate)",
+          "Semi di sesamo nero: 1 cucchiaio",
+          "Semi di zucca tostati: 1 cucchiaio",
+          "Lime: 1/2 (succo + scorza)",
+          "Olio EVO premium: 2 cucchiai",
+          "Sale rosa himalayano: pizzico",
+          "Pepe nero macinato fresco: q.b.",
+          "Paprika affumicata: pizzico"
+        ],
+        preparation: [
+          "Tostare il pane integrale fino a doratura perfetta",
+          "Avocado: schiacciare con forchetta, lime, sale, pepe",
+          "Pomodorini: tagliare a metà, condire con olio e sale",
+          "Uovo: cuocere pochè (3 min) o sodo (6 min)",
+          "Rucola: lavare e asciugare perfettamente",
+          "Assemblaggio: pane tostato spezzettato sul fondo",
+          "Stendere crema avocado, rucola, pomodorini",
+          "Uovo al centro, semi sopra, finish con paprika"
+        ],
+        bimbySteps: [
+          "Crema avocado: avocado + lime + sale, 15 sec / Vel 4",
+          "Mantecatura delicata per texture cremosa",
+          "Assemblaggio artistico in bowl larga"
+        ],
+        benefits: "Grassi monoinsaturi avocado per sazietà. Proteine uovo per massa muscolare. Licopene pomodori.",
+        timing: "Brunch 10:00-12:00 o pranzo leggero",
+        fatBurning: "Avocado stabilizza glicemia, riduce voglie +40%"
+      },
+      {
+        name: "🌿 MEDITERRANEAN QUINOA BOWL - Stile Greco",
+        time: "12 min",
+        servings: 1,
+        calories: "420",
+        type: "Bowl Salata Proteica",
+        category: "MEDITERRANEAN FUSION",
+        ingredients: [
+          "Quinoa cotta: 80g (1/3 tazza)",
+          "Cetriolo: 100g (1 medio) a cubetti",
+          "Pomodori San Marzano: 150g a spicchi",
+          "Feta greca DOP: 60g a cubetti",
+          "Olive Kalamata: 50g (8-10 olive)",
+          "Cipolla rossa tropea: 30g a fettine",
+          "Prezzemolo riccio: 20g tritato",
+          "Menta fresca: 10g tritata",
+          "Olio EVO Taggiasca: 3 cucchiai",
+          "Aceto balsamico di Modena: 1 cucchiaio",
+          "Origano greco secco: 1 cucchiaino",
+          "Sumac in polvere: 1/2 cucchiaino",
+          "Sale marino: pizzico"
+        ],
+        preparation: [
+          "Quinoa: cuocere in brodo vegetale (rapporto 1:2)",
+          "Cetriolo: cubetti regolari 1cm, salare e scolare 10 min",
+          "Pomodori: spicchi, eliminare semi, salare leggermente",
+          "Feta: cubetti 1.5cm, marinare in olio 5 min",
+          "Dressing: olio + aceto + origano + sumac",
+          "Assemblaggio: quinoa base, verdure in sezioni",
+          "Feta e olive distribuite, erbe fresche sopra",
+          "Irrorare con dressing, finish con sumac"
+        ],
+        bimbySteps: [
+          "Quinoa: 12 min / 100°C / Vel 1 (rapporto 1:2 brodo)",
+          "Dressing: olio + aceto + spezie, 10 sec / Vel 3",
+          "Assemblaggio artistico per Instagram"
+        ],
+        benefits: "Quinoa proteine complete. Feta calcio e probiotici. Olive grassi sani omega-9.",
+        timing: "Pranzo 12:00-14:00 per energia pomeridiana",
+        fatBurning: "Quinoa alto contenuto proteico: +25% termogenesi"
+      },
+      {
+        name: "🥗 POWER KALE CAESAR BOWL - Stile NYC",
+        time: "10 min",
+        servings: 1,
+        calories: "390",
+        type: "Bowl Salata Detox",
+        category: "NEW YORK HEALTHY",
+        ingredients: [
+          "Cavolo nero (kale): 100g foglie massaggiate",
+          "Pollo grigliato: 120g a strisce",
+          "Parmigiano 24 mesi: 40g scaglie",
+          "Crostini integrali: 30g (4-5 pezzi)",
+          "Avocado: 1/2 a fettine",
+          "Pomodorini datterini: 80g",
+          "Semi di girasole tostati: 2 cucchiai",
+          "Dressing Caesar light:",
+          "Yogurt greco 0%: 3 cucchiai",
+          "Senape di Digione: 1 cucchiaino",
+          "Aglio: 1 spicchio tritato",
+          "Succo di limone: 1 cucchiaio",
+          "Olio EVO: 1 cucchiaio",
+          "Acciughe: 2 filetti (opzionale)"
+        ],
+        preparation: [
+          "Kale: rimuovere nervature, massaggiare con sale 2 min",
+          "Pollo: grigliare con spezie, tagliare a strisce",
+          "Crostini: tostare con olio e aglio fino a croccanti",
+          "Dressing: tutti ingredienti nel boccale, emulsionare",
+          "Avocado: fettine sottili, spruzzare limone",
+          "Assemblaggio: kale massaggiato come base",
+          "Pollo, avocado, pomodorini in sezioni",
+          "Parmigiano, crostini, semi sopra, dressing a filo"
+        ],
+        bimbySteps: [
+          "Dressing Caesar: tutti ingredienti, 30 sec / Vel 6",
+          "Emulsione perfetta cremosa",
+          "Assemblaggio professionale da ristorante"
+        ],
+        benefits: "Kale superfood antiossidante. Pollo proteine magre. Probiotici yogurt greco.",
+        timing: "Pranzo 12:00-14:00 per energia pulita",
+        fatBurning: "Kale attiva detox epatico, accelera metabolismo +20%"
+      },
+      {
+        name: "🍤 POKE BOWL SALMONE - Stile Hawaiano",
+        time: "15 min",
+        servings: 1,
+        calories: "450",
+        type: "Bowl Salata Fusion",
+        category: "HAWAIIAN FUSION",
+        ingredients: [
+          "Salmone sashimi grade: 150g a cubetti",
+          "Riso sushi cotto: 80g",
+          "Edamame sgusciati: 50g",
+          "Avocado: 1/2 a cubetti",
+          "Cetriolo: 80g a bastoncini",
+          "Carote julienne: 50g",
+          "Cavolo rosso: 40g a julienne",
+          "Alga wakame: 20g reidratata",
+          "Semi di sesamo: 2 cucchiai",
+          "Marinata salmone:",
+          "Salsa soia: 2 cucchiai",
+          "Mirin: 1 cucchiaio",
+          "Olio sesamo: 1 cucchiaino",
+          "Zenzero grattugiato: 1 cucchiaino",
+          "Sriracha: 1/2 cucchiaino"
+        ],
+        preparation: [
+          "Salmone: cubetti 1.5cm, marinare 10 min in frigo",
+          "Riso sushi: cuocere e condire con aceto di riso",
+          "Edamame: sbollentare 3 min, raffreddare",
+          "Verdure: tagliare tutto a julienne sottile",
+          "Wakame: reidratare in acqua tiepida 5 min",
+          "Marinata: mescolare tutti ingredienti",
+          "Assemblaggio: riso base, ingredienti in sezioni colorate",
+          "Salmone marinato al centro, sesamo e salse sopra"
+        ],
+        bimbySteps: [
+          "Riso sushi: 18 min / 100°C / Vel 1 (rapporto 1:1.2)",
+          "Marinata: tutti ingredienti, 15 sec / Vel 4",
+          "Assemblaggio Instagram-worthy"
+        ],
+        benefits: "Omega-3 salmone per cervello. Proteine complete. Probiotici miso.",
+        timing: "Pranzo 12:00-14:00 o cena leggera",
+        fatBurning: "Omega-3 ottimizzano metabolismo grassi +30%"
+      },
+      {
+        name: "🌮 MEXICAN POWER BOWL - Stile Messicano",
+        time: "12 min",
+        servings: 1,
+        calories: "395",
+        type: "Bowl Salata Piccante",
+        category: "MEXICAN STREET FOOD",
+        ingredients: [
+          "Fagioli neri: 100g (cotti o in scatola)",
+          "Riso integrale: 60g (cotto)",
+          "Pollo alla griglia: 100g marinato",
+          "Mais dolce: 60g (fresco o surgelato)",
+          "Pomodori: 100g a cubetti",
+          "Avocado: 1/2 a fettine",
+          "Cipolla rossa: 30g a fettine",
+          "Coriandolo fresco: 20g",
+          "Lime: 1 intero (succo + scorza)",
+          "Jalapeño: 1 a rondelle (opzionale)",
+          "Salsa piccante:",
+          "Yogurt greco: 3 cucchiai",
+          "Paprika affumicata: 1 cucchiaino",
+          "Cumino: 1/2 cucchiaino",
+          "Aglio in polvere: 1/2 cucchiaino",
+          "Cayenna: pizzico"
+        ],
+        preparation: [
+          "Fagioli: scaldare con cumino e aglio",
+          "Pollo: marinare con lime, paprika, cumino, grigliare",
+          "Mais: saltare in padella con poco olio",
+          "Salsa: yogurt + spezie, mescolare bene",
+          "Verdure: tagliare tutto fresco",
+          "Assemblaggio: riso e fagioli come base",
+          "Pollo, verdure, avocado in sezioni",
+          "Salsa piccante sopra, coriandolo e lime finish"
+        ],
+        bimbySteps: [
+          "Salsa piccante: yogurt + spezie, 15 sec / Vel 4",
+          "Riscaldamento fagioli: 3 min / 80°C / Vel 1",
+          "Assemblaggio colorato messicano"
+        ],
+        benefits: "Fagioli fibre e proteine vegetali. Capsaicina jalapeño termogenica.",
+        timing: "Pranzo 12:00-14:00 per energia esplosiva",
+        fatBurning: "Capsaicina aumenta metabolismo +35% per 3h"
+      },
+      {
+        name: "🥙 MIDDLE EASTERN BOWL - Stile Libanese",
+        time: "14 min",
+        servings: 1,
+        calories: "410",
+        type: "Bowl Salata Speziata",
+        category: "MIDDLE EASTERN FUSION",
+        ingredients: [
+          "Bulgur: 70g (cotto)",
+          "Ceci cotti: 80g",
+          "Melanzane: 100g a cubetti",
+          "Zucchine: 80g a rondelle",
+          "Pomodori: 100g a spicchi",
+          "Cetriolo: 80g a cubetti",
+          "Menta fresca: 15g",
+          "Prezzemolo: 15g",
+          "Hummus: 3 cucchiai",
+          "Tahina: 2 cucchiai",
+          "Sumac: 1 cucchiaino",
+          "Za'atar: 1 cucchiaino",
+          "Olio EVO: 2 cucchiai",
+          "Limone: 1 (succo)",
+          "Aglio: 1 spicchio",
+          "Cannella: pizzico"
+        ],
+        preparation: [
+          "Bulgur: cuocere in brodo vegetale speziato",
+          "Melanzane e zucchine: grigliare con za'atar",
+          "Ceci: saltare con aglio, cumino, paprika",
+          "Salsa tahina: tahina + limone + aglio + acqua",
+          "Verdure crude: cubetti regolari, condire",
+          "Assemblaggio: bulgur base, verdure in sezioni",
+          "Hummus, ceci, verdure grigliate sopra",
+          "Erbe fresche, sumac, tahina a filo"
+        ],
+        bimbySteps: [
+          "Bulgur speziato: 15 min / 100°C / Vel 1",
+          "Salsa tahina: tutti ingredienti, 30 sec / Vel 5",
+          "Assemblaggio mediorientale autentico"
+        ],
+        benefits: "Bulgur fibre e proteine. Ceci proteine vegetali. Tahina calcio e magnesio.",
+        timing: "Pranzo 12:00-14:00 per energia sostenuta",
+        fatBurning: "Spezie mediorientali accelerano metabolismo +25%"
       }
     ],
     proteiche: [
