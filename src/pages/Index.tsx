@@ -33,9 +33,17 @@ import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 import RecipeSection from '@/components/RecipeSection';
 
 const Index = () => {
-  const { user, isNewUser, markProfileCompleted } = useAuth();
+  const { user, loading: authLoading, isNewUser, markProfileCompleted } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  // Redirect al login se non autenticato
+  useEffect(() => {
+    if (!authLoading && !user) {
+      console.log('❌ Utente non autenticato - redirect al login');
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
 
   // Redirect automatico al profilo per nuovi utenti
   useEffect(() => {
@@ -74,20 +82,24 @@ const Index = () => {
     }
   }, [user, getWeeklyProgress]);
 
-  if (loading) {
+  // Mostra loading durante l'autenticazione o caricamento dati
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <TrendingDown className="w-6 h-6 text-white animate-pulse" />
           </div>
-          <p className="text-slate-600">Caricamento...</p>
+          <p className="text-slate-600">
+            {authLoading ? "Verifica autenticazione..." : "Caricamento dati..."}
+          </p>
         </div>
       </div>
     );
   }
 
-  if (!userProfile) {
+  // Se non c'è utente dopo il loading, il redirect è già gestito dall'useEffect
+  if (!user || !userProfile) {
     return null;
   }
 
@@ -304,7 +316,7 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="workout" className="mt-4">
-              <WorkoutSection />
+              <WorkoutSection userProfile={userProfile} />
             </TabsContent>
 
             <TabsContent value="shopping" className="mt-4">

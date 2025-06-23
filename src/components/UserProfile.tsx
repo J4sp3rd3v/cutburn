@@ -121,22 +121,33 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
   const handleSave = () => {
     // Validazione dati obbligatori
     if (!profile.age || profile.age < 16 || profile.age > 80) {
-      alert('Inserisci un\'età valida (16-80 anni)');
+      alert('❌ Età: Inserisci un valore valido tra 16 e 80 anni');
       return;
     }
     
     if (!profile.height || profile.height < 140 || profile.height > 220) {
-      alert('Inserisci un\'altezza valida (140-220 cm)');
+      alert('❌ Altezza: Inserisci un valore valido tra 140 e 220 cm');
       return;
     }
     
     if (!profile.currentWeight || profile.currentWeight < 40 || profile.currentWeight > 200) {
-      alert('Inserisci un peso attuale valido (40-200 kg)');
+      alert('❌ Peso attuale: Inserisci un valore valido tra 40 e 200 kg\n\nEsempio: 75.5 kg');
       return;
     }
     
     if (!profile.targetWeight || profile.targetWeight < 40 || profile.targetWeight > 200) {
-      alert('Inserisci un peso obiettivo valido (40-200 kg)');
+      alert('❌ Peso obiettivo: Inserisci un valore valido tra 40 e 200 kg\n\nEsempio: 70.0 kg');
+      return;
+    }
+
+    // Validazione logica pesi
+    if (profile.goal === 'fat-loss' && profile.targetWeight >= profile.currentWeight) {
+      alert('⚠️ Obiettivo Fat Loss: Il peso obiettivo deve essere inferiore al peso attuale');
+      return;
+    }
+    
+    if (profile.goal === 'muscle-gain' && profile.targetWeight <= profile.currentWeight) {
+      alert('⚠️ Obiettivo Muscle Gain: Il peso obiettivo deve essere superiore al peso attuale');
       return;
     }
 
@@ -348,11 +359,23 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.currentWeight}
-                  onChange={(e) => setProfile({...profile, currentWeight: parseFloat(e.target.value) || 0})}
+                  value={profile.currentWeight || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const numValue = value === '' ? 0 : parseFloat(value);
+                    setProfile({
+                      ...profile, 
+                      currentWeight: numValue
+                    });
+                    console.log('💪 Peso attuale aggiornato:', numValue);
+                  }}
                   disabled={!isEditing}
-                  className={isNewUser && !profile.currentWeight ? "border-orange-300" : ""}
+                  className={isNewUser && !profile.currentWeight ? "border-orange-300 bg-orange-50" : ""}
+                  placeholder="es. 75.5"
                 />
+                {profile.currentWeight && (profile.currentWeight < 40 || profile.currentWeight > 200) && (
+                  <p className="text-xs text-red-600 mt-1">⚠️ Valore deve essere tra 40-200 kg</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="targetWeight">Peso obiettivo (kg) *</Label>
@@ -362,11 +385,29 @@ const UserProfile = ({ userStats, onUpdateWeight, weeklyProgress }: UserProfileP
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.targetWeight}
-                  onChange={(e) => setProfile({...profile, targetWeight: parseFloat(e.target.value) || 0})}
+                  value={profile.targetWeight || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const numValue = value === '' ? 0 : parseFloat(value);
+                    setProfile({
+                      ...profile, 
+                      targetWeight: numValue
+                    });
+                    console.log('🎯 Peso obiettivo aggiornato:', numValue);
+                  }}
                   disabled={!isEditing}
-                  className={isNewUser && !profile.targetWeight ? "border-orange-300" : ""}
+                  className={isNewUser && !profile.targetWeight ? "border-orange-300 bg-orange-50" : ""}
+                  placeholder="es. 70.0"
                 />
+                {profile.targetWeight && (profile.targetWeight < 40 || profile.targetWeight > 200) && (
+                  <p className="text-xs text-red-600 mt-1">⚠️ Valore deve essere tra 40-200 kg</p>
+                )}
+                {profile.currentWeight && profile.targetWeight && profile.goal === 'fat-loss' && profile.targetWeight >= profile.currentWeight && (
+                  <p className="text-xs text-orange-600 mt-1">⚠️ Per fat-loss deve essere inferiore al peso attuale</p>
+                )}
+                {profile.currentWeight && profile.targetWeight && profile.goal === 'muscle-gain' && profile.targetWeight <= profile.currentWeight && (
+                  <p className="text-xs text-orange-600 mt-1">⚠️ Per muscle-gain deve essere superiore al peso attuale</p>
+                )}
               </div>
             </div>
           </div>

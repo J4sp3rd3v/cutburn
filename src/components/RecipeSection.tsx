@@ -21,6 +21,7 @@ interface RecipeSectionProps {
 const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
   const [selectedDay, setSelectedDay] = useState(0);
+  const [recipeFilter, setRecipeFilter] = useState("all"); // "all", "dolci", "salate"
   // Rimossa modalità home cooking - sempre attiva per tutti
   
   // Controllo intolleranza lattosio
@@ -1187,6 +1188,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 280,
         type: "Smoothie Bowl",
+        recipeType: "salate", // dolci/salate
         category: "Colazione energizzante",
         ingredients: [
           "Spinaci freschi: 80g (2 manciate)",
@@ -1219,6 +1221,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 320,
         type: "Recovery Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Post-workout",
         ingredients: [
           "Frutti bosco misti: 150g (congelati)",
@@ -1251,6 +1254,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 290,
         type: "Antinfiammatorio",
+        recipeType: "salate", // dolci/salate
         category: "Wellness mattutino",
         ingredients: [
           "Ananas fresco: 100g",
@@ -1284,6 +1288,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 380,
         type: "Layered Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Colazione stratificata",
         ingredients: [
           "Semi chia: 25g",
@@ -1324,6 +1329,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 340,
         type: "Overnight Oats",
+        recipeType: "dolci", // dolci/salate
         category: "Prep ahead breakfast",
         ingredients: [
           "Fiocchi avena: 40g",
@@ -1359,6 +1365,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 420,
         type: "Panna Cotta Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Dessert breakfast",
         ingredients: [
           "Latte cocco lattina: 200ml (parte grassa)",
@@ -1392,6 +1399,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 350,
         type: "Protein Smoothie Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Post-workout indulgence",
         ingredients: [
           "Banana congelata: 1 grande a rondelle",
@@ -1423,11 +1431,86 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         fatBurning: "Proteine + maca aumentano metabolismo basale +15%"
       },
       {
+        name: "AVOCADO POWER Bowl",
+        time: "6 min",
+        servings: 1,
+        calories: 380,
+        type: "Savory Bowl",
+        recipeType: "salate", // dolci/salate
+        category: "Pranzo energetico",
+        ingredients: [
+          "Avocado maturo: 1 intero",
+          "Spinaci freschi: 50g",
+          "Cetriolo: 100g",
+          "Limone: 1/2 (succo)",
+          "Olio EVO: 1 cucchiaio",
+          "Sale marino: pizzico",
+          "Pepe nero: pizzico",
+          "Semi girasole: 20g",
+          "Pomodorini: 100g",
+          "Feta light: 30g"
+        ],
+        preparation: [
+          "Avocado, spinaci, cetriolo tagliati nel boccale",
+          "Aggiungere succo limone, olio, sale, pepe",
+          "Frullare 30 sec / Vel 6 per crema verde",
+          "Non frullare troppo per mantenere texture",
+          "Versare in bowl, aggiungere pomodorini tagliati",
+          "Guarnire con semi girasole e feta sbriciolata"
+        ],
+        bimbySteps: [
+          "Verdure + condimenti: 30 sec / Vel 6",
+          "Texture cremosa ma non liscia",
+          "Guarnizione fresca finale"
+        ],
+        benefits: "Grassi monoinsaturi per testosterone. Potassio per muscoli.",
+        timing: "Pranzo 12:00-14:00 per energia sostenuta",
+        fatBurning: "Avocado stabilizza glicemia, prolunga sazietà"
+      },
+      {
+        name: "HUMMUS VEGGIE Bowl",
+        time: "8 min",
+        servings: 1,
+        calories: 320,
+        type: "Mediterranean Bowl",
+        recipeType: "salate", // dolci/salate
+        category: "Pranzo proteico",
+        ingredients: [
+          "Ceci cotti: 150g",
+          "Tahina: 1 cucchiaio",
+          "Limone: 1/2 (succo)",
+          "Aglio: 1 spicchio",
+          "Olio EVO: 2 cucchiai",
+          "Cumino: pizzico",
+          "Paprika: pizzico",
+          "Carote: 100g",
+          "Peperoni: 100g",
+          "Rucola: 30g"
+        ],
+        preparation: [
+          "Ceci, tahina, limone, aglio nel boccale",
+          "Aggiungere 1 cucchiaio olio, cumino, paprika",
+          "Frullare 1 min / Vel 8 per hummus cremoso",
+          "Carote e peperoni a bastoncini",
+          "Versare hummus in bowl, disporre verdure",
+          "Irrorare con olio rimasto, guarnire con rucola"
+        ],
+        bimbySteps: [
+          "Hummus: 1 min / Vel 8",
+          "Verdure crude a bastoncini",
+          "Assemblaggio colorato"
+        ],
+        benefits: "Proteine vegetali complete. Fibre per microbioma intestinale.",
+        timing: "Pranzo 12:00-14:00 per energia vegetale",
+        fatBurning: "Proteine vegetali richiedono più energia per digestione"
+      },
+      {
         name: "FILL ME UP PROTEIN",
         time: "4 min",
         servings: 1,
         calories: 390,
         type: "Superfood Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Ultimate nutrition",
         ingredients: [
           "Açaí surgelato: 100g",
@@ -1465,6 +1548,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 320,
         type: "Green Superfood",
+        recipeType: "salate", // dolci/salate
         category: "Detox powerhouse",
         ingredients: [
           "Banana congelata: 1 grande a rondelle",
@@ -1502,6 +1586,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 410,
         type: "Chocolate Protein Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Guilt-free indulgence",
         ingredients: [
           "Banana congelata: 1 grande a rondelle",
@@ -1538,6 +1623,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 450,
         type: "Michelin Bowl",
+        recipeType: "dolci", // dolci/salate
         category: "Purple Royalty",
         ingredients: [
           "Açaí puro: 100g (polpa congelata premium)",
@@ -1953,6 +2039,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: "1 litro (4 porzioni da 250ml)",
         calories: "45 kcal totali",
         type: "Estratto Termogenico",
+        recipeType: "salate", // dolci/salate
         category: "LIPOLISI ESTREMA - ESTRATTORE",
         efficacy: "98%",
         badge: "1L TERMOGENICO",
@@ -1997,6 +2084,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: "1 litro (4 porzioni da 250ml)",
         calories: "38 kcal totali",
         type: "Estratto Freddo Termogenico",
+        recipeType: "salate", // dolci/salate
         category: "BROWN FAT ACTIVATION - ESTRATTORE",
         efficacy: "92%",
         badge: "1L CRYO-BURN",
@@ -2041,6 +2129,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: "1 litro (4 porzioni da 250ml)",
         calories: "52 kcal totali",
         type: "Estratto Performance Nitrico",
+        recipeType: "salate", // dolci/salate
         category: "PUMP + TERMOGENESI - ESTRATTORE",
         efficacy: "96%",
         badge: "1L NITRO-PUMP",
@@ -2085,6 +2174,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 85,
         type: "Smoothie Bruciagrassi",
+        recipeType: "salate", // dolci/salate
         category: "Pre-workout Termogenico",
         efficacy: "95%",
         badge: "EXTREME BURN",
@@ -2121,6 +2211,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 110,
         type: "Frullato Energizzante",
+        recipeType: "dolci", // dolci/salate
         category: "Morning Energy Kick",
         efficacy: "90%",
         badge: "ENERGY BLAST",
@@ -2194,6 +2285,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 180,
         type: "Frullato Proteico",
+        recipeType: "dolci", // dolci/salate
         category: "Post-Workout Recovery",
         efficacy: "92%",
         badge: "MUSCLE FUEL",
@@ -2231,6 +2323,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 120,
         type: "Smoothie Antiossidante",
+        recipeType: "dolci", // dolci/salate
         category: "Recovery & Anti-aging",
         efficacy: "85%",
         badge: "YOUTH ELIXIR",
@@ -2267,6 +2360,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 65,
         type: "Estratto Idratante",
+        recipeType: "salate", // dolci/salate
         category: "Hydration & Electrolytes",
         efficacy: "90%",
         badge: "HYDRO BOOST",
@@ -2303,6 +2397,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 140,
         type: "Smoothie Stellato Premium",
+        recipeType: "salate", // dolci/salate
         category: "Luxury Fat Burner",
         efficacy: "98%",
         badge: "MICHELIN STAR",
@@ -2342,6 +2437,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 160,
         type: "Frullato Stellato Antiossidante",
+        recipeType: "dolci", // dolci/salate
         category: "Royal Antioxidant Therapy",
         efficacy: "96%",
         badge: "ROYAL TREATMENT",
@@ -2381,6 +2477,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
         servings: 1,
         calories: 95,
         type: "Estratto Stellato Detox",
+        recipeType: "salate", // dolci/salate
         category: "Platinum Detox Therapy",
         efficacy: "94%",
         badge: "PLATINUM PURE",
@@ -2424,7 +2521,28 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
     { key: "frullati", label: "Frullati", icon: <ChefHat className="w-4 h-4" /> }
   ];
 
-  const currentRecipes = recipes[selectedCategory as keyof typeof recipes];
+  // Funzione per filtrare le ricette in base al tipo
+  const getFilteredRecipes = () => {
+    const allRecipes = recipes[selectedCategory as keyof typeof recipes];
+    
+    if (recipeFilter === "all") {
+      return allRecipes;
+    }
+    
+    // Filtra solo le ricette che hanno la proprietà recipeType
+    return allRecipes.filter((recipe: any) => 
+      recipe.recipeType === recipeFilter
+    );
+  };
+
+  const currentRecipes = getFilteredRecipes();
+
+  // Conta le ricette per tipo nella categoria corrente
+  const getRecipeCount = (type: string) => {
+    const allRecipes = recipes[selectedCategory as keyof typeof recipes];
+    if (type === "all") return allRecipes.length;
+    return allRecipes.filter((recipe: any) => recipe.recipeType === type).length;
+  };
 
   return (
     <div className="space-y-4">
@@ -2468,7 +2586,10 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
             key={category.key}
             variant={selectedCategory === category.key ? "default" : "outline"}
             size="sm"
-            onClick={() => setSelectedCategory(category.key)}
+            onClick={() => {
+              setSelectedCategory(category.key);
+              setRecipeFilter("all"); // Reset filtro quando cambia categoria
+            }}
             className="flex items-center space-x-2 justify-center"
           >
             {category.icon}
@@ -2476,6 +2597,41 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
           </Button>
         ))}
       </div>
+
+      {/* Filtri Dolci/Salate - Solo per bowls */}
+      {selectedCategory === "bowls" && (
+        <div className="bg-slate-50 rounded-lg p-3">
+          <div className="flex items-center space-x-2 mb-3">
+            <span className="text-sm font-medium text-slate-700">Filtra per tipo:</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant={recipeFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setRecipeFilter("all")}
+              className="text-xs"
+            >
+              🍽️ Tutte ({getRecipeCount("all")})
+            </Button>
+            <Button
+              variant={recipeFilter === "dolci" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setRecipeFilter("dolci")}
+              className="text-xs"
+            >
+              🍰 Dolci ({getRecipeCount("dolci")})
+            </Button>
+            <Button
+              variant={recipeFilter === "salate" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setRecipeFilter("salate")}
+              className="text-xs"
+            >
+              🥗 Salate ({getRecipeCount("salate")})
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Recipes List */}
       <div className="space-y-4">
@@ -2500,6 +2656,21 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
                   {recipe.calories} kcal
                 </Badge>
                 <div className="text-xs text-slate-500">{recipe.type}</div>
+                {/* Badge tipo ricetta */}
+                {(recipe as any).recipeType && (
+                  <div className="mt-1">
+                    <Badge 
+                      variant="secondary" 
+                      className={`text-xs ${
+                        (recipe as any).recipeType === "dolci" 
+                          ? "bg-pink-100 text-pink-700 hover:bg-pink-200" 
+                          : "bg-green-100 text-green-700 hover:bg-green-200"
+                      }`}
+                    >
+                      {(recipe as any).recipeType === "dolci" ? "🍰 Dolce" : "🥗 Salato"}
+                    </Badge>
+                  </div>
+                )}
                 {/* Badge efficacia per frullati */}
                 {selectedCategory === "frullati" && (recipe as any).efficacy && (
                   <div className="mt-2">

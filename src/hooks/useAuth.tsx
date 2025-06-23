@@ -26,6 +26,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
 
+  // Debug: controlla localStorage all'avvio
+  useEffect(() => {
+    const checkLocalStorage = () => {
+      const authToken = localStorage.getItem('cutburn-supabase-auth-token');
+      console.log('🔍 localStorage auth token:', authToken ? 'Presente' : 'Assente');
+      if (authToken) {
+        try {
+          const parsed = JSON.parse(authToken);
+          console.log('📅 Token expires_at:', parsed.expires_at ? new Date(parsed.expires_at * 1000).toLocaleString() : 'Non specificato');
+          console.log('👤 Token user email:', parsed.user?.email || 'Non disponibile');
+        } catch (e) {
+          console.warn('⚠️ Errore parsing token localStorage:', e);
+        }
+      }
+    };
+    checkLocalStorage();
+  }, []);
+
   // Evita disconnessioni durante la navigazione
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -74,6 +92,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (attempts < maxAttempts) {
               await new Promise(resolve => setTimeout(resolve, 1000));
               continue;
+            } else {
+              // Dopo tutti i tentativi falliti, considera l'utente non autenticato
+              console.log('❌ Controllo sessione fallito dopo tutti i tentativi');
+              setUser(null);
+              setLoading(false);
+              return;
             }
           }
           
@@ -81,9 +105,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('✅ Sessione trovata per:', session.user.email);
             console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
             console.log('⏰ Sessione scade:', new Date(session.expires_at! * 1000).toLocaleString());
-            await loadUserProfile(session.user);
+            
+            // Verifica che la sessione non sia scaduta
+            if (session.expires_at && session.expires_at * 1000 < Date.now()) {
+              console.log('⚠️ Sessione scaduta, tentativo refresh...');
+              const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+              if (refreshError || !refreshData.session) {
+                console.log('❌ Refresh sessione fallito, utente non autenticato');
+                setUser(null);
+                setLoading(false);
+                return;
+              }
+              await loadUserProfile(refreshData.session.user);
+            } else {
+              await loadUserProfile(session.user);
+            }
           } else {
             console.log('ℹ️ Nessuna sessione attiva');
+            setUser(null);
           }
           break; // Successo, esci dal loop
           
@@ -91,6 +130,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error(`❌ Errore controllo sessione tentativo ${attempts}:`, error);
           if (attempts < maxAttempts) {
             await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            // Dopo tutti i tentativi falliti
+            console.log('❌ Controllo sessione completamente fallito');
+            setUser(null);
           }
         }
       }
@@ -242,6 +285,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (data.user && data.session) {
           console.log('🔄 Caricamento profilo utente...');
+          console.log('💾 Sessione salvata in localStorage:', data.session.expires_at ? new Date(data.session.expires_at * 1000).toLocaleString() : 'Scadenza non specificata');
           
           // Caricamento profilo semplificato senza timeout
           try {
@@ -256,6 +300,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               created_at: data.user.created_at
             });
           }
+          
+          // Verifica immediata che la sessione sia stata salvata
+          setTimeout(async () => {
+            const { data: { session: savedSession } } = await supabase.auth.getSession();
+            if (savedSession) {
+              console.log('✅ Sessione verificata e persistente dopo login');
+            } else {
+              console.warn('⚠️ Sessione non trovata dopo login - possibile problema di persistenza');
+            }
+          }, 1000);
           
           console.log('✅ Login completato con successo!');
           return true;

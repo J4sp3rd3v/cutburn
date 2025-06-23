@@ -2,132 +2,265 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Target, Dumbbell, Play, Check, Timer } from 'lucide-react';
+import { Clock, Target, Dumbbell, Play, Check, Timer, Flame, Zap } from 'lucide-react';
 import ExerciseTimer from '@/components/ExerciseTimer';
 
-const WorkoutSection = () => {
+interface UserProfile {
+  id: string;
+  name: string;
+  age: number;
+  height: number;
+  currentWeight: number;
+  startWeight: number;
+  targetWeight: number;
+  activityLevel: string;
+  goal: string;
+  intermittentFasting: boolean;
+  lactoseIntolerant: boolean;
+  targetCalories: number;
+  targetWater: number;
+  created_at: string;
+}
+
+interface WorkoutSectionProps {
+  userProfile: UserProfile;
+}
+
+const WorkoutSection: React.FC<WorkoutSectionProps> = ({ userProfile }) => {
   const [completedExercises, setCompletedExercises] = useState<string[]>([]);
   const [currentWorkout, setCurrentWorkout] = useState('petto');
   const [showTimer, setShowTimer] = useState<string | null>(null);
 
+  // Calcolo personalizzazione basata su profilo utente
+  const getPersonalizedWeights = () => {
+    const weightFactor = userProfile.currentWeight / 70; // Base 70kg
+    const experienceMultiplier = userProfile.activityLevel === 'sedentary' ? 0.7 : 
+                                userProfile.activityLevel === 'moderate' ? 1.0 : 1.3;
+    
+    return {
+      light: Math.round(8 * weightFactor * experienceMultiplier),
+      medium: Math.round(12 * weightFactor * experienceMultiplier),
+      heavy: Math.round(16 * weightFactor * experienceMultiplier)
+    };
+  };
+
+  const getPersonalizedSets = () => {
+    if (userProfile.goal === 'fat-loss') {
+      return { sets: '4', reps: '12-15', rest: 45 }; // Higher reps, shorter rest
+    } else if (userProfile.goal === 'muscle-gain') {
+      return { sets: '4', reps: '8-10', rest: 90 }; // Lower reps, longer rest
+    }
+    return { sets: '3', reps: '10-12', rest: 60 }; // Maintenance
+  };
+
+  const getWorkoutFocus = () => {
+    if (userProfile.goal === 'fat-loss') {
+      return {
+        title: 'Allenamento Fat-Loss',
+        subtitle: 'Massima ossidazione grassi • HIIT • Deficit calorico',
+        primaryColor: 'from-red-500 to-orange-500'
+      };
+    } else if (userProfile.goal === 'muscle-gain') {
+      return {
+        title: 'Allenamento Massa',
+        subtitle: 'Ipertrofia muscolare • Sovraccarico progressivo • Forza',
+        primaryColor: 'from-blue-500 to-purple-500'
+      };
+    }
+    return {
+      title: 'Allenamento Mirato',
+      subtitle: 'Tonificazione • Definizione • Benessere',
+      primaryColor: 'from-purple-500 to-blue-500'
+    };
+  };
+
+  const weights = getPersonalizedWeights();
+  const setConfig = getPersonalizedSets();
+  const workoutFocus = getWorkoutFocus();
+
   const workouts = {
     petto: {
-      name: 'Petto & Tricipiti',
-      duration: '45 min',
-      focus: 'Sviluppo torace, definizione muscolare',
+      name: userProfile.goal === 'fat-loss' ? 'Petto Fat-Burn' : 'Petto & Tricipiti',
+      duration: userProfile.goal === 'fat-loss' ? '35 min' : '45 min',
+      focus: userProfile.goal === 'fat-loss' ? 
+        'Brucia grassi pettorali, definizione estrema' : 
+        'Sviluppo torace, definizione muscolare',
       exercises: [
         {
           id: 'bench-press',
           name: 'Panca Piana con Manubri',
-          sets: '4 x 8-10',
-          rest: '90 sec',
-          restSeconds: 90,
-          weight: '12kg per braccio',
-          instructions: 'Scendere lentamente, spingere esplosivamente. Focus sul centro del petto.',
+          sets: `${setConfig.sets} x ${setConfig.reps}`,
+          rest: `${setConfig.rest} sec`,
+          restSeconds: setConfig.rest,
+          weight: `${weights.medium}kg per braccio`,
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Tempo controllato 2-1-2. Focus brucia grassi, alta intensità.' :
+            'Scendere lentamente, spingere esplosivamente. Focus sul centro del petto.',
           muscles: 'Torace, deltoidi anteriori'
         },
         {
           id: 'incline-press',
           name: 'Panca Inclinata 30°',
-          sets: '3 x 10-12',
-          rest: '75 sec',
-          restSeconds: 75,
-          weight: '10kg per braccio',
-          instructions: 'Inclinazione 30°. Movimento controllato, massima contrazione in alto.',
+          sets: `${setConfig.sets} x ${setConfig.reps}`,
+          rest: `${Math.round(setConfig.rest * 0.8)} sec`,
+          restSeconds: Math.round(setConfig.rest * 0.8),
+          weight: `${weights.light}kg per braccio`,
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Superserie possibili. Movimento esplosivo, massimo consumo calorico.' :
+            'Inclinazione 30°. Movimento controllato, massima contrazione in alto.',
           muscles: 'Torace superiore'
         },
         {
           id: 'flyes',
           name: 'Croci su Panca',
-          sets: '3 x 12-15',
-          rest: '60 sec',
-          restSeconds: 60,
-          weight: '8kg per braccio',
-          instructions: 'Movimento ad arco, sentire lo stretch. Non bloccare i gomiti.',
+          sets: `${setConfig.sets} x ${userProfile.goal === 'fat-loss' ? '15-20' : setConfig.reps}`,
+          rest: `${Math.round(setConfig.rest * 0.7)} sec`,
+          restSeconds: Math.round(setConfig.rest * 0.7),
+          weight: `${weights.light}kg per braccio`,
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Range alto, tempo sotto tensione. Brucia grassi localizzati.' :
+            'Movimento ad arco, sentire lo stretch. Non bloccare i gomiti.',
           muscles: 'Torace, definizione'
         },
         {
           id: 'push-ups',
-          name: 'Flessioni Diamante',
-          sets: '3 x max',
-          rest: '60 sec',
-          restSeconds: 60,
+          name: userProfile.goal === 'fat-loss' ? 'Flessioni Esplosive' : 'Flessioni Diamante',
+          sets: userProfile.goal === 'fat-loss' ? '4 x 15-20' : '3 x max',
+          rest: `${Math.round(setConfig.rest * 0.7)} sec`,
+          restSeconds: Math.round(setConfig.rest * 0.7),
           weight: 'Corpo libero',
-          instructions: 'Mani a diamante, corpo rigido. Focus sui tricipiti.',
-          muscles: 'Tricipiti, torace interno'
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Movimento esplosivo, cardio integrato. Massimo consumo calorico.' :
+            'Mani a diamante, corpo rigido. Focus sui tricipiti.',
+          muscles: userProfile.goal === 'fat-loss' ? 'Torace, cardio' : 'Tricipiti, torace interno'
         }
       ]
     },
     cardio: {
-      name: 'Cardio Brucia Grassi',
-      duration: '30 min',
-      focus: 'Ossidazione grassi, deficit calorico',
+      name: userProfile.goal === 'fat-loss' ? 'HIIT Fat-Burn' : 'Cardio Brucia Grassi',
+      duration: userProfile.goal === 'fat-loss' ? '25 min' : '30 min',
+      focus: userProfile.goal === 'fat-loss' ? 
+        'HIIT massimo, afterburn effect, grasso viscerale' : 
+        'Ossidazione grassi, deficit calorico',
       exercises: [
         {
           id: 'treadmill',
-          name: 'Tapis Roulant HIIT',
-          sets: '5 rounds',
-          rest: '60 sec recovery',
-          restSeconds: 60,
+          name: userProfile.goal === 'fat-loss' ? 'HIIT Estremo' : 'Tapis Roulant HIIT',
+          sets: userProfile.goal === 'fat-loss' ? '8 rounds' : '5 rounds',
+          rest: userProfile.goal === 'fat-loss' ? '30 sec recovery' : '60 sec recovery',
+          restSeconds: userProfile.goal === 'fat-loss' ? 30 : 60,
           weight: 'Intensità variabile',
-          instructions: '2 min a 7 km/h, 1 min a 12 km/h. Mantenere frequenza cardiaca 75-85% FCmax.',
-          muscles: 'Sistema cardiovascolare'
+          instructions: userProfile.goal === 'fat-loss' ? 
+            '30 sec sprint massimo, 30 sec recovery. FCmax 85-95%. Afterburn garantito.' :
+            '2 min a 7 km/h, 1 min a 12 km/h. Mantenere frequenza cardiaca 75-85% FCmax.',
+          muscles: userProfile.goal === 'fat-loss' ? 'Cardio, metabolismo' : 'Sistema cardiovascolare'
         },
         {
           id: 'rowing',
-          name: 'Vogatore',
-          sets: '4 x 500m',
-          rest: '90 sec',
-          restSeconds: 90,
-          weight: 'Resistenza media',
-          instructions: 'Tecnica corretta: gambe, core, braccia. Ritmo costante.',
-          muscles: 'Full body, dorso'
-        }
+          name: userProfile.goal === 'fat-loss' ? 'Rowing Tabata' : 'Vogatore',
+          sets: userProfile.goal === 'fat-loss' ? '4 x Tabata' : '4 x 500m',
+          rest: userProfile.goal === 'fat-loss' ? '60 sec' : '90 sec',
+          restSeconds: userProfile.goal === 'fat-loss' ? 60 : 90,
+          weight: 'Resistenza alta',
+          instructions: userProfile.goal === 'fat-loss' ? 
+            '20 sec massimo sforzo, 10 sec pausa x8. Protocollo Tabata scientifico.' :
+            'Tecnica corretta: gambe, core, braccia. Ritmo costante.',
+          muscles: userProfile.goal === 'fat-loss' ? 'Full body, fat-burn' : 'Full body, dorso'
+        },
+        ...(userProfile.goal === 'fat-loss' ? [{
+          id: 'burpees',
+          name: 'Burpees Metabolici',
+          sets: '3 x 12',
+          rest: '45 sec',
+          restSeconds: 45,
+          weight: 'Corpo libero',
+          instructions: 'Movimento esplosivo completo. Salto in alto, plank perfetto. Massimo consumo.',
+          muscles: 'Full body, core'
+        }] : [])
       ]
     },
     addominali: {
-      name: 'Core & Addominali',
-      duration: '20 min',
-      focus: 'Riduzione grasso addominale, stabilità core',
+      name: userProfile.goal === 'fat-loss' ? 'Addome Fat-Burn' : 'Core & Addominali',
+      duration: userProfile.goal === 'fat-loss' ? '25 min' : '20 min',
+      focus: userProfile.goal === 'fat-loss' ? 
+        'Eliminazione grasso viscerale, addome scolpito, ginecomastia' : 
+        'Riduzione grasso addominale, stabilità core',
       exercises: [
         {
           id: 'plank',
-          name: 'Plank Statico',
-          sets: '4 x 45 sec',
+          name: userProfile.goal === 'fat-loss' ? 'Plank Dinamico' : 'Plank Statico',
+          sets: userProfile.goal === 'fat-loss' ? '5 x 60 sec' : '4 x 45 sec',
           rest: '30 sec',
           restSeconds: 30,
           weight: 'Corpo libero',
-          instructions: 'Corpo perfettamente allineato. Respirazione controllata.',
-          muscles: 'Core, stabilizzatori'
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Plank con movimento braccia/gambe. Massimo consumo calorico, core instabile.' :
+            'Corpo perfettamente allineato. Respirazione controllata.',
+          muscles: userProfile.goal === 'fat-loss' ? 'Core, metabolismo' : 'Core, stabilizzatori'
         },
         {
           id: 'bicycle',
           name: 'Bicycle Crunches',
-          sets: '4 x 20 per lato',
-          rest: '45 sec',
-          restSeconds: 45,
+          sets: userProfile.goal === 'fat-loss' ? '5 x 25 per lato' : '4 x 20 per lato',
+          rest: userProfile.goal === 'fat-loss' ? '30 sec' : '45 sec',
+          restSeconds: userProfile.goal === 'fat-loss' ? 30 : 45,
           weight: 'Corpo libero',
-          instructions: 'Movimento controllato, gomito verso ginocchio opposto.',
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Movimento esplosivo, alta velocità. Target grasso laterale e viscerale.' :
+            'Movimento controllato, gomito verso ginocchio opposto.',
           muscles: 'Addominali obliqui'
         },
         {
           id: 'leg-raises',
-          name: 'Leg Raises',
-          sets: '3 x 15',
-          rest: '60 sec',
-          restSeconds: 60,
+          name: userProfile.goal === 'fat-loss' ? 'Leg Raises Esplosivi' : 'Leg Raises',
+          sets: userProfile.goal === 'fat-loss' ? '4 x 20' : '3 x 15',
+          rest: userProfile.goal === 'fat-loss' ? '45 sec' : '60 sec',
+          restSeconds: userProfile.goal === 'fat-loss' ? 45 : 60,
           weight: 'Corpo libero',
-          instructions: 'Gambe tese, movimento lento e controllato. Non toccare il suolo.',
+          instructions: userProfile.goal === 'fat-loss' ? 
+            'Movimento esplosivo su, controllo giù. Focus grasso addominale basso.' :
+            'Gambe tese, movimento lento e controllato. Non toccare il suolo.',
           muscles: 'Addominali bassi'
-        }
+        },
+        ...(userProfile.goal === 'fat-loss' ? [{
+          id: 'mountain-climbers',
+          name: 'Mountain Climbers',
+          sets: '4 x 30 sec',
+          rest: '30 sec',
+          restSeconds: 30,
+          weight: 'Corpo libero',
+          instructions: 'Movimento esplosivo, ginocchia al petto. Cardio + core, brucia grasso viscerale.',
+          muscles: 'Core, cardio, fat-burn'
+        }, {
+          id: 'russian-twists',
+          name: 'Russian Twists',
+          sets: '4 x 20 per lato',
+          rest: '30 sec',
+          restSeconds: 30,
+          weight: 'Corpo libero',
+          instructions: 'Rotazione esplosiva, focus obliqui. Target love handles e grasso laterale.',
+          muscles: 'Obliqui, rotatori'
+        }] : [])
       ]
     }
   };
 
   const workoutOptions = [
-    { key: 'petto', label: 'Petto', icon: <Dumbbell className="w-4 h-4" /> },
-    { key: 'cardio', label: 'Cardio', icon: <Target className="w-4 h-4" /> },
-    { key: 'addominali', label: 'Core', icon: <Target className="w-4 h-4" /> }
+    { 
+      key: 'petto', 
+      label: userProfile.goal === 'fat-loss' ? 'Petto' : 'Petto', 
+      icon: <Dumbbell className="w-4 h-4" /> 
+    },
+    { 
+      key: 'cardio', 
+      label: userProfile.goal === 'fat-loss' ? 'HIIT' : 'Cardio', 
+      icon: userProfile.goal === 'fat-loss' ? <Flame className="w-4 h-4" /> : <Target className="w-4 h-4" /> 
+    },
+    { 
+      key: 'addominali', 
+      label: userProfile.goal === 'fat-loss' ? 'Addome' : 'Core', 
+      icon: userProfile.goal === 'fat-loss' ? <Zap className="w-4 h-4" /> : <Target className="w-4 h-4" /> 
+    }
   ];
 
   const workout = workouts[currentWorkout as keyof typeof workouts];
@@ -147,10 +280,10 @@ const WorkoutSection = () => {
     <div className="space-y-4">
       <div className="text-center py-4">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">
-          Allenamento Mirato
+          {workoutFocus.title}
         </h2>
         <p className="text-slate-600">
-          Focus ginecomastia • Sovraccarico progressivo • Timer perfetti
+          {workoutFocus.subtitle}
         </p>
       </div>
 
@@ -171,7 +304,7 @@ const WorkoutSection = () => {
       </div>
 
       {/* Workout Overview */}
-      <Card className="p-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+      <Card className={`p-4 bg-gradient-to-r ${workoutFocus.primaryColor} text-white`}>
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold">{workout.name}</h3>
           <Badge variant="secondary" className="bg-white/20 text-white">
