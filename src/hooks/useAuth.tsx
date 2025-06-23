@@ -152,17 +152,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('⏰ Sessione scade:', new Date(session.expires_at! * 1000).toLocaleString());
       }
 
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('✅ Utente loggato - sessione persistente attiva');
-        await loadUserProfile(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        console.log('👋 Utente disconnesso');
-        setUser(null);
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        console.log('🔄 Token aggiornato - sessione estesa');
-        await loadUserProfile(session.user);
+      try {
+        if (event === 'SIGNED_IN' && session?.user) {
+          console.log('✅ Utente loggato - sessione persistente attiva');
+          await loadUserProfile(session.user);
+        } else if (event === 'SIGNED_OUT') {
+          console.log('👋 Utente disconnesso');
+          setUser(null);
+          setLoading(false);
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          console.log('🔄 Token aggiornato - sessione estesa');
+          await loadUserProfile(session.user);
+        } else {
+          // Altri eventi (INITIAL_SESSION, etc.)
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('❌ Errore gestione auth state change:', error);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     // Mantieni la sessione attiva con refresh periodico
@@ -205,6 +213,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       console.log('✅ Impostazione utente con dati base:', basicUser);
       setUser(basicUser);
+      setLoading(false); // IMPORTANTE: imposta loading a false subito
       
       // Poi prova a caricare il profilo dal database (opzionale)
       try {
@@ -238,6 +247,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         name: supabaseUser.email?.split('@')[0] || 'Utente',
         created_at: supabaseUser.created_at
       });
+      setLoading(false); // IMPORTANTE: imposta loading a false anche in caso di errore
     }
   };
 
