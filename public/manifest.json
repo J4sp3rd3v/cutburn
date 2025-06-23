@@ -28,6 +28,18 @@
   ],
   "icons": [
     {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
       "src": "/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
@@ -84,7 +96,7 @@
       "url": "/?action=weight",
       "icons": [
         {
-          "src": "/icon-96x96.png",
+          "src": "/icon.svg",
           "sizes": "96x96"
         }
       ]
@@ -96,7 +108,7 @@
       "url": "/?tab=diet",
       "icons": [
         {
-          "src": "/icon-96x96.png", 
+          "src": "/icon.svg", 
           "sizes": "96x96"
         }
       ]
@@ -108,7 +120,7 @@
       "url": "/?tab=workout",
       "icons": [
         {
-          "src": "/icon-96x96.png",
+          "src": "/icon.svg",
           "sizes": "96x96"
         }
       ]

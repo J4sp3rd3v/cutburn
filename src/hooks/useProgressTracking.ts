@@ -44,6 +44,18 @@ export const useProgressTracking = () => {
   const [loading, setLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   
+  // Timeout di sicurezza per evitare loading infinito
+  useEffect(() => {
+    if (user && loading) {
+      const timeout = setTimeout(() => {
+        console.warn('🚨 TIMEOUT CRITICO: Forzando loading=false dopo 3 secondi');
+        setLoading(false);
+      }, 3000);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [user, loading]);
+  
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('userProfile', null);
   const [pendingSync, setPendingSync] = useLocalStorage<PendingData[]>('pendingSync', []);
   const [lastSyncDate, setLastSyncDate] = useLocalStorage<string>('lastSyncDate', '');
@@ -135,7 +147,8 @@ export const useProgressTracking = () => {
     if (!isOnline || !user || pendingSync.length === 0) return;
 
     console.log('🔄 Sincronizzazione dati pending:', pendingSync.length, 'elementi');
-    setLoading(true);
+    // NON impostare loading=true per la sincronizzazione
+    // setLoading(true); // RIMOSSO
 
     const successfulSyncs: string[] = [];
     
@@ -172,7 +185,8 @@ export const useProgressTracking = () => {
       });
     }
 
-    setLoading(false);
+    // NON modificare loading per la sincronizzazione
+    // setLoading(false); // RIMOSSO
   };
 
   // Enhanced save functions with offline support
@@ -283,14 +297,26 @@ export const useProgressTracking = () => {
   const loadDataFromSupabase = async () => {
     if (!user) return;
     
-    setLoading(true);
+    // NON impostare loading=true qui per evitare blocchi
+    // setLoading(true); // RIMOSSO
     try {
-      // Carica profilo utente
-      const { data: profileData, error: profileError } = await supabase
+      console.log('🔄 Caricamento dati utente da Supabase per:', user.email);
+      
+      // Carica profilo utente con timeout di 10 secondi
+      const profilePromise = supabase
         .from('user_profiles')
         .select('*')
         .eq('auth_user_id', user.id)
         .single();
+
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout caricamento profilo')), 10000)
+      );
+
+      const { data: profileData, error: profileError } = await Promise.race([
+        profilePromise,
+        timeoutPromise
+      ]) as any;
 
       if (!profileError && profileData) {
         const profile: UserProfile = {
@@ -311,53 +337,134 @@ export const useProgressTracking = () => {
         };
         setUserProfile(profile);
         console.log('✅ Profilo caricato da Supabase:', profile.name);
-      }
 
-      // Carica progressi giornalieri se il profilo è stato trovato
-      if (!profileError && profileData) {
-        const today = new Date().toISOString().split('T')[0];
-        const { data: progressData, error: progressError } = await supabase
-          .from('daily_progress')
-          .select('*')
-          .eq('user_id', profileData.id)
-          .eq('date', today)
-          .single();
+        // Carica progressi giornalieri solo se il profilo è stato trovato
+        try {
+          const today = new Date().toISOString().split('T')[0];
+          const { data: progressData, error: progressError } = await supabase
+            .from('daily_progress')
+            .select('*')
+            .eq('user_id', profileData.id)
+            .eq('date', today)
+            .single();
 
-        if (!progressError && progressData) {
-          const progress: DailyProgress = {
-            date: progressData.date,
-            water: progressData.water || 0,
-            calories: progressData.calories || 0,
-            weight: progressData.weight,
-            workoutCompleted: progressData.workout_completed || false,
-            supplementsTaken: progressData.supplements_taken || 0,
-            shotsConsumed: progressData.shots_consumed || []
-          };
-          setDailyProgress(progress);
-          console.log('✅ Progressi giornalieri caricati da Supabase');
+          if (!progressError && progressData) {
+            const progress: DailyProgress = {
+              date: progressData.date,
+              water: progressData.water || 0,
+              calories: progressData.calories || 0,
+              weight: progressData.weight,
+              workoutCompleted: progressData.workout_completed || false,
+              supplementsTaken: progressData.supplements_taken || 0,
+              shotsConsumed: progressData.shots_consumed || []
+            };
+            setDailyProgress(progress);
+            console.log('✅ Progressi giornalieri caricati da Supabase');
+          }
+        } catch (progressError) {
+          console.log('⚠️ Errore caricamento progressi (non critico):', progressError);
         }
+      } else {
+        console.log('⚠️ Profilo non trovato nel database - nuovo utente o errore:', profileError?.message);
+        
+        // Per nuovi utenti, crea un profilo di base
+        const defaultProfile: UserProfile = {
+          id: user.id,
+          name: user.name || user.email?.split('@')[0] || 'Utente',
+          age: 0, // Valori vuoti per nuovo utente
+          height: 0,
+          currentWeight: 0,
+          startWeight: 0,
+          targetWeight: 0,
+          activityLevel: 'moderate',
+          goal: 'fat-loss',
+          intermittentFasting: false,
+          lactoseIntolerant: false,
+          targetCalories: 1800,
+          targetWater: 2500,
+          created_at: user.created_at
+        };
+        
+        setUserProfile(defaultProfile);
+        console.log('✅ Profilo di base creato per nuovo utente');
       }
       
     } catch (error) {
       console.error('❌ Errore caricamento dati da Supabase:', error);
+      
+      // Fallback: crea sempre un profilo di base per evitare blocchi
+      const fallbackProfile: UserProfile = {
+        id: user.id,
+        name: user.name || user.email?.split('@')[0] || 'Utente',
+        age: 0,
+        height: 0,
+        currentWeight: 0,
+        startWeight: 0,
+        targetWeight: 0,
+        activityLevel: 'moderate',
+        goal: 'fat-loss',
+        intermittentFasting: false,
+        lactoseIntolerant: false,
+        targetCalories: 1800,
+        targetWater: 2500,
+        created_at: user.created_at
+      };
+      
+      setUserProfile(fallbackProfile);
+      console.log('✅ Profilo fallback creato dopo errore');
     } finally {
-      setLoading(false);
+      // NON modificare loading qui, è già gestito nell'useEffect principale
+      // setLoading(false); // RIMOSSO
+      console.log('✅ Caricamento dati completato');
     }
   };
 
   // Inizializza il profilo utente con i dati dell'utente autenticato
   useEffect(() => {
-    if (user && !userProfile && isOnline) {
-      // Prima prova a caricare da Supabase
-      loadDataFromSupabase();
+    if (user && !userProfile) {
+      console.log('🔄 Inizializzazione profilo per utente:', user.email);
+      
+      // Sempre crea un profilo di base IMMEDIATAMENTE per evitare blocchi
+      const baseProfile: UserProfile = {
+        id: user.id,
+        name: user.name || user.email?.split('@')[0] || 'Utente',
+        age: 0,
+        height: 0,
+        currentWeight: 0,
+        startWeight: 0,
+        targetWeight: 0,
+        activityLevel: 'moderate',
+        goal: 'fat-loss',
+        intermittentFasting: false,
+        lactoseIntolerant: false,
+        targetCalories: 1800,
+        targetWater: 2500,
+        created_at: user.created_at
+      };
+      
+      setUserProfile(baseProfile);
+      setLoading(false); // IMPORTANTE: Imposta loading a false SUBITO
+      console.log('✅ Profilo base creato immediatamente');
+      
+      // POI, se online, prova a caricare dati da Supabase in background
+      if (isOnline) {
+        console.log('🌐 Tentativo caricamento dati da Supabase in background...');
+        loadDataFromSupabase().catch(error => {
+          console.warn('⚠️ Errore caricamento background, continuo con profilo base:', error);
+        });
+      }
     } else if (user && userProfile && userProfile.name !== user.name) {
       // Aggiorna il nome se è cambiato
       const updatedProfile = { ...userProfile, name: user.name, id: user.id };
       setUserProfile(updatedProfile);
       saveProfileWithOfflineSupport(updatedProfile);
       console.log('🔄 Nome utente aggiornato:', user.name);
+    } else if (user && userProfile) {
+      // Utente e profilo già presenti, assicurati che loading sia false
+      setLoading(false);
+      console.log('✅ Utente e profilo già disponibili');
     }
-  }, [user, isOnline]);
+  }, [user]);
 
   // Check for day change on app start
   useEffect(() => {

@@ -1,0 +1,75 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradiente principale rosso-arancione -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradiente per le fiamme -->
+    <linearGradient id="fireGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Ombra -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Sfondo circolare -->
+  <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" filter="url(#shadow)"/>
+  
+  <!-- Cerchio interno più scuro -->
+  <circle cx="256" cy="256" r="200" fill="#0f172a" opacity="0.1"/>
+  
+  <!-- Bilanciere stilizzato -->
+  <g transform="translate(256, 256)">
+    <!-- Barra centrale -->
+    <rect x="-120" y="-8" width="240" height="16" rx="8" fill="#ffffff" opacity="0.9"/>
+    
+    <!-- Peso sinistro -->
+    <rect x="-140" y="-35" width="40" height="70" rx="8" fill="#ffffff" opacity="0.9"/>
+    <rect x="-135" y="-30" width="30" height="60" rx="6" fill="#fbbf24"/>
+    
+    <!-- Peso destro -->
+    <rect x="100" y="-35" width="40" height="70" rx="8" fill="#ffffff" opacity="0.9"/>
+    <rect x="105" y="-30" width="30" height="60" rx="6" fill="#fbbf24"/>
+    
+    <!-- Dettagli sui pesi -->
+    <circle cx="-120" cy="0" r="4" fill="#ef4444"/>
+    <circle cx="120" cy="0" r="4" fill="#ef4444"/>
+  </g>
+  
+  <!-- Fiamme stilizzate intorno al bilanciere -->
+  <g transform="translate(256, 256)" opacity="0.8">
+    <!-- Fiamma 1 -->
+    <path d="M -60 -80 Q -50 -100 -40 -85 Q -35 -95 -25 -80 Q -30 -70 -45 -75 Z" fill="url(#fireGradient)"/>
+    
+    <!-- Fiamma 2 -->
+    <path d="M 40 -80 Q 50 -100 60 -85 Q 65 -95 75 -80 Q 70 -70 55 -75 Z" fill="url(#fireGradient)"/>
+    
+    <!-- Fiamma 3 -->
+    <path d="M -80 60 Q -70 40 -60 55 Q -55 45 -45 60 Q -50 70 -65 65 Z" fill="url(#fireGradient)"/>
+    
+    <!-- Fiamma 4 -->
+    <path d="M 60 60 Q 70 40 80 55 Q 85 45 95 60 Q 90 70 75 65 Z" fill="url(#fireGradient)"/>
+  </g>
+  
+  <!-- Testo "CB" stilizzato -->
+  <g transform="translate(256, 380)">
+    <text x="0" y="0" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="48" font-weight="900" fill="#ffffff" opacity="0.9">CB</text>
+    <text x="0" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#fbbf24" opacity="0.8">PRO</text>
+  </g>
+  
+  <!-- Elementi decorativi - stelle/scintille -->
+  <g opacity="0.6">
+    <circle cx="150" cy="150" r="3" fill="#fbbf24"/>
+    <circle cx="360" cy="160" r="2" fill="#ffffff"/>
+    <circle cx="140" cy="350" r="2.5" fill="#fbbf24"/>
+    <circle cx="370" cy="340" r="2" fill="#ffffff"/>
+  </g>
+</svg> 
