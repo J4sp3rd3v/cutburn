@@ -23,24 +23,76 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Evita disconnessioni durante la navigazione
   useEffect(() => {
-    // Controlla se c'è già un utente loggato
-    const checkUser = async () => {
-      try {
-        console.log('🔄 Controllo sessione esistente...');
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          console.log('✅ Sessione trovata per:', session.user.email);
-          console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
-          await loadUserProfile(session.user);
-        } else {
-          console.log('ℹ️ Nessuna sessione attiva');
+    const handleBeforeUnload = () => {
+      // Non fare nulla, mantieni la sessione
+    };
+
+    const handleVisibilityChange = async () => {
+      if (!document.hidden && user) {
+        // Quando l'utente torna alla tab, verifica la sessione
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session?.user) {
+            console.log('⚠️ Sessione persa durante inattività');
+            setUser(null);
+          }
+        } catch (error) {
+          console.warn('⚠️ Errore controllo sessione al ritorno:', error);
         }
-      } catch (error) {
-        console.error('❌ Errore controllo sessione:', error);
-      } finally {
-        setLoading(false);
       }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user]);
+
+  useEffect(() => {
+    // Controlla se c'è già un utente loggato con retry
+    const checkUser = async () => {
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (attempts < maxAttempts) {
+        try {
+          attempts++;
+          console.log(`🔄 Controllo sessione esistente (tentativo ${attempts}/${maxAttempts})...`);
+          
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.warn(`⚠️ Errore controllo sessione tentativo ${attempts}:`, error);
+            if (attempts < maxAttempts) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              continue;
+            }
+          }
+          
+          if (session?.user) {
+            console.log('✅ Sessione trovata per:', session.user.email);
+            console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
+            console.log('⏰ Sessione scade:', new Date(session.expires_at! * 1000).toLocaleString());
+            await loadUserProfile(session.user);
+          } else {
+            console.log('ℹ️ Nessuna sessione attiva');
+          }
+          break; // Successo, esci dal loop
+          
+        } catch (error) {
+          console.error(`❌ Errore controllo sessione tentativo ${attempts}:`, error);
+          if (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      }
+      
+      setLoading(false);
     };
 
     checkUser();
@@ -51,22 +103,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (session?.user) {
         console.log('👤 Utente:', session.user.email);
         console.log('📧 Email confermata:', session.user.email_confirmed_at ? 'Sì' : 'No');
+        console.log('⏰ Sessione scade:', new Date(session.expires_at! * 1000).toLocaleString());
       }
 
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('✅ Utente loggato');
+        console.log('✅ Utente loggato - sessione persistente attiva');
         await loadUserProfile(session.user);
       } else if (event === 'SIGNED_OUT') {
         console.log('👋 Utente disconnesso');
         setUser(null);
       } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        console.log('🔄 Token aggiornato');
+        console.log('🔄 Token aggiornato - sessione estesa');
         await loadUserProfile(session.user);
       }
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Mantieni la sessione attiva con refresh periodico
+    const keepSessionAlive = setInterval(async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Refresh token se la sessione è vicina alla scadenza (< 10 minuti)
+          const expiresAt = session.expires_at! * 1000;
+          const now = Date.now();
+          const tenMinutes = 10 * 60 * 1000;
+          
+          if (expiresAt - now < tenMinutes) {
+            console.log('🔄 Refresh token preventivo...');
+            await supabase.auth.refreshSession();
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ Errore refresh preventivo:', error);
+      }
+    }, 5 * 60 * 1000); // Ogni 5 minuti
+
+    return () => {
+      subscription.unsubscribe();
+      clearInterval(keepSessionAlive);
+    };
   }, []);
 
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {

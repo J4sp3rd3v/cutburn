@@ -13,10 +13,23 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    // Sessione persistente per 7 giorni
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storageKey: 'cutburn-supabase-auth-token',
+    flowType: 'pkce'
   },
   global: {
     headers: {
       'x-client-info': 'cutburn-app/1.0.0',
     },
+  },
+  // Configurazioni per sessioni lunghe
+  db: {
+    schema: 'public'
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 2
+    }
   }
 });
