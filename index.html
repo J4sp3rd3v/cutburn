@@ -105,6 +105,25 @@
             
             console.log('✅ Service Worker registered:', registration.scope);
             
+            // Listen for messages from Service Worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+              console.log('📨 Message from Service Worker:', event.data);
+              
+              if (event.data.type === 'REQUEST_PENDING_DATA') {
+                // Send pending data to service worker
+                const pendingData = JSON.parse(localStorage.getItem('pendingSync') || '[]');
+                navigator.serviceWorker.controller?.postMessage({
+                  type: 'PENDING_DATA_RESPONSE',
+                  data: pendingData
+                });
+              } else if (event.data.type === 'BACKGROUND_SYNC' || event.data.type === 'TRIGGER_SYNC') {
+                // Trigger sync in React app
+                window.dispatchEvent(new CustomEvent('triggerSync', {
+                  detail: event.data
+                }));
+              }
+            });
+            
             // Check for updates
             registration.addEventListener('updatefound', () => {
               const newWorker = registration.installing;

@@ -31,13 +31,151 @@ interface UserProfile {
   created_at: string;
 }
 
+interface PendingData {
+  id: string;
+  type: 'profile' | 'progress';
+  data: any;
+  timestamp: number;
+  attempts: number;
+}
+
 export const useProgressTracking = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('userProfile', null);
+  const [pendingSync, setPendingSync] = useLocalStorage<PendingData[]>('pendingSync', []);
+  const [lastSyncDate, setLastSyncDate] = useLocalStorage<string>('lastSyncDate', '');
 
-  // Salva il profilo utente su Supabase
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('🌐 Connessione ripristinata - avvio sincronizzazione');
+      setIsOnline(true);
+      syncPendingData();
+      checkForDayChange();
+    };
+
+    const handleOffline = () => {
+      console.log('📡 Connessione persa - modalità offline attiva');
+      setIsOnline(false);
+      toast({
+        title: "Modalità Offline 📡",
+        description: "I dati verranno sincronizzati al ritorno online",
+      });
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Check for day change and update diet accordingly
+  const checkForDayChange = async () => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (lastSyncDate && lastSyncDate !== today) {
+      console.log('📅 Cambio giorno rilevato:', lastSyncDate, '→', today);
+      
+      toast({
+        title: "Nuovo Giorno! 🌅",
+        description: "Aggiornamento protocollo dieta e reset progressi",
+      });
+
+      // Reset daily progress for new day
+      const newProgress: DailyProgress = {
+        date: today,
+        water: 0,
+        calories: 0,
+        workoutCompleted: false,
+        supplementsTaken: 0,
+        shotsConsumed: []
+      };
+      setDailyProgress(newProgress);
+
+      // Force reload of diet data if needed
+      if (window.location.pathname === '/' || window.location.pathname === '/diet') {
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    }
+    
+    setLastSyncDate(today);
+  };
+
+  // Add data to pending sync queue
+  const addToPendingSync = (type: 'profile' | 'progress', data: any) => {
+    const pendingItem: PendingData = {
+      id: `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type,
+      data,
+      timestamp: Date.now(),
+      attempts: 0
+    };
+
+    setPendingSync(prev => {
+      // Remove old entries of same type to avoid duplicates
+      const filtered = prev.filter(item => 
+        !(item.type === type && Date.now() - item.timestamp < 5000)
+      );
+      return [...filtered, pendingItem];
+    });
+
+    console.log('📦 Dati aggiunti alla coda di sincronizzazione:', type);
+  };
+
+  // Sync all pending data when online
+  const syncPendingData = async () => {
+    if (!isOnline || !user || pendingSync.length === 0) return;
+
+    console.log('🔄 Sincronizzazione dati pending:', pendingSync.length, 'elementi');
+    setLoading(true);
+
+    const successfulSyncs: string[] = [];
+    
+    for (const item of pendingSync) {
+      try {
+        if (item.type === 'profile') {
+          await saveProfileToSupabase(item.data);
+          successfulSyncs.push(item.id);
+          console.log('✅ Profilo sincronizzato:', item.id);
+        } else if (item.type === 'progress') {
+          await saveDailyProgressToSupabase(item.data);
+          successfulSyncs.push(item.id);
+          console.log('✅ Progressi sincronizzati:', item.id);
+        }
+      } catch (error) {
+        console.error('❌ Errore sincronizzazione:', item.id, error);
+        
+        // Increment attempts and remove if too many failures
+        item.attempts++;
+        if (item.attempts >= 3) {
+          successfulSyncs.push(item.id); // Remove after 3 failed attempts
+          console.warn('⚠️ Elemento rimosso dopo 3 tentativi falliti:', item.id);
+        }
+      }
+    }
+
+    // Remove successfully synced items
+    if (successfulSyncs.length > 0) {
+      setPendingSync(prev => prev.filter(item => !successfulSyncs.includes(item.id)));
+      
+      toast({
+        title: "Sincronizzazione Completata! ✅",
+        description: `${successfulSyncs.length} elementi sincronizzati con successo`,
+      });
+    }
+
+    setLoading(false);
+  };
+
+  // Enhanced save functions with offline support
   const saveProfileToSupabase = async (profile: UserProfile) => {
     if (!user || !profile) return;
     
@@ -64,16 +202,16 @@ export const useProgressTracking = () => {
         });
 
       if (error) {
-        console.error('❌ Errore salvataggio profilo su Supabase:', error);
-      } else {
-        console.log('✅ Profilo salvato su Supabase:', profile.name);
+        throw error;
       }
+      
+      console.log('✅ Profilo salvato su Supabase:', profile.name);
     } catch (error) {
-      console.error('❌ Errore connessione Supabase per profilo:', error);
+      console.error('❌ Errore salvataggio profilo su Supabase:', error);
+      throw error;
     }
   };
 
-  // Salva i progressi giornalieri su Supabase
   const saveDailyProgressToSupabase = async (progress: DailyProgress) => {
     if (!user || !userProfile) return;
     
@@ -86,8 +224,7 @@ export const useProgressTracking = () => {
         .single();
 
       if (!profileData) {
-        console.error('❌ Profilo utente non trovato per salvare progressi');
-        return;
+        throw new Error('Profilo utente non trovato');
       }
 
       const { error } = await supabase
@@ -107,12 +244,38 @@ export const useProgressTracking = () => {
         });
 
       if (error) {
-        console.error('❌ Errore salvataggio progressi su Supabase:', error);
-      } else {
-        console.log('✅ Progressi salvati su Supabase per:', progress.date);
+        throw error;
       }
+      
+      console.log('✅ Progressi salvati su Supabase per:', progress.date);
     } catch (error) {
-      console.error('❌ Errore connessione Supabase per progressi:', error);
+      console.error('❌ Errore salvataggio progressi su Supabase:', error);
+      throw error;
+    }
+  };
+
+  // Enhanced save with offline support
+  const saveProfileWithOfflineSupport = (profile: UserProfile) => {
+    if (isOnline) {
+      // Try immediate save
+      saveProfileToSupabase(profile).catch(() => {
+        addToPendingSync('profile', profile);
+      });
+    } else {
+      // Add to pending queue
+      addToPendingSync('profile', profile);
+    }
+  };
+
+  const saveProgressWithOfflineSupport = (progress: DailyProgress) => {
+    if (isOnline) {
+      // Try immediate save
+      saveDailyProgressToSupabase(progress).catch(() => {
+        addToPendingSync('progress', progress);
+      });
+    } else {
+      // Add to pending queue
+      addToPendingSync('progress', progress);
     }
   };
 
@@ -184,17 +347,49 @@ export const useProgressTracking = () => {
 
   // Inizializza il profilo utente con i dati dell'utente autenticato
   useEffect(() => {
-    if (user && !userProfile) {
+    if (user && !userProfile && isOnline) {
       // Prima prova a caricare da Supabase
       loadDataFromSupabase();
     } else if (user && userProfile && userProfile.name !== user.name) {
       // Aggiorna il nome se è cambiato
       const updatedProfile = { ...userProfile, name: user.name, id: user.id };
       setUserProfile(updatedProfile);
-      saveProfileToSupabase(updatedProfile);
+      saveProfileWithOfflineSupport(updatedProfile);
       console.log('🔄 Nome utente aggiornato:', user.name);
     }
+  }, [user, isOnline]);
+
+  // Check for day change on app start
+  useEffect(() => {
+    if (user) {
+      checkForDayChange();
+    }
   }, [user]);
+
+  // Auto-sync when coming back online
+  useEffect(() => {
+    if (isOnline && user && pendingSync.length > 0) {
+      setTimeout(() => {
+        syncPendingData();
+      }, 1000); // Wait 1 second after coming online
+    }
+  }, [isOnline, user]);
+
+  // Listen for service worker sync triggers
+  useEffect(() => {
+    const handleServiceWorkerSync = (event: any) => {
+      console.log('🔄 Service Worker triggered sync:', event.detail);
+      if (user && isOnline) {
+        syncPendingData();
+      }
+    };
+
+    window.addEventListener('triggerSync', handleServiceWorkerSync);
+    
+    return () => {
+      window.removeEventListener('triggerSync', handleServiceWorkerSync);
+    };
+  }, [user, isOnline]);
 
   const today = new Date().toISOString().split('T')[0];
   const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress>(`dailyProgress_${today}`, {
@@ -208,33 +403,13 @@ export const useProgressTracking = () => {
 
   const [weeklyProgress, setWeeklyProgress] = useLocalStorage<Array<{ date: string; weight: number }>>('weeklyProgress', []);
 
-  // Auto-salva su Supabase quando i dati cambiano
-  useEffect(() => {
-    if (userProfile && user) {
-      const timeoutId = setTimeout(() => {
-        saveProfileToSupabase(userProfile);
-      }, 2000); // Salva dopo 2 secondi di inattività
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [userProfile, user]);
-
-  useEffect(() => {
-    if (dailyProgress && user) {
-      const timeoutId = setTimeout(() => {
-        saveDailyProgressToSupabase(dailyProgress);
-      }, 2000); // Salva dopo 2 secondi di inattività
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [dailyProgress, user]);
-
   const addWater = () => {
     if (!userProfile) return;
     
     const newWater = Math.min(dailyProgress.water + 500, userProfile.targetWater);
     const newProgress = { ...dailyProgress, water: newWater };
     setDailyProgress(newProgress);
+    saveProgressWithOfflineSupport(newProgress);
     
     if (newWater >= userProfile.targetWater) {
       toast({
@@ -250,6 +425,7 @@ export const useProgressTracking = () => {
     const newCalories = Math.min(dailyProgress.calories + amount, userProfile.targetCalories);
     const newProgress = { ...dailyProgress, calories: newCalories };
     setDailyProgress(newProgress);
+    saveProgressWithOfflineSupport(newProgress);
   };
 
   const updateWeight = (weight: number) => {
@@ -258,10 +434,12 @@ export const useProgressTracking = () => {
     // Update profile
     const updatedProfile = { ...userProfile, currentWeight: weight };
     setUserProfile(updatedProfile);
+    saveProfileWithOfflineSupport(updatedProfile);
 
     // Update daily progress
     const newProgress = { ...dailyProgress, weight };
     setDailyProgress(newProgress);
+    saveProgressWithOfflineSupport(newProgress);
 
     // Update weekly progress
     const newEntry = { date: today, weight };
@@ -272,7 +450,7 @@ export const useProgressTracking = () => {
 
     toast({
       title: "Peso aggiornato",
-      description: `Nuovo peso: ${weight}kg`,
+      description: `Nuovo peso: ${weight}kg ${!isOnline ? '(sarà sincronizzato online)' : ''}`,
     });
   };
 
@@ -280,6 +458,7 @@ export const useProgressTracking = () => {
     const newShots = [...dailyProgress.shotsConsumed, shotType];
     const newProgress = { ...dailyProgress, shotsConsumed: newShots };
     setDailyProgress(newProgress);
+    saveProgressWithOfflineSupport(newProgress);
     
     toast({
       title: "Shot registrato! 🥤",
@@ -291,6 +470,7 @@ export const useProgressTracking = () => {
     const newWorkoutStatus = !dailyProgress.workoutCompleted;
     const newProgress = { ...dailyProgress, workoutCompleted: newWorkoutStatus };
     setDailyProgress(newProgress);
+    saveProgressWithOfflineSupport(newProgress);
     
     if (newWorkoutStatus) {
       toast({
@@ -304,6 +484,8 @@ export const useProgressTracking = () => {
     dailyProgress,
     userProfile,
     loading,
+    isOnline,
+    pendingSync: pendingSync.length,
     addWater,
     addCalories,
     updateWeight,
@@ -311,6 +493,8 @@ export const useProgressTracking = () => {
     toggleWorkout,
     getWeeklyProgress: () => weeklyProgress,
     saveProfileToSupabase,
-    loadDataFromSupabase
+    loadDataFromSupabase,
+    syncPendingData,
+    checkForDayChange
   };
 };

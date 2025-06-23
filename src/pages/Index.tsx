@@ -115,12 +115,15 @@ const Index = () => {
     dailyProgress,
     userProfile,
     loading,
+    isOnline,
+    pendingSync,
     addWater,
     addCalories,
     updateWeight,
     addShot,
     toggleWorkout,
-    getWeeklyProgress
+    getWeeklyProgress,
+    syncPendingData
   } = useProgressTracking();
 
   const {
@@ -189,6 +192,33 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-2">
+              {/* Indicatore stato sincronizzazione */}
+              {!isOnline && (
+                <div className="flex items-center space-x-1 bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span>Offline</span>
+                </div>
+              )}
+              
+              {isOnline && pendingSync > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={syncPendingData}
+                  className="flex items-center space-x-1 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs hover:bg-blue-200"
+                >
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span>{pendingSync}</span>
+                </Button>
+              )}
+              
+              {isOnline && pendingSync === 0 && (
+                <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Sync</span>
+                </div>
+              )}
+              
               <Button
                 variant="ghost"
                 size="sm"

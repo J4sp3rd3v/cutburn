@@ -133,41 +133,66 @@ self.addEventListener('sync', (event) => {
 // Sync user data when connection is restored
 async function syncUserData() {
   try {
-    console.log('📤 Syncing user data...');
+    console.log('📤 Background sync: starting user data sync...');
     
-    // Get pending data from IndexedDB or localStorage
+    // Get pending data from localStorage
     const pendingData = await getPendingData();
     
     if (pendingData.length > 0) {
-      // Send to Supabase
-      for (const data of pendingData) {
-        await syncToSupabase(data);
+      console.log(`📦 Found ${pendingData.length} pending items to sync`);
+      
+      // Notify main app to handle sync
+      const clients = await self.clients.matchAll();
+      for (const client of clients) {
+        client.postMessage({
+          type: 'BACKGROUND_SYNC',
+          action: 'SYNC_PENDING_DATA',
+          data: pendingData
+        });
       }
       
-      // Clear pending data after successful sync
-      await clearPendingData();
-      console.log('✅ User data synced successfully');
+      console.log('✅ Background sync notification sent to app');
     }
   } catch (error) {
-    console.error('❌ Failed to sync user data:', error);
+    console.error('❌ Background sync failed:', error);
   }
 }
 
 // Helper functions for data sync
 async function getPendingData() {
-  // Implementation would get data from IndexedDB
-  return [];
+  try {
+    // Try to get pending data from localStorage
+    const clients = await self.clients.matchAll();
+    if (clients.length > 0) {
+      // Ask the main app for pending data
+      clients[0].postMessage({
+        type: 'REQUEST_PENDING_DATA'
+      });
+    }
+    return [];
+  } catch (error) {
+    console.error('Error getting pending data:', error);
+    return [];
+  }
 }
 
-async function syncToSupabase(data) {
-  // Implementation would send data to Supabase
-  console.log('Syncing data:', data);
-}
-
-async function clearPendingData() {
-  // Implementation would clear pending data
-  console.log('Cleared pending data');
-}
+// Listen for messages from main app
+self.addEventListener('message', (event) => {
+  console.log('📨 Service Worker received message:', event.data);
+  
+  if (event.data.type === 'PENDING_DATA_RESPONSE') {
+    // Handle pending data from main app
+    const pendingData = event.data.data || [];
+    if (pendingData.length > 0) {
+      console.log(`📦 Received ${pendingData.length} pending items from main app`);
+      // Trigger sync in main app
+      event.source.postMessage({
+        type: 'TRIGGER_SYNC',
+        data: pendingData
+      });
+    }
+  }
+});
 
 // Push notification handling
 self.addEventListener('push', (event) => {
