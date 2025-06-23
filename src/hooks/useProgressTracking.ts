@@ -189,37 +189,73 @@ export const useProgressTracking = () => {
     // setLoading(false); // RIMOSSO
   };
 
+  // Test connessione Supabase
+  const testSupabaseConnection = async () => {
+    try {
+      console.log('🔍 Test connessione Supabase...');
+      const { data, error } = await supabase.from('user_profiles').select('count').limit(1);
+      if (error) {
+        console.error('❌ Test Supabase fallito:', error);
+        return false;
+      }
+      console.log('✅ Connessione Supabase OK');
+      return true;
+    } catch (error) {
+      console.error('❌ Errore test Supabase:', error);
+      return false;
+    }
+  };
+
   // Enhanced save functions with offline support
   const saveProfileToSupabase = async (profile: UserProfile) => {
-    if (!user || !profile) return;
+    if (!user || !profile) {
+      console.warn('⚠️ saveProfileToSupabase: user o profile mancanti');
+      return;
+    }
+    
+    console.log('🔄 Tentativo salvataggio profilo su Supabase per:', user.email);
+    console.log('📊 Dati profilo da salvare:', {
+      name: profile.name,
+      age: profile.age,
+      height: profile.height,
+      currentWeight: profile.currentWeight,
+      targetWeight: profile.targetWeight,
+      goal: profile.goal
+    });
     
     try {
-      const { error } = await supabase
+      const profileData = {
+        auth_user_id: user.id,
+        name: profile.name,
+        age: profile.age,
+        height: profile.height,
+        current_weight: profile.currentWeight,
+        start_weight: profile.startWeight,
+        target_weight: profile.targetWeight,
+        activity_level: profile.activityLevel,
+        goal: profile.goal,
+        intermittent_fasting: profile.intermittentFasting,
+        lactose_intolerant: profile.lactoseIntolerant,
+        target_calories: profile.targetCalories,
+        target_water: profile.targetWater,
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('📤 Invio dati a Supabase:', profileData);
+
+      const { data, error } = await supabase
         .from('user_profiles')
-        .upsert({
-          auth_user_id: user.id,
-          name: profile.name,
-          age: profile.age,
-          height: profile.height,
-          current_weight: profile.currentWeight,
-          start_weight: profile.startWeight,
-          target_weight: profile.targetWeight,
-          activity_level: profile.activityLevel,
-          goal: profile.goal,
-          intermittent_fasting: profile.intermittentFasting,
-          lactose_intolerant: profile.lactoseIntolerant,
-          target_calories: profile.targetCalories,
-          target_water: profile.targetWater,
-          updated_at: new Date().toISOString()
-        }, {
+        .upsert(profileData, {
           onConflict: 'auth_user_id'
         });
 
       if (error) {
+        console.error('❌ Errore Supabase:', error);
         throw error;
       }
       
-      console.log('✅ Profilo salvato su Supabase:', profile.name);
+      console.log('✅ Profilo salvato su Supabase con successo:', profile.name);
+      console.log('📊 Risposta Supabase:', data);
     } catch (error) {
       console.error('❌ Errore salvataggio profilo su Supabase:', error);
       throw error;
@@ -561,20 +597,56 @@ export const useProgressTracking = () => {
     });
   };
 
-  const updateProfile = (profileData: Partial<UserProfile>) => {
+  const updateProfile = async (profileData: Partial<UserProfile>) => {
     if (!userProfile) return;
 
     // Update profile with new data
     const updatedProfile = { ...userProfile, ...profileData };
     setUserProfile(updatedProfile);
-    saveProfileWithOfflineSupport(updatedProfile);
 
-    console.log('✅ Profilo aggiornato:', updatedProfile);
-    
-    toast({
-      title: "Profilo aggiornato",
-      description: `Le modifiche sono state salvate ${!isOnline ? '(saranno sincronizzate online)' : ''}`,
-    });
+    console.log('🔄 Aggiornamento profilo:', updatedProfile);
+
+    // Prova a salvare immediatamente su Supabase se online
+    if (isOnline) {
+      // Prima testa la connessione
+      const isConnected = await testSupabaseConnection();
+      
+      if (isConnected) {
+        try {
+          await saveProfileToSupabase(updatedProfile);
+          console.log('✅ Profilo salvato su Supabase con successo');
+          
+          toast({
+            title: "Profilo aggiornato ✅",
+            description: "Le modifiche sono state salvate su cloud",
+          });
+        } catch (error) {
+          console.warn('⚠️ Errore salvataggio Supabase, aggiungo a pending:', error);
+          addToPendingSync('profile', updatedProfile);
+          
+          toast({
+            title: "Profilo aggiornato ⚠️",
+            description: "Salvato localmente, sincronizzazione in corso...",
+          });
+        }
+      } else {
+        console.warn('⚠️ Connessione Supabase non disponibile, aggiungo a pending');
+        addToPendingSync('profile', updatedProfile);
+        
+        toast({
+          title: "Profilo aggiornato 🔄",
+          description: "Cloud non raggiungibile, sincronizzerà automaticamente",
+        });
+      }
+    } else {
+      // Se offline, aggiungi alla coda
+      addToPendingSync('profile', updatedProfile);
+      
+      toast({
+        title: "Profilo aggiornato 📡",
+        description: "Salvato offline, sincronizzerà quando torni online",
+      });
+    }
   };
 
   const addShot = (shotType: string) => {

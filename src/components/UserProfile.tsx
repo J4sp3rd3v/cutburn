@@ -188,8 +188,9 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     }
     
     // Salva il profilo usando la funzione passata dal parent
+    console.log('🔄 Chiamata onUpdateProfile con dati:', profileToSave);
     onUpdateProfile(profileToSave);
-    console.log('💾 Profilo salvato:', profileToSave);
+    console.log('💾 Profilo salvato localmente:', profileToSave);
     console.log('📊 Metriche calcolate:', metrics);
   };
 
