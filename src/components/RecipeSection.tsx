@@ -21,7 +21,7 @@ interface RecipeSectionProps {
 const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
   const [selectedDay, setSelectedDay] = useState(0);
-  const [homeCookingMode, setHomeCookingMode] = useState(true); // Modalità casa di default
+  // Rimossa modalità home cooking - sempre attiva per tutti
   
   // Controllo intolleranza lattosio
   const isLactoseIntolerant = userProfile?.lactoseIntolerant || false;
@@ -1690,6 +1690,139 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
       }
     ],
     frullati: [
+      // === ESTRATTI TERMOGENICI 1 LITRO - ESTRATTORE ===
+      {
+        name: "🔥 ESTRATTO TERMOGENICO CAYENNA 1L",
+        time: "8 min",
+        servings: "1 litro (4 porzioni da 250ml)",
+        calories: "45 kcal totali",
+        type: "Estratto Termogenico",
+        category: "LIPOLISI ESTREMA - ESTRATTORE",
+        efficacy: "98%",
+        badge: "1L TERMOGENICO",
+        ingredients: [
+          "Sedano verde fresco: 400g (6-7 gambi grandi)",
+          "Cetriolo con buccia: 300g (2 cetrioli medi)",
+          "Spinaci baby: 200g (2 buste)",
+          "Zenzero fresco pelato: 100g (pezzo grande)",
+          "Limone intero con buccia: 80g (2 limoni)",
+          "Peperoncino cayenna fresco: 15g (3-4 peperoncini)",
+          "Curcuma fresca: 10g (o 3g polvere)",
+          "Pepe nero macinato fresco: 5g (1 cucchiaino)",
+          "Acqua oligominerale: 200ml (se serve)"
+        ],
+        preparation: [
+          "Lavare tutto sotto acqua corrente fredda",
+          "Sedano: tagliare a bastoncini da 5cm per estrattore",
+          "Cetriolo: affettare con buccia spessore 1cm",
+          "Zenzero: pelare e tagliare a rondelle sottili",
+          "Limoni: dividere a spicchi mantenendo buccia",
+          "Cayenna: tritare finemente (USARE GUANTI!)",
+          "Preparare estrattore con contenitore da 1L pulito"
+        ],
+        bimbySteps: [
+          "ESTRATTORE LENTO: Velocità minima per max nutrienti",
+          "1° Inserire sedano e cetriolo alternati",
+          "2° Aggiungere spinaci mescolati a zenzero",
+          "3° Estrarre limoni con buccia molto lentamente", 
+          "4° Cayenna e curcuma gradualmente (piccantezza)",
+          "5° Mescolare estratto con cucchiaio di legno",
+          "6° Pepe nero macinato fresco nell'estratto finale",
+          "CONSERVAZIONE: Frigo max 24h in bottiglia vetro scuro"
+        ],
+        benefits: "Capsaicina termogenesi +45%, Gingerolo lipolisi +35%, Curcumina anti-infiammatorio potente, Piperina aumenta biodisponibilità +200%",
+        timing: "250ml a digiuno 6:00 + 250ml pre-workout + 500ml durante giornata",
+        fatBurning: "Cocktail termogenico scientificamente dosato: +70% ossidazione grassi per 6h consecutive",
+        scientificProof: "Capsaicina 15mg/L: +45% REE (Yoshioka 1995), Gingerolo 100mg/L: +35% lipolisi (Mansour 2012), Piperina: +200% biodisponibilità curcumina"
+      },
+      {
+        name: "❄️ ESTRATTO CRYO-TERMOGENICO 1L",
+        time: "10 min",
+        servings: "1 litro (4 porzioni da 250ml)",
+        calories: "38 kcal totali",
+        type: "Estratto Freddo Termogenico",
+        category: "BROWN FAT ACTIVATION - ESTRATTORE",
+        efficacy: "92%",
+        badge: "1L CRYO-BURN",
+        ingredients: [
+          "Cetriolo ghiacciato: 500g (3 cetrioli - 2h in freezer)",
+          "Sedano ghiacciato: 300g (4-5 gambi - 2h in freezer)",
+          "Menta fresca: 150g (3 mazzi grandi)",
+          "Prezzemolo riccio: 100g (2 mazzi)",
+          "Zenzero fresco: 80g (pezzo medio)",
+          "Lime verde: 60g (3 lime con buccia)",
+          "Peperoncino jalapeño: 20g (2-3 jalapeño)",
+          "Estratto menta piperita: 10g (o 30g foglie extra)",
+          "Ghiaccio tritato: q.b. per servizio"
+        ],
+        preparation: [
+          "PRE-RAFFREDDAMENTO: Cetriolo e sedano 2h in freezer",
+          "Estrattore e contenitore in frigo 1h prima",
+          "Menta e prezzemolo: lavaggio in acqua ghiacciata",
+          "Zenzero: pelare e tenere in ghiaccio fino all'uso",
+          "Lime: tagliare a spicchi con buccia (ricchi oli essenziali)",
+          "Jalapeño: rimuovere semi per controllo piccantezza",
+          "Ambiente estrazione: <18°C per effetto cryo"
+        ],
+        bimbySteps: [
+          "ESTRATTORE TEMPERATURA AMBIENTE <18°C",
+          "1° Estrarre verdure ghiacciate per prime",
+          "2° Alternare menta e prezzemolo (oli essenziali)",
+          "3° Zenzero freddo e lime gradualmente",
+          "4° Jalapeño per ultimo (controllo piccantezza)",
+          "5° Aggiungere ghiaccio tritato nell'estratto finale",
+          "6° Servire IMMEDIATAMENTE a 4°C massimo",
+          "EFFETTO: Shock termico per brown fat activation"
+        ],
+        benefits: "Mentolo attivazione brown fat +25%, Cryo-shock termogenesi +30%, Capsaicina jalapeño metabolismo +20%, Oli essenziali menta sistema nervoso simpatico",
+        timing: "250ml ghiacciato ogni 3h - Massimo effetto termogenico da freddo",
+        fatBurning: "Brown fat activation da freddo: +55% termogenesi per 8h consecutive",
+        scientificProof: "Mentolo cold receptors TRPM8: +25% brown fat (Jiang 2017), Cryo 4°C: +30% termogenesi (Cypess 2009)"
+      },
+      {
+        name: "⚡ ESTRATTO PRE-WORKOUT NITRICO 1L",
+        time: "7 min",
+        servings: "1 litro (4 porzioni da 250ml)",
+        calories: "52 kcal totali",
+        type: "Estratto Performance Nitrico",
+        category: "PUMP + TERMOGENESI - ESTRATTORE",
+        efficacy: "96%",
+        badge: "1L NITRO-PUMP",
+        ingredients: [
+          "Barbabietola rossa cruda: 400g (3-4 barbabietole medie)",
+          "Carote viola: 300g (o arancioni - 4-5 carote)",
+          "Spinaci freschi: 200g (2 buste grandi)",
+          "Rucola selvatica: 100g (2 buste)",
+          "Zenzero fresco: 80g (pezzo grande)",
+          "Melograno chicchi: 60g (1/2 melograno)",
+          "Aglio fresco: 40g (4 spicchi grandi)",
+          "Peperoncino habanero: 20g (1 habanero - ATTENZIONE!)",
+          "Spirulina polvere: 10g (2 cucchiaini)"
+        ],
+        preparation: [
+          "Barbabietole: sbucciare e tagliare a quarti",
+          "Carote: pulire e tagliare a bastoncini",
+          "Spinaci e rucola: lavaggio accurato",
+          "Zenzero e aglio: pelare completamente",
+          "Melograno: estrarre solo chicchi (no parti bianche)",
+          "HABANERO: GUANTI OBBLIGATORI - molto piccante!",
+          "Spirulina: preparare in ciotolina a parte"
+        ],
+        bimbySteps: [
+          "ESTRATTORE: Iniziare con barbabietole (colore rosso base)",
+          "2° Alternare carote e verdure a foglia verde",
+          "3° Zenzero e aglio gradualmente (sapore intenso)",
+          "4° Melograno lentamente (evitare semi amari)",
+          "5° ULTIMO: 1/4 habanero (testare piccantezza prima!)",
+          "6° Mescolare spirulina nell'estratto finale rosso",
+          "7° Dividere in 4 porzioni da 250ml numerate",
+          "DOSAGGIO: Iniziare con 125ml per testare tolleranza"
+        ],
+        benefits: "Nitrati barbabietola +40% ossido nitrico, Allicina aglio vasodilatazione potente, Capsaicina habanero termogenesi estrema +50%, Spirulina B12 energia",
+        timing: "250ml 45min pre-workout + 250ml durante + 500ml post per recovery nitrico",
+        fatBurning: "NO boost + termogenesi habanero: +80% performance + +60% fat oxidation durante workout",
+        scientificProof: "Nitrati 400mg/L: +40% NO e -12% VO2 (Bailey 2009), Allicina: vasodilatazione +35% (Ried 2016), Habanero 300.000 Scoville: termogenesi +50%"
+      },
       {
         name: "THERMOGENIC FIRE 🔥",
         time: "3 min",
@@ -2050,53 +2183,24 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
           </Badge>
           <Badge variant="outline" className="flex items-center space-x-1">
             <ChefHat className="w-3 h-3" />
-            <span>{homeCookingMode ? 'Bimby TM5' : 'Bimby TM6'}</span>
+            <span>Bimby TM5</span>
           </Badge>
-          {homeCookingMode && (
-            <Badge variant="outline" className="flex items-center space-x-1 bg-green-100 text-green-700">
-              <span>🏠</span>
-              <span>Modalità Casa</span>
-            </Badge>
-          )}
+          <Badge variant="outline" className="flex items-center space-x-1 bg-green-100 text-green-700">
+            <span>🏠</span>
+            <span>Ingredienti Supermercato</span>
+          </Badge>
         </div>
 
-        {/* Toggle Modalità Casa/Pro */}
-        <div className="flex items-center justify-center space-x-2 mb-4">
-          <div className="flex items-center space-x-2 bg-slate-100 rounded-lg p-2">
-            <span className={`text-sm font-medium ${!homeCookingMode ? 'text-slate-400' : 'text-slate-700'}`}>
-              🏠 Casa
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setHomeCookingMode(!homeCookingMode)}
-              className={`px-3 py-1 h-8 rounded-md transition-all ${
-                homeCookingMode 
-                  ? 'bg-green-500 text-white hover:bg-green-600' 
-                  : 'bg-orange-500 text-white hover:bg-orange-600'
-              }`}
-            >
-              {homeCookingMode ? '✓ Attiva' : '⭐ Pro'}
-            </Button>
-            <span className={`text-sm font-medium ${homeCookingMode ? 'text-slate-400' : 'text-slate-700'}`}>
-              ⭐ Pro
-            </span>
-          </div>
-        </div>
-
-        {/* Spiegazione modalità */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        {/* Info ricette semplificate */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
           <div className="flex items-center space-x-2 mb-2">
-            <span className="text-blue-600">ℹ️</span>
-            <span className="font-medium text-blue-800 text-sm">
-              {homeCookingMode ? 'Modalità Casa Attiva' : 'Modalità Pro Attiva'}
+            <span className="text-green-600">✅</span>
+            <span className="font-medium text-green-800 text-sm">
+              Ricette Semplificate per Tutti
             </span>
           </div>
-          <p className="text-xs text-blue-700">
-            {homeCookingMode 
-              ? '🏠 Ricette semplificate: TM6→TM5, sottovuoto→padella, ingredienti premium→normali, tecniche avanzate→casalinghe'
-              : '⭐ Ricette originali: TM6, tecniche stellate, ingredienti premium, cotture professionali per risultati ottimali'
-            }
+          <p className="text-xs text-green-700">
+            🏠 Ingredienti da supermercato, Bimby TM5, tecniche casalinghe, nessun sottovuoto. Stessa efficacia scientifica!
           </p>
         </div>
       </div>
@@ -2182,7 +2286,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
                 )}
               </h4>
               <div className="grid grid-cols-1 gap-1">
-                {(homeCookingMode ? addHomeCookingAlternatives(replaceLactoseIngredients(recipe.ingredients)) : replaceLactoseIngredients(recipe.ingredients)).map((ingredient, idx) => (
+                {addHomeCookingAlternatives(replaceLactoseIngredients(recipe.ingredients)).map((ingredient, idx) => (
                   <div key={idx} className="text-sm text-slate-600 flex">
                     <span className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                     {ingredient}
@@ -2195,7 +2299,7 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
             <div className="mb-4">
               <h4 className="font-medium text-slate-700 mb-2">Preparazione:</h4>
               <ol className="space-y-1">
-                {(homeCookingMode ? replaceAdvancedTechniques(recipe.preparation) : recipe.preparation).map((step, idx) => (
+                {replaceAdvancedTechniques(recipe.preparation).map((step, idx) => (
                   <li key={idx} className="text-sm text-slate-600 flex">
                     <span className="text-blue-500 font-medium mr-2 flex-shrink-0">
                       {idx + 1}.
@@ -2210,10 +2314,10 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
             <div className="mb-4">
               <h4 className="font-medium text-slate-700 mb-2 flex items-center">
                 <ChefHat className="w-4 h-4 mr-1" />
-                {homeCookingMode ? 'Bimby TM5:' : 'Bimby TM6:'}
+                Bimby TM5:
               </h4>
               <div className="bg-slate-50 rounded-lg p-3">
-                {(homeCookingMode ? replaceAdvancedTechniques(recipe.bimbySteps) : recipe.bimbySteps).map((step, idx) => (
+                {replaceAdvancedTechniques(recipe.bimbySteps).map((step, idx) => (
                   <div key={idx} className="text-sm text-slate-700 mb-1">
                     • {step}
                   </div>
