@@ -452,3 +452,38 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  age: number | null;
+  height: number | null;
+  currentWeight: number | null;
+  startWeight: number | null;
+  targetWeight: number | null;
+  activityLevel: string;
+  goal: string;
+  intermittentFasting: boolean;
+  lactoseIntolerant: boolean;
+  targetCalories: number | null;
+  targetWater: number | null;
+  created_at: string;
+}
+
+export interface DailyProgress {
+  date: string;
+  water: number;
+  calories: number;
+  weight?: number;
+  workoutCompleted: boolean;
+  supplementsTaken: number;
+  shotsConsumed: string[];
+}
+
+export interface PendingData {
+  id: string;
+  type: 'profile' | 'progress';
+  data: any;
+  timestamp: number;
+  attempts: number;
+}
