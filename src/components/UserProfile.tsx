@@ -376,10 +376,15 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="16"
                   max="80"
-                  value={profile.age}
-                  onChange={(e) => setProfile({...profile, age: parseInt(e.target.value) || 0})}
+                  value={profile.age === 0 ? '' : profile.age}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const numValue = value === '' ? 0 : parseInt(value);
+                    setProfile({...profile, age: numValue});
+                  }}
                   disabled={!isEditing}
                   className={isNewUser && !profile.age ? "border-orange-300" : ""}
+                  placeholder="es. 25"
                 />
               </div>
               <div>
@@ -389,10 +394,15 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="140"
                   max="220"
-                  value={profile.height}
-                  onChange={(e) => setProfile({...profile, height: parseInt(e.target.value) || 0})}
+                  value={profile.height === 0 ? '' : profile.height}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const numValue = value === '' ? 0 : parseInt(value);
+                    setProfile({...profile, height: numValue});
+                  }}
                   disabled={!isEditing}
                   className={isNewUser && !profile.height ? "border-orange-300" : ""}
+                  placeholder="es. 175"
                 />
               </div>
             </div>
@@ -487,9 +497,14 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                 type="number"
                 min="0"
                 max="7"
-                value={profile.workoutDays}
-                onChange={(e) => setProfile({...profile, workoutDays: parseInt(e.target.value) || 0})}
+                value={profile.workoutDays === 0 ? '' : profile.workoutDays}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === '' ? 0 : parseInt(value);
+                  setProfile({...profile, workoutDays: numValue});
+                }}
                 disabled={!isEditing}
+                placeholder="es. 3"
               />
             </div>
           </div>
