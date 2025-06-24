@@ -638,16 +638,26 @@ export const useProgressTracking = () => {
           
           toast({
             title: "Profilo aggiornato ✅",
-            description: "Le modifiche sono state salvate su cloud",
+            description: "Le modifiche sono state salvate su cloud. App aggiornata automaticamente!",
           });
+          
+          // Trigger refresh di tutte le sezioni che dipendono dal profilo
+          window.dispatchEvent(new CustomEvent('profileUpdated', {
+            detail: { profile: updatedProfile }
+          }));
         } catch (error) {
           console.warn('⚠️ Errore salvataggio Supabase, aggiungo a pending:', error);
           addToPendingSync('profile', updatedProfile);
           
-          toast({
-            title: "Profilo aggiornato ⚠️",
-            description: "Salvato localmente, sincronizzazione in corso...",
-          });
+                  toast({
+          title: "Profilo aggiornato ⚠️",
+          description: "Salvato localmente, sincronizzazione in corso...",
+        });
+        
+        // Trigger refresh anche per salvataggio offline
+        window.dispatchEvent(new CustomEvent('profileUpdated', {
+          detail: { profile: updatedProfile }
+        }));
         }
       } else {
         console.warn('⚠️ Connessione Supabase non disponibile, aggiungo a pending');
@@ -657,6 +667,11 @@ export const useProgressTracking = () => {
           title: "Profilo aggiornato 🔄",
           description: "Cloud non raggiungibile, sincronizzerà automaticamente",
         });
+        
+        // Trigger refresh anche quando cloud non raggiungibile
+        window.dispatchEvent(new CustomEvent('profileUpdated', {
+          detail: { profile: updatedProfile }
+        }));
       }
     } else {
       // Se offline, aggiungi alla coda
@@ -666,6 +681,11 @@ export const useProgressTracking = () => {
         title: "Profilo aggiornato 📡",
         description: "Salvato offline, sincronizzerà quando torni online",
       });
+      
+      // Trigger refresh anche offline
+      window.dispatchEvent(new CustomEvent('profileUpdated', {
+        detail: { profile: updatedProfile }
+      }));
     }
   };
 

@@ -79,7 +79,16 @@ export const useNutritionTracking = (userProfile: any) => {
     };
   };
 
-  const [nutritionData] = useState<NutritionData>(() => calculateNutritionData());
+  const [nutritionData, setNutritionData] = useState<NutritionData>(() => calculateNutritionData());
+
+  // Aggiorna nutritionData quando userProfile cambia
+  useEffect(() => {
+    if (userProfile) {
+      const newNutritionData = calculateNutritionData();
+      setNutritionData(newNutritionData);
+      console.log('📊 Dati nutrizionali ricalcolati:', newNutritionData);
+    }
+  }, [userProfile]);
 
   const generateDailyMeals = (): MealEntry[] => {
     if (!userProfile) return [];
@@ -146,6 +155,57 @@ export const useNutritionTracking = (userProfile: any) => {
       });
     }
   }, [userProfile]);
+
+  // Listener per aggiornamenti profilo - rigenera piani dieta automaticamente
+  useEffect(() => {
+    const handleProfileUpdate = (event: any) => {
+      console.log('🔄 Profilo aggiornato - rigenerazione piani dieta automatica');
+      const updatedProfile = event.detail?.profile;
+      
+      if (updatedProfile) {
+        // Ricalcola prima i dati nutrizionali con il nuovo profilo
+        const tempProfile = updatedProfile;
+        const newNutritionData = {
+          bmr: Math.round(10 * tempProfile.currentWeight + 6.25 * tempProfile.height - 5 * tempProfile.age + 5),
+          tdee: 0,
+          targetCalories: tempProfile.targetCalories || 1700,
+          proteinTarget: Math.round(tempProfile.currentWeight * 1.8),
+          carbTarget: 0,
+          fatTarget: 0,
+          aggressiveDeficit: 900,
+          expectedWeeklyLoss: 0.9
+        };
+        
+        const activityMultipliers = {
+          sedentary: 1.2,
+          light: 1.375,
+          moderate: 1.55,
+          active: 1.725,
+          very_active: 1.9
+        };
+        newNutritionData.tdee = Math.round(newNutritionData.bmr * (activityMultipliers[tempProfile.activityLevel as keyof typeof activityMultipliers] || 1.55));
+        newNutritionData.fatTarget = Math.round((newNutritionData.targetCalories * 0.25) / 9);
+        newNutritionData.carbTarget = Math.round((newNutritionData.targetCalories - (newNutritionData.proteinTarget * 4) - (newNutritionData.fatTarget * 9)) / 4);
+        
+        setNutritionData(newNutritionData);
+        
+        // Poi ricalcola i pasti con i nuovi dati
+        const newMeals = generateDailyMeals();
+        setTodayMeals(newMeals);
+        
+        toast({
+          title: "Dieta aggiornata! 🍽️",
+          description: "Piani alimentari ricalcolati con i tuoi nuovi obiettivi",
+        });
+      }
+    };
+
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, []);
 
   const markMealAsEaten = (mealId: string) => {
     const updatedMeals = todayMeals.map(meal => 
