@@ -157,7 +157,8 @@ export const useProgressTracking = () => {
         };
         setUserProfile(profile);
 
-        const { data: progressFromDb } = await supabase.from('daily_progress').select('*').eq('user_id', profile.id).eq('date', today).single();
+        const progressColumns = 'date, water, calories, workout_completed, supplements_taken, shots_consumed, weight';
+        const { data: progressFromDb } = await supabase.from('daily_progress').select(progressColumns).eq('user_id', profile.id).eq('date', today).single();
         if (progressFromDb) {
             const progress: DailyProgress = {
                 ...progressFromDb,

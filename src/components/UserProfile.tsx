@@ -237,11 +237,13 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
   };
 
   const calculateBMI = () => {
+    if (!profile.height || !profile.currentWeight) return "0.0";
     const heightInMeters = profile.height / 100;
     return (profile.currentWeight / (heightInMeters * heightInMeters)).toFixed(1);
   };
 
   const getBodyFatEstimate = () => {
+    if (!profile.age) return "0.0";
     const bmi = parseFloat(calculateBMI());
     const estimate = (1.39 * bmi) + (0.16 * profile.age) - 19.34;
     return Math.max(8, Math.min(25, estimate)).toFixed(1);
@@ -267,7 +269,8 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     return { text: "Obeso", color: "text-red-600" };
   };
 
-  const bmiCategory = getBMICategory(parseFloat(calculateBMI()));
+  const bmiValue = calculateBMI();
+  const bmiCategory = getBMICategory(parseFloat(bmiValue));
 
   return (
     <div className="space-y-4">
