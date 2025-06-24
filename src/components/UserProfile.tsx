@@ -29,10 +29,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
   
   const [profile, setProfile] = useState({
     name: currentProfile?.name || user?.name || 'Utente',
-    age: currentProfile?.age || 0,
-    height: currentProfile?.height || 0,
-    currentWeight: currentProfile?.currentWeight || 0,
-    targetWeight: currentProfile?.targetWeight || 0,
+    age: currentProfile?.age && currentProfile.age > 0 ? currentProfile.age : null,
+    height: currentProfile?.height && currentProfile.height > 0 ? currentProfile.height : null,
+    currentWeight: currentProfile?.currentWeight && currentProfile.currentWeight > 0 ? currentProfile.currentWeight : null,
+    targetWeight: currentProfile?.targetWeight && currentProfile.targetWeight > 0 ? currentProfile.targetWeight : null,
     activityLevel: currentProfile?.activityLevel || 'moderate',
     intermittentFasting: currentProfile?.intermittentFasting || false,
     lactoseIntolerant: currentProfile?.lactoseIntolerant || false,
@@ -50,10 +50,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     if (currentProfile) {
       setProfile({
         name: currentProfile.name || user?.name || 'Utente',
-        age: currentProfile.age || 0,
-        height: currentProfile.height || 0,
-        currentWeight: currentProfile.currentWeight || 0,
-        targetWeight: currentProfile.targetWeight || 0,
+        age: currentProfile.age && currentProfile.age > 0 ? currentProfile.age : null,
+        height: currentProfile.height && currentProfile.height > 0 ? currentProfile.height : null,
+        currentWeight: currentProfile.currentWeight && currentProfile.currentWeight > 0 ? currentProfile.currentWeight : null,
+        targetWeight: currentProfile.targetWeight && currentProfile.targetWeight > 0 ? currentProfile.targetWeight : null,
         activityLevel: currentProfile.activityLevel || 'moderate',
         intermittentFasting: currentProfile.intermittentFasting || false,
         lactoseIntolerant: currentProfile.lactoseIntolerant || false,
@@ -66,6 +66,23 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
 
   // Calcoli scientifici personalizzati
   const calculatePersonalizedMetrics = () => {
+    // Se non ci sono dati sufficienti, restituisci valori di default
+    if (!profile.currentWeight || !profile.height || !profile.age) {
+      return {
+        bmr: 0,
+        tdee: 0,
+        targetCalories: 0,
+        proteinTarget: 0,
+        fatTarget: 0,
+        carbTarget: 0,
+        waterTarget: 0,
+        deficit: 0,
+        fastingWindow: "Normale",
+        weightLossWeekly: 0,
+        timeToGoal: 0
+      };
+    }
+    
     // BMR Formula di Harris-Benedict rivista (2024)
     const bmr = (10 * profile.currentWeight) + (6.25 * profile.height) - (5 * profile.age) + 5;
     
@@ -264,13 +281,13 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold">
-              {profile.currentWeight && profile.currentWeight > 0 ? profile.currentWeight : "---"}
+              {profile.currentWeight ? profile.currentWeight : "---"}
             </div>
             <div className="text-sm opacity-90">Peso attuale</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold">
-              {profile.targetWeight && profile.targetWeight > 0 ? profile.targetWeight : "---"}
+              {profile.targetWeight ? profile.targetWeight : "---"}
             </div>
             <div className="text-sm opacity-90">Peso obiettivo</div>
           </div>
@@ -376,10 +393,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="16"
                   max="80"
-                  value={profile.age === 0 ? '' : profile.age}
+                  value={profile.age || ''}
                   onChange={(e) => {
                     const value = e.target.value;
-                    const numValue = value === '' ? 0 : parseInt(value);
+                    const numValue = value === '' ? null : parseInt(value);
                     setProfile({...profile, age: numValue});
                   }}
                   disabled={!isEditing}
@@ -394,10 +411,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="140"
                   max="220"
-                  value={profile.height === 0 ? '' : profile.height}
+                  value={profile.height || ''}
                   onChange={(e) => {
                     const value = e.target.value;
-                    const numValue = value === '' ? 0 : parseInt(value);
+                    const numValue = value === '' ? null : parseInt(value);
                     setProfile({...profile, height: numValue});
                   }}
                   disabled={!isEditing}
@@ -415,10 +432,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.currentWeight === 0 ? '' : profile.currentWeight}
+                  value={profile.currentWeight || ''}
                   onChange={(e) => {
                     const value = e.target.value;
-                    const numValue = value === '' ? 0 : parseFloat(value);
+                    const numValue = value === '' ? null : parseFloat(value);
                     setProfile({
                       ...profile, 
                       currentWeight: numValue
@@ -441,10 +458,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.targetWeight === 0 ? '' : profile.targetWeight}
+                  value={profile.targetWeight || ''}
                   onChange={(e) => {
                     const value = e.target.value;
-                    const numValue = value === '' ? 0 : parseFloat(value);
+                    const numValue = value === '' ? null : parseFloat(value);
                     setProfile({
                       ...profile, 
                       targetWeight: numValue
@@ -497,10 +514,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                 type="number"
                 min="0"
                 max="7"
-                value={profile.workoutDays === 0 ? '' : profile.workoutDays}
+                value={profile.workoutDays || ''}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === '' ? 0 : parseInt(value);
+                  const numValue = value === '' ? null : parseInt(value);
                   setProfile({...profile, workoutDays: numValue});
                 }}
                 disabled={!isEditing}
