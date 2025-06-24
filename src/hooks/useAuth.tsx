@@ -80,6 +80,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Controlla sessione esistente all'avvio
   useEffect(() => {
+    setLoading(true); // Imposta loading a true all'inizio
+    
     const checkUser = async () => {
       try {
         console.log('🔄 Controllo sessione esistente...');
@@ -89,7 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (error) {
           console.error('❌ Errore controllo sessione:', error);
           setUser(null);
-          setLoading(false);
+          setLoading(false); // Imposta loading a false solo se non c'è sessione
           return;
         }
         
@@ -99,12 +101,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           console.log('ℹ️ Nessuna sessione attiva');
           setUser(null);
+          setLoading(false); // Imposta loading a false in caso di errore
         }
       } catch (error) {
         console.error('❌ Errore controllo sessione:', error);
         setUser(null);
-      } finally {
-        setLoading(false);
+        setLoading(false); // Imposta loading a false in caso di errore
       }
     };
 
@@ -117,18 +119,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('✅ Utente loggato');
+          setLoading(true);
           await loadUserProfile(session.user);
         } else if (event === 'SIGNED_OUT') {
           console.log('👋 Utente disconnesso');
           setUser(null);
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           console.log('🔄 Token aggiornato');
+          // Non impostare loading a true qui per evitare sfarfallio
           await loadUserProfile(session.user);
         }
       } catch (error) {
         console.error('❌ Errore gestione auth state:', error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Assicurati che loading sia false dopo ogni operazione
       }
     });
 
@@ -204,6 +208,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Eseguiamo il logout per forzare un nuovo tentativo di login.
       setUser(null);
       await supabase.auth.signOut();
+    } finally {
+      setLoading(false); // Imposta loading a false alla fine di tutto
     }
   };
 
