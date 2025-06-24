@@ -71,7 +71,7 @@ const Auth = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Accesso..." : "Accedi"}
+                  {loading ? "🚀 Accesso..." : "🔐 Accedi"}
                 </Button>
               </form>
             </TabsContent>
@@ -110,7 +110,7 @@ const Auth = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Registrazione..." : "Registrati"}
+                  {loading ? "✨ Creazione account..." : "🎯 Registrati"}
                 </Button>
               </form>
             </TabsContent>

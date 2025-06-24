@@ -169,14 +169,14 @@ const Index = () => {
           <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <TrendingDown className="w-6 h-6 text-white animate-pulse" />
           </div>
-          <p className="text-slate-600 mb-2">
-            {authLoading ? "Recupero sessione..." : "Inizializzazione app..."}
+          <p className="text-slate-600 mb-2 font-medium">
+            {authLoading ? "🔐 Ripristino sessione..." : "🚀 Avvio CutBurn Pro..."}
           </p>
           <p className="text-slate-500 text-sm">
-            {authLoading ? "Controllo se sei già loggato..." : "Preparazione dati utente..."}
+            {authLoading ? "Verifica credenziali salvate" : "Configurazione scientifica personalizzata"}
           </p>
           <p className="text-slate-400 text-xs mt-1">
-            Timeout automatico in 5 secondi
+            ⚡ Caricamento ultrarapido in corso
           </p>
           <div className="mt-4">
             <div className="w-32 h-1 bg-slate-200 rounded-full mx-auto overflow-hidden">

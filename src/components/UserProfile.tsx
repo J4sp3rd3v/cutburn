@@ -35,7 +35,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
           <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
             <div className="w-8 h-8 bg-white rounded-full"></div>
           </div>
-          <p className="text-slate-600">Caricamento dati profilo...</p>
+          <p className="text-slate-600 font-medium">📊 Caricamento profilo personalizzato...</p>
         </div>
       </div>
     );

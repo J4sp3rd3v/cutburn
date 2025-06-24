@@ -92,15 +92,15 @@ export default function EmailConfirm() {
           </div>
           
           <CardTitle className="text-2xl font-bold">
-            {status === 'loading' && 'Conferma Email...'}
-            {status === 'success' && 'Email Confermata!'}
-            {status === 'error' && 'Conferma Fallita'}
+            {status === 'loading' && '📧 Verifica Email...'}
+            {status === 'success' && '✅ Email Confermata!'}
+            {status === 'error' && '❌ Conferma Fallita'}
           </CardTitle>
           
           <CardDescription>
-            {status === 'loading' && 'Stiamo verificando il tuo link di conferma...'}
-            {status === 'success' && 'Il tuo account è stato attivato con successo'}
-            {status === 'error' && 'Si è verificato un problema con la conferma'}
+            {status === 'loading' && '🔍 Analisi sicurezza e verifica autenticità del link...'}
+            {status === 'success' && '🎉 Perfetto! Il tuo account è ora attivo e pronto all\'uso.'}
+            {status === 'error' && '⚠️ Qualcosa è andato storto durante la verifica'}
           </CardDescription>
         </CardHeader>
 
