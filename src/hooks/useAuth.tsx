@@ -169,7 +169,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .from('user_profiles')
           .insert({
             auth_user_id: supabaseUser.id,
-            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente'
+            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
+            activity_level: 'moderate',
+            goal: 'fat-loss',
           })
           .select()
           .single();
