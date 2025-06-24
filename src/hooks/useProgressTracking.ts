@@ -17,11 +17,11 @@ interface DailyProgress {
 interface UserProfile {
   id: string;
   name: string;
-  age: number;
-  height: number;
-  currentWeight: number;
-  startWeight: number;
-  targetWeight: number;
+  age: number | null;
+  height: number | null;
+  currentWeight: number | null;
+  startWeight: number | null;
+  targetWeight: number | null;
   activityLevel: string;
   goal: string;
   intermittentFasting: boolean;
@@ -227,11 +227,11 @@ export const useProgressTracking = () => {
       const profileData = {
         auth_user_id: user.id,
         name: profile.name,
-        age: profile.age,
-        height: profile.height,
-        current_weight: profile.currentWeight,
-        start_weight: profile.startWeight,
-        target_weight: profile.targetWeight,
+        age: profile.age || null,
+        height: profile.height || null,
+        current_weight: profile.currentWeight || null,
+        start_weight: profile.startWeight || null,
+        target_weight: profile.targetWeight || null,
         activity_level: profile.activityLevel,
         goal: profile.goal,
         intermittent_fasting: profile.intermittentFasting,
@@ -358,11 +358,11 @@ export const useProgressTracking = () => {
         const profile: UserProfile = {
           id: user.id,
           name: profileData.name,
-          age: profileData.age,
-          height: profileData.height,
-          currentWeight: profileData.current_weight,
-          startWeight: profileData.start_weight,
-          targetWeight: profileData.target_weight,
+          age: profileData.age || null,
+          height: profileData.height || null,
+          currentWeight: profileData.current_weight || null,
+          startWeight: profileData.start_weight || null,
+          targetWeight: profileData.target_weight || null,
           activityLevel: profileData.activity_level,
           goal: profileData.goal,
           intermittentFasting: profileData.intermittent_fasting,
@@ -408,11 +408,11 @@ export const useProgressTracking = () => {
         const newProfile: UserProfile = {
           id: user.id,
           name: user.name || user.email?.split('@')[0] || '',
-          age: 0,
-          height: 0,
-          currentWeight: 0,
-          startWeight: 0,
-          targetWeight: 0,
+          age: null,
+          height: null,
+          currentWeight: null,
+          startWeight: null,
+          targetWeight: null,
           activityLevel: 'moderate',
           goal: 'fat-loss',
           intermittentFasting: false,
@@ -585,7 +585,9 @@ export const useProgressTracking = () => {
     const updatedProfile = { ...userProfile, ...profileData };
     
     // Calcola automaticamente calorie e acqua target SOLO se ci sono dati reali
-    if (updatedProfile.age > 0 && updatedProfile.height > 0 && updatedProfile.currentWeight > 0) {
+    if (updatedProfile.age && updatedProfile.age > 0 && 
+        updatedProfile.height && updatedProfile.height > 0 && 
+        updatedProfile.currentWeight && updatedProfile.currentWeight > 0) {
       // Calcolo BMR (Basal Metabolic Rate) con formula Mifflin-St Jeor
       const bmr = updatedProfile.goal === 'muscle-gain' 
         ? 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age + 5
