@@ -144,78 +144,16 @@ const Index = () => {
     }
   }, [user, getWeeklyProgress]);
 
-  // Mostra loading durante l'autenticazione o caricamento dati (con timeout di sicurezza)
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
-  
+  // Reindirizzamento immediato senza loading per non autenticati
   useEffect(() => {
-    if (authLoading || loading) {
-      // Timeout di sicurezza AGGRESSIVO: se il loading dura più di 5 secondi, forza il caricamento
-      const timeout = setTimeout(() => {
-        console.warn('⚠️ Loading timeout raggiunto dopo 5 secondi - forzando caricamento');
-        setLoadingTimeout(true);
-      }, 5000); // Ridotto da 15s a 5s
-      
-      return () => clearTimeout(timeout);
-    } else {
-      setLoadingTimeout(false);
+    if (!authLoading && !user) {
+      navigate('/auth');
     }
-  }, [authLoading, loading]);
+  }, [user, authLoading, navigate]);
 
-  // Mostra loading solo se non è scaduto il timeout
-  if ((authLoading || loading) && !loadingTimeout) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <TrendingDown className="w-6 h-6 text-white animate-pulse" />
-          </div>
-          <p className="text-slate-600 mb-2 font-medium">
-            {authLoading ? "🔐 Ripristino sessione..." : "🚀 Avvio CutBurn Pro..."}
-          </p>
-          <p className="text-slate-500 text-sm">
-            {authLoading ? "Verifica credenziali salvate" : "Configurazione scientifica personalizzata"}
-          </p>
-          <p className="text-slate-400 text-xs mt-1">
-            ⚡ Caricamento ultrarapido in corso
-          </p>
-          <div className="mt-4">
-            <div className="w-32 h-1 bg-slate-200 rounded-full mx-auto overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Se non c'è utente dopo il loading, il redirect è già gestito dall'useEffect
-  if (!user) {
-    return null;
-  }
-
-  // Se non c'è userProfile dopo il timeout, crea uno di default
-  if (!userProfile && loadingTimeout) {
-    console.warn('⚠️ UserProfile non trovato dopo timeout - creazione profilo di emergenza');
-    const emergencyProfile = {
-      id: user.id,
-      name: user.name || user.email?.split('@')[0] || 'Utente',
-      age: 0,
-      height: 0,
-      currentWeight: 0,
-      startWeight: 0,
-      targetWeight: 0,
-      activityLevel: 'moderate',
-      goal: 'fat-loss',
-      intermittentFasting: false,
-      lactoseIntolerant: false,
-      targetCalories: 1800,
-      targetWater: 2500,
-      created_at: user.created_at
-    };
-    // Qui dovresti avere accesso al setter del userProfile, ma per ora continuiamo
-  }
-
-  if (!userProfile) {
+  // Se l'utente o il profilo non sono ancora stati caricati, non renderizzare nulla.
+  // Questo previene il "flickering" di una UI incompleta o di messaggi di caricamento.
+  if (authLoading || loading || !user || !userProfile) {
     return null;
   }
 

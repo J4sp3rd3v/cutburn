@@ -4,6 +4,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: string;
+  auth_user_id: string;
   email: string;
   name: string;
   created_at: string;
@@ -24,7 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
 
   // Funzione per pulire completamente la cache
@@ -156,43 +157,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('✅ Profilo trovato:', profile);
         setUser({
           id: profile.id,
+          auth_user_id: supabaseUser.id,
           email: supabaseUser.email || '',
           name: profile.name,
           created_at: profile.created_at || supabaseUser.created_at
         });
       } else {
-        console.log('⚠️ Profilo non trovato, creo uno nuovo');
-        // Crea profilo se non esiste
-        const { error: insertError } = await supabase
+        console.log('⚠️ Profilo non trovato, creo uno nuovo...');
+        // Crea profilo se non esiste e lo restituisce
+        const { data: newProfile, error: insertError } = await supabase
           .from('user_profiles')
           .insert({
             auth_user_id: supabaseUser.id,
             name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente'
-          });
+          })
+          .select()
+          .single();
 
         if (insertError) {
           console.error('❌ Errore creazione profilo:', insertError);
           throw insertError;
         }
-
-        setUser({
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
-          created_at: supabaseUser.created_at
-        });
         
-        setIsNewUser(true);
+        if (newProfile) {
+            console.log('✅ Profilo creato e caricato:', newProfile);
+            setUser({
+              id: newProfile.id,
+              auth_user_id: supabaseUser.id,
+              email: supabaseUser.email || '',
+              name: newProfile.name,
+              created_at: newProfile.created_at || supabaseUser.created_at
+            });
+            setIsNewUser(true);
+        } else {
+            // Questo caso non dovrebbe accadere se l'insert va a buon fine
+            throw new Error("Creazione profilo fallita: nessun dato restituito.");
+        }
       }
     } catch (error) {
-      console.error('❌ Errore loadUserProfile:', error);
-      // Fallback con dati minimi
-      setUser({
-        id: supabaseUser.id,
-        email: supabaseUser.email || '',
-        name: supabaseUser.email?.split('@')[0] || 'Utente',
-        created_at: supabaseUser.created_at
-      });
+      console.error('❌ Errore critico durante il caricamento del profilo:', error);
+      // Se non possiamo caricare/creare un profilo, l'app non può funzionare.
+      // Eseguiamo il logout per forzare un nuovo tentativo di login.
+      setUser(null);
+      await supabase.auth.signOut();
     }
   };
 

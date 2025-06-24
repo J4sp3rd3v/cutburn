@@ -100,33 +100,4 @@ CREATE TRIGGER update_user_profiles_updated_at BEFORE UPDATE ON user_profiles FO
 CREATE TRIGGER update_daily_progress_updated_at BEFORE UPDATE ON daily_progress FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_meals_updated_at BEFORE UPDATE ON meals FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert demo data for testing
-INSERT INTO user_profiles (
-  auth_user_id,
-  name,
-  age,
-  height,
-  current_weight,
-  start_weight,
-  target_weight,
-  activity_level,
-  goal,
-  intermittent_fasting,
-  lactose_intolerant,
-  target_calories,
-  target_water
-) VALUES (
-  'demo_user_id'::uuid,
-  'Marco Demo',
-  30,
-  173,
-  69,
-  69,
-  65,
-  'moderate',
-  'fat-loss',
-  true,
-  false,
-  1700,
-  2500
-); 
+-- Demo data removed to prevent database state issues. 

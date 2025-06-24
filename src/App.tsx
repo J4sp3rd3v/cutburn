@@ -23,19 +23,6 @@ const queryClient = new QueryClient({
 const AppRoutes = () => {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
-            <div className="w-8 h-8 bg-white rounded-full"></div>
-          </div>
-          <p className="text-slate-600 font-medium">🔥 Inizializzazione CutBurn Pro...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <BrowserRouter>
       <Routes>

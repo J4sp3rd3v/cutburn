@@ -133,7 +133,7 @@ export const useProgressTracking = () => {
     console.log('🔄 Caricamento dati da Supabase per:', user.email);
 
     try {
-      const { data: profileFromDb, error } = await supabase.from('user_profiles').select('*').eq('auth_user_id', user.id).single();
+      const { data: profileFromDb, error } = await supabase.from('user_profiles').select('*').eq('auth_user_id', user.auth_user_id).single();
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
 
       if (profileFromDb) {
@@ -156,33 +156,22 @@ export const useProgressTracking = () => {
         };
         setUserProfile(profile);
 
-        const { data: progress } = await supabase.from('daily_progress').select('*').eq('user_id', profile.id).eq('date', today).single();
-        if (progress) setDailyProgress(progress);
+        const { data: progressFromDb } = await supabase.from('daily_progress').select('*').eq('user_id', profile.id).eq('date', today).single();
+        if (progressFromDb) {
+            const progress: DailyProgress = {
+                ...progressFromDb,
+                workoutCompleted: progressFromDb.workout_completed,
+                supplementsTaken: progressFromDb.supplements_taken,
+                shotsConsumed: progressFromDb.shots_consumed,
+            };
+            setDailyProgress(progress);
+        }
         console.log('✅ Dati caricati da Supabase');
       } else {
-        console.log('✅ Nuovo utente: creazione profilo...');
-        const newProfile: Partial<UserProfile> = { name: user.email?.split('@')[0] || 'Nuovo Utente' };
-        await saveProfileToSupabase(newProfile);
-        const { data: createdProfileFromDb } = await supabase.from('user_profiles').select('*').eq('auth_user_id', user.id).single();
-        if(createdProfileFromDb) {
-            const createdProfile: UserProfile = {
-                id: createdProfileFromDb.id,
-                name: createdProfileFromDb.name,
-                age: createdProfileFromDb.age,
-                height: createdProfileFromDb.height,
-                currentWeight: createdProfileFromDb.current_weight,
-                startWeight: createdProfileFromDb.start_weight,
-                targetWeight: createdProfileFromDb.target_weight,
-                activityLevel: createdProfileFromDb.activity_level,
-                goal: createdProfileFromDb.goal,
-                intermittentFasting: createdProfileFromDb.intermittent_fasting,
-                lactoseIntolerant: createdProfileFromDb.lactose_intolerant,
-                targetCalories: createdProfileFromDb.target_calories,
-                targetWater: createdProfileFromDb.target_water,
-                created_at: createdProfileFromDb.created_at,
-            };
-            setUserProfile(createdProfile);
-        }
+        // Se il profilo non viene trovato, useAuth() dovrebbe averlo già creato.
+        // Aspettiamo che il contesto utente si aggiorni.
+        // Potrebbe essere necessario un ri-render. Non fare nulla qui evita loop.
+        console.log('ℹ️ Profilo non ancora disponibile in useProgressTracking, in attesa del contesto...');
       }
     } catch (err) {
       console.error("❌ Errore caricamento dati da Supabase:", err);
@@ -274,5 +263,6 @@ export const useProgressTracking = () => {
     addShot,
     toggleWorkout,
     getWeeklyProgress: () => weeklyProgress,
+    syncPendingData,
   };
 };

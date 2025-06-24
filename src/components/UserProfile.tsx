@@ -27,37 +27,34 @@ interface UserProfileProps {
 const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgress, currentProfile }: UserProfileProps) => {
   const { signOut, user, isNewUser, markProfileCompleted } = useAuth();
   
-  // FIX: Add loading state to prevent crash if props are not ready
-  if (!currentProfile || !userStats) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
-            <div className="w-8 h-8 bg-white rounded-full"></div>
-          </div>
-          <p className="text-slate-600 font-medium">📊 Caricamento profilo personalizzato...</p>
-        </div>
-      </div>
-    );
-  }
+  // Usa valori di default se i dati non sono pronti
+  const safeCurrentProfile = currentProfile || {
+    name: user?.name || 'Utente',
+    age: null, height: null, currentWeight: null, targetWeight: null,
+    activityLevel: 'moderate', intermittentFasting: false, lactoseIntolerant: false, goal: 'fat-loss'
+  };
+  
+  const safeUserStats = userStats || {
+    targetWater: 2500, targetCalories: 1800, currentWeight: 0, startWeight: 0, startDate: new Date().toISOString()
+  };
   
   const [profile, setProfile] = useState(() => {
     // FORZA tutti i valori 0 a null per evitare zeri nei campi input
-    const cleanAge = currentProfile?.age === 0 || !currentProfile?.age ? null : currentProfile.age;
-    const cleanHeight = currentProfile?.height === 0 || !currentProfile?.height ? null : currentProfile.height;
-    const cleanCurrentWeight = currentProfile?.currentWeight === 0 || !currentProfile?.currentWeight ? null : currentProfile.currentWeight;
-    const cleanTargetWeight = currentProfile?.targetWeight === 0 || !currentProfile?.targetWeight ? null : currentProfile.targetWeight;
+    const cleanAge = safeCurrentProfile?.age === 0 || !safeCurrentProfile?.age ? null : safeCurrentProfile.age;
+    const cleanHeight = safeCurrentProfile?.height === 0 || !safeCurrentProfile?.height ? null : safeCurrentProfile.height;
+    const cleanCurrentWeight = safeCurrentProfile?.currentWeight === 0 || !safeCurrentProfile?.currentWeight ? null : safeCurrentProfile.currentWeight;
+    const cleanTargetWeight = safeCurrentProfile?.targetWeight === 0 || !safeCurrentProfile?.targetWeight ? null : safeCurrentProfile.targetWeight;
     
     return {
-      name: currentProfile?.name || user?.name || 'Utente',
+      name: safeCurrentProfile?.name || user?.name || 'Utente',
       age: cleanAge,
       height: cleanHeight,
       currentWeight: cleanCurrentWeight,
       targetWeight: cleanTargetWeight,
-      activityLevel: currentProfile?.activityLevel || 'moderate',
-      intermittentFasting: currentProfile?.intermittentFasting || false,
-      lactoseIntolerant: currentProfile?.lactoseIntolerant || false,
-      goal: currentProfile?.goal || 'fat-loss',
+      activityLevel: safeCurrentProfile?.activityLevel || 'moderate',
+      intermittentFasting: safeCurrentProfile?.intermittentFasting || false,
+      lactoseIntolerant: safeCurrentProfile?.lactoseIntolerant || false,
+      goal: safeCurrentProfile?.goal || 'fat-loss',
       workoutDays: 3,
       experience: 'beginner'
     };
