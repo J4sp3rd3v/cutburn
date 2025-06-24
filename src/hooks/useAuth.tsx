@@ -209,12 +209,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) {
         console.error('❌ Errore login:', error);
-        if (error.message.includes('Invalid login')) {
+        if (error.message && error.message.includes('Invalid login')) {
           alert('Email o password non corretti');
-        } else if (error.message.includes('Email not confirmed')) {
+        } else if (error.message && error.message.includes('Email not confirmed')) {
           alert('Devi confermare la tua email prima di accedere.');
         } else {
-          alert(`Errore: ${error.message}`);
+          alert(`Errore: ${error.message || 'Errore sconosciuto'}`);
         }
         return false;
       }
@@ -253,7 +253,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) {
         console.error('❌ Errore registrazione:', error);
-        alert(`Errore registrazione: ${error.message}`);
+        alert(`Errore registrazione: ${error.message || 'Errore sconosciuto'}`);
         return false;
       }
 
