@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -143,7 +142,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       // Prova a caricare il profilo dal database
       const { data: profile, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
         .eq('id', supabaseUser.id)
         .single();
@@ -157,7 +156,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('✅ Profilo trovato:', profile);
         setUser({
           id: profile.id,
-          email: profile.email || supabaseUser.email || '',
+          email: supabaseUser.email || '',
           name: profile.name,
           created_at: profile.created_at || supabaseUser.created_at
         });
@@ -165,7 +164,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log('⚠️ Profilo non trovato, creo uno nuovo');
         // Crea profilo se non esiste
         const { error: insertError } = await supabase
-          .from('profiles')
+          .from('user_profiles')
           .insert({
             id: supabaseUser.id,
             name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
