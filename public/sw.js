@@ -60,6 +60,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip development server requests (localhost)
+  if (event.request.url.includes('localhost') || event.request.url.includes('127.0.0.1')) {
+    return;
+  }
+
+  // Skip Vite HMR requests
+  if (event.request.url.includes('@vite') || event.request.url.includes('react-refresh') || event.request.url.includes('.tsx') || event.request.url.includes('.ts')) {
+    return;
+  }
+
   // Skip Supabase requests (need internet connection)
   if (event.request.url.includes('supabase.co')) {
     return;

@@ -106,8 +106,8 @@
     
     <!-- Service Worker Registration -->
     <script>
-      // Register Service Worker
-      if ('serviceWorker' in navigator) {
+      // Register Service Worker - DISABLED IN DEVELOPMENT
+      if (false && 'serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
           try {
             const registration = await navigator.serviceWorker.register('/sw.js', {

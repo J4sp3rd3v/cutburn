@@ -43,7 +43,7 @@ const DailyShots = ({ shotsConsumed, onTakeShot, userWeight }: DailyShotsProps) 
       time: '07:00-08:00',
       benefits: 'Attivazione metabolismo, termogenesi, digestione',
       ingredients: getPersonalizedIngredients('Zenzero fresco + Limone + Pepe nero', 'morning-ginger'),
-      taken: shotsConsumed.includes('morning-ginger')
+      taken: shotsConsumed && shotsConsumed.includes('morning-ginger')
     },
     {
       id: 'pre-workout-green',
@@ -51,7 +51,7 @@ const DailyShots = ({ shotsConsumed, onTakeShot, userWeight }: DailyShotsProps) 
       time: '30 min prima allenamento',
       benefits: 'Energia naturale, ossidazione grassi',
       ingredients: 'Spirulina (3g) + Matcha (2g) + Lime + Zenzero (2g)',
-      taken: shotsConsumed.includes('pre-workout-green')
+      taken: shotsConsumed && shotsConsumed.includes('pre-workout-green')
     },
     {
       id: 'evening-turmeric',
@@ -59,7 +59,7 @@ const DailyShots = ({ shotsConsumed, onTakeShot, userWeight }: DailyShotsProps) 
       time: '19:00-20:00',
       benefits: 'Antinfiammatorio, recupero muscolare',
       ingredients: getPersonalizedIngredients('Curcuma fresca + Zenzero + Pepe nero + Miele', 'evening-turmeric'),
-      taken: shotsConsumed.includes('evening-turmeric')
+      taken: shotsConsumed && shotsConsumed.includes('evening-turmeric')
     }
   ];
 

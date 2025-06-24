@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { data: profile, error } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('id', supabaseUser.id)
+        .eq('auth_user_id', supabaseUser.id)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -166,9 +166,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { error: insertError } = await supabase
           .from('user_profiles')
           .insert({
-            id: supabaseUser.id,
-            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
-            email: supabaseUser.email
+            auth_user_id: supabaseUser.id,
+            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente'
           });
 
         if (insertError) {
