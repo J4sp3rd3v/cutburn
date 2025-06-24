@@ -133,7 +133,8 @@ export const useProgressTracking = () => {
     console.log('🔄 Caricamento dati da Supabase per:', user.email);
 
     try {
-      const { data: profileFromDb, error } = await supabase.from('user_profiles').select('*').eq('auth_user_id', user.auth_user_id).single();
+      const profileColumns = 'id, name, age, height, current_weight, start_weight, target_weight, activity_level, goal, intermittent_fasting, lactose_intolerant, target_calories, target_water, created_at';
+      const { data: profileFromDb, error } = await supabase.from('user_profiles').select(profileColumns).eq('auth_user_id', user.auth_user_id).single();
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
 
       if (profileFromDb) {

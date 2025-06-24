@@ -141,10 +141,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       console.log('🔄 Caricamento profilo per:', supabaseUser.id);
       
+      const profileColumns = 'id, auth_user_id, name, created_at, age, height, current_weight, start_weight, target_weight, activity_level, goal, intermittent_fasting, lactose_intolerant, target_calories, target_water';
+
       // Prova a caricare il profilo dal database
       const { data: profile, error } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select(profileColumns)
         .eq('auth_user_id', supabaseUser.id)
         .single();
 
@@ -173,7 +175,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             activity_level: 'moderate',
             goal: 'fat-loss',
           })
-          .select()
+          .select(profileColumns)
           .single();
 
         if (insertError) {

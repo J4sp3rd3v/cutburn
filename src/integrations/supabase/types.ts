@@ -316,3 +316,39 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// Custom app-specific types
+export interface UserProfile {
+  id: string;
+  name: string;
+  age: number | null;
+  height: number | null;
+  currentWeight: number | null;
+  startWeight: number | null;
+  targetWeight: number | null;
+  activityLevel: string;
+  goal: string;
+  intermittentFasting: boolean | null;
+  lactoseIntolerant: boolean | null;
+  targetCalories: number | null;
+  targetWater: number | null;
+  created_at: string | null;
+}
+
+export interface DailyProgress {
+  date: string;
+  water: number;
+  calories: number;
+  workoutCompleted: boolean;
+  supplementsTaken: number;
+  shotsConsumed: string[];
+  weight?: number | null;
+}
+
+export interface PendingData {
+  id: string;
+  type: 'profile' | 'progress';
+  data: any;
+  timestamp: number;
+  attempts: number;
+}
