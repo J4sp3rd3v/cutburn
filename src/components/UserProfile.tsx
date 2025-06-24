@@ -27,18 +27,26 @@ interface UserProfileProps {
 const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgress, currentProfile }: UserProfileProps) => {
   const { signOut, user, isNewUser, markProfileCompleted } = useAuth();
   
-  const [profile, setProfile] = useState({
-    name: currentProfile?.name || user?.name || 'Utente',
-    age: currentProfile?.age && currentProfile.age > 0 ? currentProfile.age : null,
-    height: currentProfile?.height && currentProfile.height > 0 ? currentProfile.height : null,
-    currentWeight: currentProfile?.currentWeight && currentProfile.currentWeight > 0 ? currentProfile.currentWeight : null,
-    targetWeight: currentProfile?.targetWeight && currentProfile.targetWeight > 0 ? currentProfile.targetWeight : null,
-    activityLevel: currentProfile?.activityLevel || 'moderate',
-    intermittentFasting: currentProfile?.intermittentFasting || false,
-    lactoseIntolerant: currentProfile?.lactoseIntolerant || false,
-    goal: currentProfile?.goal || 'fat-loss',
-    workoutDays: 3,
-    experience: 'beginner'
+  const [profile, setProfile] = useState(() => {
+    // FORZA tutti i valori 0 a null per evitare zeri nei campi input
+    const cleanAge = currentProfile?.age === 0 || !currentProfile?.age ? null : currentProfile.age;
+    const cleanHeight = currentProfile?.height === 0 || !currentProfile?.height ? null : currentProfile.height;
+    const cleanCurrentWeight = currentProfile?.currentWeight === 0 || !currentProfile?.currentWeight ? null : currentProfile.currentWeight;
+    const cleanTargetWeight = currentProfile?.targetWeight === 0 || !currentProfile?.targetWeight ? null : currentProfile.targetWeight;
+    
+    return {
+      name: currentProfile?.name || user?.name || 'Utente',
+      age: cleanAge,
+      height: cleanHeight,
+      currentWeight: cleanCurrentWeight,
+      targetWeight: cleanTargetWeight,
+      activityLevel: currentProfile?.activityLevel || 'moderate',
+      intermittentFasting: currentProfile?.intermittentFasting || false,
+      lactoseIntolerant: currentProfile?.lactoseIntolerant || false,
+      goal: currentProfile?.goal || 'fat-loss',
+      workoutDays: 3,
+      experience: 'beginner'
+    };
   });
 
   const [isEditing, setIsEditing] = useState(isNewUser);
@@ -48,12 +56,18 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
   // Aggiorna il profilo quando cambia l'utente o currentProfile
   useEffect(() => {
     if (currentProfile) {
+      // FORZA tutti i valori 0 a null per evitare zeri nei campi input
+      const cleanAge = currentProfile.age === 0 || !currentProfile.age ? null : currentProfile.age;
+      const cleanHeight = currentProfile.height === 0 || !currentProfile.height ? null : currentProfile.height;
+      const cleanCurrentWeight = currentProfile.currentWeight === 0 || !currentProfile.currentWeight ? null : currentProfile.currentWeight;
+      const cleanTargetWeight = currentProfile.targetWeight === 0 || !currentProfile.targetWeight ? null : currentProfile.targetWeight;
+      
       setProfile({
         name: currentProfile.name || user?.name || 'Utente',
-        age: currentProfile.age && currentProfile.age > 0 ? currentProfile.age : null,
-        height: currentProfile.height && currentProfile.height > 0 ? currentProfile.height : null,
-        currentWeight: currentProfile.currentWeight && currentProfile.currentWeight > 0 ? currentProfile.currentWeight : null,
-        targetWeight: currentProfile.targetWeight && currentProfile.targetWeight > 0 ? currentProfile.targetWeight : null,
+        age: cleanAge,
+        height: cleanHeight,
+        currentWeight: cleanCurrentWeight,
+        targetWeight: cleanTargetWeight,
         activityLevel: currentProfile.activityLevel || 'moderate',
         intermittentFasting: currentProfile.intermittentFasting || false,
         lactoseIntolerant: currentProfile.lactoseIntolerant || false,
@@ -393,7 +407,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="16"
                   max="80"
-                  value={profile.age || ''}
+                  value={profile.age === null || profile.age === 0 ? '' : profile.age}
                   onChange={(e) => {
                     const value = e.target.value;
                     const numValue = value === '' ? null : parseInt(value);
@@ -411,7 +425,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="140"
                   max="220"
-                  value={profile.height || ''}
+                  value={profile.height === null || profile.height === 0 ? '' : profile.height}
                   onChange={(e) => {
                     const value = e.target.value;
                     const numValue = value === '' ? null : parseInt(value);
@@ -432,7 +446,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.currentWeight || ''}
+                  value={profile.currentWeight === null || profile.currentWeight === 0 ? '' : profile.currentWeight}
                   onChange={(e) => {
                     const value = e.target.value;
                     const numValue = value === '' ? null : parseFloat(value);
@@ -440,7 +454,6 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                       ...profile, 
                       currentWeight: numValue
                     });
-                    console.log('💪 Peso attuale aggiornato:', numValue);
                   }}
                   disabled={!isEditing}
                   className={isNewUser && !profile.currentWeight ? "border-orange-300 bg-orange-50" : ""}
@@ -458,7 +471,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.targetWeight || ''}
+                  value={profile.targetWeight === null || profile.targetWeight === 0 ? '' : profile.targetWeight}
                   onChange={(e) => {
                     const value = e.target.value;
                     const numValue = value === '' ? null : parseFloat(value);
@@ -466,7 +479,6 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                       ...profile, 
                       targetWeight: numValue
                     });
-                    console.log('🎯 Peso obiettivo aggiornato:', numValue);
                   }}
                   disabled={!isEditing}
                   className={isNewUser && !profile.targetWeight ? "border-orange-300 bg-orange-50" : ""}
