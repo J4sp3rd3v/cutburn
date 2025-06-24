@@ -27,6 +27,20 @@ interface UserProfileProps {
 const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgress, currentProfile }: UserProfileProps) => {
   const { signOut, user, isNewUser, markProfileCompleted } = useAuth();
   
+  // FIX: Add loading state to prevent crash if props are not ready
+  if (!currentProfile || !userStats) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
+            <div className="w-8 h-8 bg-white rounded-full"></div>
+          </div>
+          <p className="text-slate-600">Caricamento dati profilo...</p>
+        </div>
+      </div>
+    );
+  }
+  
   const [profile, setProfile] = useState(() => {
     // FORZA tutti i valori 0 a null per evitare zeri nei campi input
     const cleanAge = currentProfile?.age === 0 || !currentProfile?.age ? null : currentProfile.age;

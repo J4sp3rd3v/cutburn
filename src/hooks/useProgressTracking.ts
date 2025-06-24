@@ -479,243 +479,266 @@ export const useProgressTracking = () => {
       }
     };
 
-    initializeUser();
-  }, [user]);
+    // Questo useEffect si attiva quando l'utente cambia (es. login)
+    useEffect(() => {
+      if (user) {
+        console.log('🚀 Inizializzazione utente in useProgressTracking (rilevato cambio utente)...');
+        initializeUser();
+      }
+    }, [user]); // FIX: Aggiunto 'user' come dipendenza per ri-triggerare l'init al login
 
-  // Check for day change on app start
-  useEffect(() => {
-    if (user) {
+    // Check for day change on app start
+    useEffect(() => {
       checkForDayChange();
-    }
-  }, [user]);
+    }, [user]);
 
-  // Auto-sync when coming back online
-  useEffect(() => {
-    if (isOnline && user && pendingSync.length > 0) {
-      setTimeout(() => {
-        syncPendingData();
-      }, 1000); // Wait 1 second after coming online
-    }
-  }, [isOnline, user]);
+    // Auto-sync when coming back online
+    useEffect(() => {
+      if (isOnline && user && pendingSync.length > 0) {
+        setTimeout(() => {
+          syncPendingData();
+        }, 1000); // Wait 1 second after coming online
+      }
+    }, [isOnline, user]);
 
-  // Listen for service worker sync triggers
-  useEffect(() => {
-    const handleServiceWorkerSync = (event: any) => {
-      console.log('🔄 Service Worker triggered sync:', event.detail);
-      if (user && isOnline) {
-        syncPendingData();
+    // Listen for service worker sync triggers
+    useEffect(() => {
+      const handleServiceWorkerSync = (event: any) => {
+        console.log('🔄 Service Worker triggered sync:', event.detail);
+        if (user && isOnline) {
+          syncPendingData();
+        }
+      };
+
+      window.addEventListener('triggerSync', handleServiceWorkerSync);
+      
+      return () => {
+        window.removeEventListener('triggerSync', handleServiceWorkerSync);
+      };
+    }, [user, isOnline]);
+
+    const today = new Date().toISOString().split('T')[0];
+    // NESSUN valore di default - solo dati da Supabase
+    const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress>(`dailyProgress_${today}`, {
+      date: today,
+      water: 0,
+      calories: 0,
+      workoutCompleted: false,
+      supplementsTaken: 0,
+      shotsConsumed: []
+    });
+
+    const [weeklyProgress, setWeeklyProgress] = useLocalStorage<Array<{ date: string; weight: number }>>('weeklyProgress', []);
+
+    const addWater = () => {
+      if (!userProfile) return;
+      
+      const newWater = Math.min(dailyProgress.water + 500, userProfile.targetWater);
+      const newProgress = { ...dailyProgress, water: newWater };
+      setDailyProgress(newProgress);
+      saveProgressWithOfflineSupport(newProgress);
+      
+      if (newWater >= userProfile.targetWater) {
+        toast({
+          title: "Obiettivo raggiunto! 💧",
+          description: "Hai bevuto abbastanza acqua oggi!",
+        });
       }
     };
 
-    window.addEventListener('triggerSync', handleServiceWorkerSync);
-    
-    return () => {
-      window.removeEventListener('triggerSync', handleServiceWorkerSync);
+    const addCalories = (amount: number) => {
+      if (!userProfile) return;
+      
+      const newCalories = Math.min(dailyProgress.calories + amount, userProfile.targetCalories);
+      const newProgress = { ...dailyProgress, calories: newCalories };
+      setDailyProgress(newProgress);
+      saveProgressWithOfflineSupport(newProgress);
     };
-  }, [user, isOnline]);
 
-  const today = new Date().toISOString().split('T')[0];
-  // NESSUN valore di default - solo dati da Supabase
-  const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress>(`dailyProgress_${today}`, {
-    date: today,
-    water: 0,
-    calories: 0,
-    workoutCompleted: false,
-    supplementsTaken: 0,
-    shotsConsumed: []
-  });
+    const updateWeight = (weight: number) => {
+      if (!userProfile) return;
 
-  const [weeklyProgress, setWeeklyProgress] = useLocalStorage<Array<{ date: string; weight: number }>>('weeklyProgress', []);
+      // Update profile
+      const updatedProfile = { ...userProfile, currentWeight: weight };
+      setUserProfile(updatedProfile);
+      saveProfileWithOfflineSupport(updatedProfile);
 
-  const addWater = () => {
-    if (!userProfile) return;
-    
-    const newWater = Math.min(dailyProgress.water + 500, userProfile.targetWater);
-    const newProgress = { ...dailyProgress, water: newWater };
-    setDailyProgress(newProgress);
-    saveProgressWithOfflineSupport(newProgress);
-    
-    if (newWater >= userProfile.targetWater) {
+      // Update daily progress
+      const newProgress = { ...dailyProgress, weight };
+      setDailyProgress(newProgress);
+      saveProgressWithOfflineSupport(newProgress);
+
+      // Update weekly progress
+      const newEntry = { date: today, weight };
+      setWeeklyProgress(prev => {
+        const filtered = prev.filter(entry => entry.date !== today);
+        return [...filtered, newEntry].slice(-7);
+      });
+
       toast({
-        title: "Obiettivo raggiunto! 💧",
-        description: "Hai bevuto abbastanza acqua oggi!",
+        title: "Peso aggiornato",
+        description: `Nuovo peso: ${weight}kg ${!isOnline ? '(sarà sincronizzato online)' : ''}`,
       });
-    }
-  };
+    };
 
-  const addCalories = (amount: number) => {
-    if (!userProfile) return;
-    
-    const newCalories = Math.min(dailyProgress.calories + amount, userProfile.targetCalories);
-    const newProgress = { ...dailyProgress, calories: newCalories };
-    setDailyProgress(newProgress);
-    saveProgressWithOfflineSupport(newProgress);
-  };
+    const updateProfile = async (profileData: Partial<UserProfile>) => {
+      if (!userProfile) return;
 
-  const updateWeight = (weight: number) => {
-    if (!userProfile) return;
-
-    // Update profile
-    const updatedProfile = { ...userProfile, currentWeight: weight };
-    setUserProfile(updatedProfile);
-    saveProfileWithOfflineSupport(updatedProfile);
-
-    // Update daily progress
-    const newProgress = { ...dailyProgress, weight };
-    setDailyProgress(newProgress);
-    saveProgressWithOfflineSupport(newProgress);
-
-    // Update weekly progress
-    const newEntry = { date: today, weight };
-    setWeeklyProgress(prev => {
-      const filtered = prev.filter(entry => entry.date !== today);
-      return [...filtered, newEntry].slice(-7);
-    });
-
-    toast({
-      title: "Peso aggiornato",
-      description: `Nuovo peso: ${weight}kg ${!isOnline ? '(sarà sincronizzato online)' : ''}`,
-    });
-  };
-
-  const updateProfile = async (profileData: Partial<UserProfile>) => {
-    if (!userProfile) return;
-
-    // Update profile with new data and calculate targets based on real data
-    const updatedProfile = { ...userProfile, ...profileData };
-    
-    // Calcola automaticamente calorie e acqua target SOLO se ci sono dati reali
-    if (updatedProfile.age && updatedProfile.age > 0 && 
-        updatedProfile.height && updatedProfile.height > 0 && 
-        updatedProfile.currentWeight && updatedProfile.currentWeight > 0) {
-      // Calcolo BMR (Basal Metabolic Rate) con formula Mifflin-St Jeor
-      const bmr = updatedProfile.goal === 'muscle-gain' 
-        ? 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age + 5
-        : 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age - 161;
+      // Update profile with new data and calculate targets based on real data
+      const updatedProfile = { ...userProfile, ...profileData };
       
-      // Fattore attività
-      const activityMultiplier = {
-        'sedentary': 1.2,
-        'light': 1.375,
-        'moderate': 1.55,
-        'active': 1.725,
-        'very-active': 1.9
-      }[updatedProfile.activityLevel] || 1.55;
+      // Calcola automaticamente calorie e acqua target SOLO se ci sono dati reali
+      if (updatedProfile.age && updatedProfile.age > 0 && 
+          updatedProfile.height && updatedProfile.height > 0 && 
+          updatedProfile.currentWeight && updatedProfile.currentWeight > 0) {
+        // Calcolo BMR (Basal Metabolic Rate) con formula Mifflin-St Jeor
+        const bmr = updatedProfile.goal === 'muscle-gain' 
+          ? 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age + 5
+          : 10 * updatedProfile.currentWeight + 6.25 * updatedProfile.height - 5 * updatedProfile.age - 161;
+        
+        // Fattore attività
+        const activityMultiplier = {
+          'sedentary': 1.2,
+          'light': 1.375,
+          'moderate': 1.55,
+          'active': 1.725,
+          'very-active': 1.9
+        }[updatedProfile.activityLevel] || 1.55;
+        
+        // Calorie target basate su obiettivo
+        const maintenanceCalories = bmr * activityMultiplier;
+        updatedProfile.targetCalories = Math.round(
+          updatedProfile.goal === 'fat-loss' ? maintenanceCalories - 500 :
+          updatedProfile.goal === 'muscle-gain' ? maintenanceCalories + 300 :
+          maintenanceCalories
+        );
+        
+        // Acqua target: 35ml per kg di peso corporeo
+        updatedProfile.targetWater = Math.round(updatedProfile.currentWeight * 35);
+        
+        console.log('📊 Target calcolati automaticamente:', {
+          calories: updatedProfile.targetCalories,
+          water: updatedProfile.targetWater
+        });
+      } else {
+        // Se non ci sono dati sufficienti, mantieni a 0
+        updatedProfile.targetCalories = 0;
+        updatedProfile.targetWater = 0;
+        console.log('⚠️ Dati insufficienti per calcolare target');
+      }
       
-      // Calorie target basate su obiettivo
-      const maintenanceCalories = bmr * activityMultiplier;
-      updatedProfile.targetCalories = Math.round(
-        updatedProfile.goal === 'fat-loss' ? maintenanceCalories - 500 :
-        updatedProfile.goal === 'muscle-gain' ? maintenanceCalories + 300 :
-        maintenanceCalories
-      );
-      
-      // Acqua target: 35ml per kg di peso corporeo
-      updatedProfile.targetWater = Math.round(updatedProfile.currentWeight * 35);
-      
-      console.log('📊 Target calcolati automaticamente:', {
-        calories: updatedProfile.targetCalories,
-        water: updatedProfile.targetWater
-      });
-    } else {
-      // Se non ci sono dati sufficienti, mantieni a 0
-      updatedProfile.targetCalories = 0;
-      updatedProfile.targetWater = 0;
-      console.log('⚠️ Dati insufficienti per calcolare target');
-    }
-    
-    setUserProfile(updatedProfile);
+      setUserProfile(updatedProfile);
 
-    console.log('🔄 Aggiornamento profilo:', updatedProfile);
+      console.log('🔄 Aggiornamento profilo:', updatedProfile);
 
-    // Prova a salvare immediatamente su Supabase se online
-    if (isOnline) {
-      // Prima testa la connessione
-      const isConnected = await testSupabaseConnection();
-      
-      if (isConnected) {
-        try {
-          await saveProfileToSupabase(updatedProfile);
-          console.log('✅ Profilo salvato su Supabase con successo');
-          
-          toast({
-            title: "Profilo aggiornato ✅",
-            description: "Le modifiche sono state salvate su cloud. App aggiornata automaticamente!",
+      // Prova a salvare immediatamente su Supabase se online
+      if (isOnline) {
+        // Prima testa la connessione
+        const isConnected = await testSupabaseConnection();
+        
+        if (isConnected) {
+          try {
+            await saveProfileToSupabase(updatedProfile);
+            console.log('✅ Profilo salvato su Supabase con successo');
+            
+            toast({
+              title: "Profilo aggiornato ✅",
+              description: "Le modifiche sono state salvate su cloud. App aggiornata automaticamente!",
+            });
+            
+            // Trigger refresh di tutte le sezioni che dipendono dal profilo
+            window.dispatchEvent(new CustomEvent('profileUpdated', {
+              detail: { profile: updatedProfile }
+            }));
+          } catch (error) {
+            console.warn('⚠️ Errore salvataggio Supabase, aggiungo a pending:', error);
+            addToPendingSync('profile', updatedProfile);
+            
+                    toast({
+            title: "Profilo aggiornato ⚠️",
+            description: "Salvato localmente, sincronizzazione in corso...",
           });
           
-          // Trigger refresh di tutte le sezioni che dipendono dal profilo
+          // Trigger refresh anche per salvataggio offline
           window.dispatchEvent(new CustomEvent('profileUpdated', {
             detail: { profile: updatedProfile }
           }));
-        } catch (error) {
-          console.warn('⚠️ Errore salvataggio Supabase, aggiungo a pending:', error);
+          }
+        } else {
+          console.warn('⚠️ Connessione Supabase non disponibile, aggiungo a pending');
           addToPendingSync('profile', updatedProfile);
           
-                  toast({
-          title: "Profilo aggiornato ⚠️",
-          description: "Salvato localmente, sincronizzazione in corso...",
-        });
-        
-        // Trigger refresh anche per salvataggio offline
-        window.dispatchEvent(new CustomEvent('profileUpdated', {
-          detail: { profile: updatedProfile }
-        }));
+          toast({
+            title: "Profilo aggiornato 🔄",
+            description: "Cloud non raggiungibile, sincronizzerà automaticamente",
+          });
+          
+          // Trigger refresh anche quando cloud non raggiungibile
+          window.dispatchEvent(new CustomEvent('profileUpdated', {
+            detail: { profile: updatedProfile }
+          }));
         }
       } else {
-        console.warn('⚠️ Connessione Supabase non disponibile, aggiungo a pending');
+        // Se offline, aggiungi alla coda
         addToPendingSync('profile', updatedProfile);
         
         toast({
-          title: "Profilo aggiornato 🔄",
-          description: "Cloud non raggiungibile, sincronizzerà automaticamente",
+          title: "Profilo aggiornato 📡",
+          description: "Salvato offline, sincronizzerà quando torni online",
         });
         
-        // Trigger refresh anche quando cloud non raggiungibile
+        // Trigger refresh anche offline
         window.dispatchEvent(new CustomEvent('profileUpdated', {
           detail: { profile: updatedProfile }
         }));
       }
-    } else {
-      // Se offline, aggiungi alla coda
-      addToPendingSync('profile', updatedProfile);
+    };
+
+    const addShot = (shotType: string) => {
+      const newShots = [...dailyProgress.shotsConsumed, shotType];
+      const newProgress = { ...dailyProgress, shotsConsumed: newShots };
+      setDailyProgress(newProgress);
+      saveProgressWithOfflineSupport(newProgress);
       
       toast({
-        title: "Profilo aggiornato 📡",
-        description: "Salvato offline, sincronizzerà quando torni online",
+        title: "Shot registrato! 🥤",
+        description: `${shotType} aggiunto al tracking`,
       });
+    };
+
+    const toggleWorkout = () => {
+      const newWorkoutStatus = !dailyProgress.workoutCompleted;
+      const newProgress = { ...dailyProgress, workoutCompleted: newWorkoutStatus };
+      setDailyProgress(newProgress);
+      saveProgressWithOfflineSupport(newProgress);
       
-      // Trigger refresh anche offline
-      window.dispatchEvent(new CustomEvent('profileUpdated', {
-        detail: { profile: updatedProfile }
-      }));
-    }
-  };
+      if (newWorkoutStatus) {
+        toast({
+          title: "Workout completato! 💪",
+          description: "Ottimo lavoro oggi!",
+        });
+      }
+    };
 
-  const addShot = (shotType: string) => {
-    const newShots = [...dailyProgress.shotsConsumed, shotType];
-    const newProgress = { ...dailyProgress, shotsConsumed: newShots };
-    setDailyProgress(newProgress);
-    saveProgressWithOfflineSupport(newProgress);
-    
-    toast({
-      title: "Shot registrato! 🥤",
-      description: `${shotType} aggiunto al tracking`,
-    });
-  };
-
-  const toggleWorkout = () => {
-    const newWorkoutStatus = !dailyProgress.workoutCompleted;
-    const newProgress = { ...dailyProgress, workoutCompleted: newWorkoutStatus };
-    setDailyProgress(newProgress);
-    saveProgressWithOfflineSupport(newProgress);
-    
-    if (newWorkoutStatus) {
-      toast({
-        title: "Workout completato! 💪",
-        description: "Ottimo lavoro oggi!",
-      });
-    }
-  };
+    return {
+      dailyProgress,
+      userProfile,
+      loading,
+      isOnline,
+      pendingSync: pendingSync.length,
+      addWater,
+      addCalories,
+      updateWeight,
+      updateProfile,
+      addShot,
+      toggleWorkout,
+      getWeeklyProgress: () => weeklyProgress,
+      saveProfileToSupabase,
+      loadDataFromSupabase,
+      syncPendingData,
+      checkForDayChange
+    };
+  }, [user]);
 
   return {
     dailyProgress,
