@@ -264,13 +264,13 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold">
-              {profile.currentWeight || (isNewUser ? "---" : "75")}
+              {profile.currentWeight && profile.currentWeight > 0 ? profile.currentWeight : "---"}
             </div>
             <div className="text-sm opacity-90">Peso attuale</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold">
-              {profile.targetWeight || (isNewUser ? "---" : "70")}
+              {profile.targetWeight && profile.targetWeight > 0 ? profile.targetWeight : "---"}
             </div>
             <div className="text-sm opacity-90">Peso obiettivo</div>
           </div>
@@ -415,7 +415,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.currentWeight || ''}
+                  value={profile.currentWeight === 0 ? '' : profile.currentWeight}
                   onChange={(e) => {
                     const value = e.target.value;
                     const numValue = value === '' ? 0 : parseFloat(value);
@@ -441,7 +441,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.targetWeight || ''}
+                  value={profile.targetWeight === 0 ? '' : profile.targetWeight}
                   onChange={(e) => {
                     const value = e.target.value;
                     const numValue = value === '' ? 0 : parseFloat(value);
