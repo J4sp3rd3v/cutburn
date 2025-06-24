@@ -89,10 +89,43 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     }
   }, [currentProfile, user]);
 
+  useEffect(() => {
+    if (isNewUser) {
+      setIsEditing(true);
+    }
+  }, [isNewUser]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    let finalValue: string | number | boolean = value;
+
+    if (type === 'number') {
+      finalValue = value === '' ? null : parseFloat(value);
+    }
+    
+    if (e.target.type === 'checkbox') {
+        finalValue = (e.target as HTMLInputElement).checked;
+    }
+
+    setProfile(prev => ({ ...prev, [name]: finalValue }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setProfile(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckedChange = (name: string, checked: boolean) => {
+    setProfile(prev => ({ ...prev, [name]: checked }));
+  };
+
   // Calcoli scientifici personalizzati
   const calculatePersonalizedMetrics = () => {
-    // Se non ci sono dati sufficienti, restituisci valori di default
-    if (!profile.currentWeight || !profile.height || !profile.age) {
+    // Se non ci sono dati sufficienti, restituisci valori di default sicuri
+    const weight = profile.currentWeight || 0;
+    const height = profile.height || 0;
+    const age = profile.age || 0;
+
+    if (weight === 0 || height === 0 || age === 0) {
       return {
         bmr: 0,
         tdee: 0,
@@ -102,16 +135,14 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
         carbTarget: 0,
         waterTarget: 0,
         deficit: 0,
-        fastingWindow: "Normale",
+        fastingWindow: "N/D",
         weightLossWeekly: 0,
         timeToGoal: 0
       };
     }
     
-    // BMR Formula di Harris-Benedict rivista (2024)
-    const bmr = (10 * profile.currentWeight) + (6.25 * profile.height) - (5 * profile.age) + 5;
+    const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
     
-    // TDEE con moltiplicatori aggiornati
     const activityMultipliers = {
       sedentary: 1.2,
       light: 1.375,
@@ -140,7 +171,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
       'recomp': 3.0           // 3.0g/kg ricomposizione
     };
     
-    const proteinTarget = Math.round(profile.currentWeight * (proteinMultipliers[profile.goal as keyof typeof proteinMultipliers] || 2.8));
+    const proteinTarget = Math.round(weight * (proteinMultipliers[profile.goal as keyof typeof proteinMultipliers] || 2.8));
     
     // Grassi: 25-30% delle calorie per ormoni
     const fatTarget = Math.round((targetCalories * 0.28) / 9);
@@ -149,11 +180,16 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     const carbTarget = Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4);
     
     // Acqua personalizzata
-    const waterTarget = Math.round((profile.currentWeight * 35) + (profile.workoutDays * 500));
+    const waterTarget = Math.round(weight * 35);
     
     // Timing digiuno intermittente
-    const fastingWindow = profile.intermittentFasting ? "16:8 (12:00-20:00)" : "Normale";
+    const fastingWindow = profile.intermittentFasting ? "16/8" : "Normale";
     
+    const weightToLose = weight - (profile.targetWeight || weight);
+    const deficit = Math.round(tdee - targetCalories);
+    const weightLossWeekly = deficit > 0 ? (deficit * 7) / 7700 : 0;
+    const timeToGoal = weightLossWeekly > 0 ? Math.ceil(weightToLose / weightLossWeekly) : 0;
+
     return {
       bmr: Math.round(bmr),
       tdee: Math.round(tdee),
@@ -162,10 +198,10 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
       fatTarget,
       carbTarget,
       waterTarget,
-      deficit: Math.round(tdee - targetCalories),
+      deficit,
       fastingWindow,
-      weightLossWeekly: Math.round((tdee - targetCalories) * 7 / 7700 * 100) / 100, // kg/settimana
-      timeToGoal: Math.round((profile.currentWeight - profile.targetWeight) / (Math.abs(tdee - targetCalories) * 7 / 7700))
+      weightLossWeekly: Number(weightLossWeekly.toFixed(1)),
+      timeToGoal
     };
   };
 
@@ -237,29 +273,30 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
   };
 
   const calculateBMI = () => {
-    if (!profile.height || !profile.currentWeight) return "0.0";
-    const heightInMeters = profile.height / 100;
-    return (profile.currentWeight / (heightInMeters * heightInMeters)).toFixed(1);
+    const weight = profile.currentWeight || 0;
+    const height = profile.height || 0;
+    if (height === 0 || weight === 0) return "0.0";
+    const heightInMeters = height / 100;
+    return (weight / (heightInMeters * heightInMeters)).toFixed(1);
   };
 
   const getBodyFatEstimate = () => {
-    if (!profile.age) return "0.0";
+    const age = profile.age || 0;
+    if (age === 0) return "0.0";
     const bmi = parseFloat(calculateBMI());
-    const estimate = (1.39 * bmi) + (0.16 * profile.age) - 19.34;
+    const estimate = (1.39 * bmi) + (0.16 * age) - 19.34;
     return Math.max(8, Math.min(25, estimate)).toFixed(1);
   };
 
   const getTotalWeightLoss = () => {
-    // Se è un nuovo utente o non ha ancora perso peso, non mostrare statistiche
-    if (isNewUser || userStats.startWeight === userStats.currentWeight) {
+    if (isNewUser || (userStats.startWeight || 0) === (userStats.currentWeight || 0)) {
       return "0.0";
     }
-    return (userStats.startWeight - userStats.currentWeight).toFixed(1);
+    return ((userStats.startWeight || 0) - (userStats.currentWeight || 0)).toFixed(1);
   };
 
   const hasRealProgress = () => {
-    // Controlla se l'utente ha progressi reali (non è nuovo e ha cambiato peso)
-    return !isNewUser && userStats.startWeight !== userStats.currentWeight;
+    return !isNewUser && (userStats.startWeight || 0) !== (userStats.currentWeight || 0);
   };
 
   const getBMICategory = (bmi: number) => {
@@ -422,11 +459,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="16"
                   max="80"
                   value={profile.age === null || profile.age === 0 ? '' : profile.age}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const numValue = value === '' ? null : parseInt(value);
-                    setProfile({...profile, age: numValue});
-                  }}
+                  onChange={handleInputChange}
                   disabled={!isEditing}
                   className={isNewUser && !profile.age ? "border-orange-300" : ""}
                   placeholder="es. 25"
@@ -440,11 +473,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="140"
                   max="220"
                   value={profile.height === null || profile.height === 0 ? '' : profile.height}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const numValue = value === '' ? null : parseInt(value);
-                    setProfile({...profile, height: numValue});
-                  }}
+                  onChange={handleInputChange}
                   disabled={!isEditing}
                   className={isNewUser && !profile.height ? "border-orange-300" : ""}
                   placeholder="es. 175"
@@ -461,14 +490,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   max="200"
                   step="0.1"
                   value={profile.currentWeight === null || profile.currentWeight === 0 ? '' : profile.currentWeight}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const numValue = value === '' ? null : parseFloat(value);
-                    setProfile({
-                      ...profile, 
-                      currentWeight: numValue
-                    });
-                  }}
+                  onChange={handleInputChange}
                   disabled={!isEditing}
                   className={isNewUser && !profile.currentWeight ? "border-orange-300 bg-orange-50" : ""}
                   placeholder="es. 75.5"
@@ -486,14 +508,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   max="200"
                   step="0.1"
                   value={profile.targetWeight === null || profile.targetWeight === 0 ? '' : profile.targetWeight}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const numValue = value === '' ? null : parseFloat(value);
-                    setProfile({
-                      ...profile, 
-                      targetWeight: numValue
-                    });
-                  }}
+                  onChange={handleInputChange}
                   disabled={!isEditing}
                   className={isNewUser && !profile.targetWeight ? "border-orange-300 bg-orange-50" : ""}
                   placeholder="es. 70.0"
@@ -518,7 +533,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
               <Label htmlFor="activity">Livello di attività *</Label>
               <Select
                 value={profile.activityLevel}
-                onValueChange={(value) => setProfile({...profile, activityLevel: value})}
+                onValueChange={handleSelectChange.bind(null, 'activityLevel')}
                 disabled={!isEditing}
               >
                 <SelectTrigger className={isNewUser ? "border-orange-300" : ""}>
@@ -541,11 +556,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                 min="0"
                 max="7"
                 value={profile.workoutDays || ''}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const numValue = value === '' ? null : parseInt(value);
-                  setProfile({...profile, workoutDays: numValue});
-                }}
+                onChange={handleInputChange}
                 disabled={!isEditing}
                 placeholder="es. 3"
               />
@@ -559,7 +570,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
               <Label htmlFor="goal">Obiettivo principale *</Label>
               <Select
                 value={profile.goal}
-                onValueChange={(value) => setProfile({...profile, goal: value})}
+                onValueChange={handleSelectChange.bind(null, 'goal')}
                 disabled={!isEditing}
               >
                 <SelectTrigger className={isNewUser ? "border-orange-300" : ""}>
@@ -577,7 +588,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
               <Label htmlFor="experience">Esperienza allenamento</Label>
               <Select
                 value={profile.experience}
-                onValueChange={(value) => setProfile({...profile, experience: value})}
+                onValueChange={handleSelectChange.bind(null, 'experience')}
                 disabled={!isEditing}
               >
                 <SelectTrigger>
@@ -596,30 +607,23 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
           <div className="space-y-3">
             <h4 className="font-medium text-slate-700 border-b pb-1">🍽️ Preferenze Alimentari</h4>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="intermittent-fasting" className="font-medium">Digiuno Intermittente 16:8</Label>
-                  <p className="text-sm text-slate-500">Finestra alimentare: 12:00-20:00</p>
-                </div>
+              <div className="flex items-center space-x-2">
                 <Switch
                   id="intermittent-fasting"
-                  checked={profile.intermittentFasting}
-                  onCheckedChange={(checked) => setProfile({...profile, intermittentFasting: checked})}
+                  checked={profile.intermittentFasting || false}
+                  onCheckedChange={(checked) => handleCheckedChange('intermittentFasting', checked)}
                   disabled={!isEditing}
                 />
+                <Label htmlFor="intermittent-fasting">Digiuno Intermittente (16/8)</Label>
               </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="lactose-intolerant" className="font-medium">Intolleranza al Lattosio</Label>
-                  <p className="text-sm text-slate-500">Esclude latticini dalle ricette</p>
-                </div>
+              <div className="flex items-center space-x-2">
                 <Switch
                   id="lactose-intolerant"
-                  checked={profile.lactoseIntolerant}
-                  onCheckedChange={(checked) => setProfile({...profile, lactoseIntolerant: checked})}
+                  checked={profile.lactoseIntolerant || false}
+                  onCheckedChange={(checked) => handleCheckedChange('lactoseIntolerant', checked)}
                   disabled={!isEditing}
                 />
+                <Label htmlFor="lactose-intolerant">Intollerante al Lattosio</Label>
               </div>
             </div>
           </div>
