@@ -80,18 +80,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Controlla sessione esistente all'avvio
   useEffect(() => {
-    setLoading(true); // Imposta loading a true all'inizio
+    // Non impostare loading a true qui per evitare di bloccare l'UI all'avvio
     
     const checkUser = async () => {
       try {
         console.log('🔄 Controllo sessione esistente...');
+        setLoading(true); // Inizia a caricare solo quando la funzione parte
         
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('❌ Errore controllo sessione:', error);
           setUser(null);
-          setLoading(false); // Imposta loading a false solo se non c'è sessione
+          setLoading(false); // Fine caricamento
           return;
         }
         
@@ -101,12 +102,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           console.log('ℹ️ Nessuna sessione attiva');
           setUser(null);
-          setLoading(false); // Imposta loading a false in caso di errore
+          setLoading(false); // Fine caricamento
         }
       } catch (error) {
-        console.error('❌ Errore controllo sessione:', error);
+        console.error('❌ Errore critico controllo sessione:', error);
         setUser(null);
-        setLoading(false); // Imposta loading a false in caso di errore
+        setLoading(false); // Fine caricamento
       }
     };
 
@@ -119,21 +120,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('✅ Utente loggato');
-          setLoading(true);
+          setLoading(true); // Mostra caricamento durante il login
           await loadUserProfile(session.user);
         } else if (event === 'SIGNED_OUT') {
           console.log('👋 Utente disconnesso');
           setUser(null);
+          setLoading(false); // Assicurati di fermare il caricamento
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           console.log('🔄 Token aggiornato');
-          // Non impostare loading a true qui per evitare sfarfallio
+          // Non impostare loading a true qui per non bloccare l'UI
           await loadUserProfile(session.user);
         }
       } catch (error) {
         console.error('❌ Errore gestione auth state:', error);
-      } finally {
-        setLoading(false); // Assicurati che loading sia false dopo ogni operazione
+        setLoading(false); // Assicurati di fermare il caricamento in caso di errore
       }
+      // Non mettere un finally qui, perché loadUserProfile gestisce già il suo stato di caricamento.
     });
 
     return () => {
