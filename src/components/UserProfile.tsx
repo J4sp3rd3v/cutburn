@@ -83,19 +83,19 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     }
   }, [currentProfile, user]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    let finalValue: string | number | boolean = value;
-
-    if (type === 'number') {
-      finalValue = value === '' ? null : parseFloat(value);
+  const handleInputChange = (fieldName: string, value: string | number | boolean) => {
+    let finalValue = value;
+    if (typeof value === 'string' && /^\d*\.?\d*$/.test(value)) {
+      if (value === '') {
+        finalValue = null;
+      } else {
+        finalValue = parseFloat(value);
+        if (isNaN(finalValue)) {
+          finalValue = null;
+        }
+      }
     }
-    
-    if (e.target.type === 'checkbox') {
-        finalValue = (e.target as HTMLInputElement).checked;
-    }
-
-    setProfile(prev => ({ ...prev, [name]: finalValue }));
+    setProfile(prev => ({ ...prev, [fieldName]: finalValue }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -463,8 +463,8 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="16"
                   max="80"
-                  value={profile.age === null || profile.age === 0 ? '' : profile.age}
-                  onChange={handleInputChange}
+                  value={profile.age || ''}
+                  onChange={(e) => handleInputChange('age', e.target.value)}
                   disabled={!isEditing}
                   className={isNewUser && !profile.age ? "border-orange-300" : ""}
                   placeholder="es. 25"
@@ -477,8 +477,8 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   type="number"
                   min="140"
                   max="220"
-                  value={profile.height === null || profile.height === 0 ? '' : profile.height}
-                  onChange={handleInputChange}
+                  value={profile.height || ''}
+                  onChange={(e) => handleInputChange('height', e.target.value)}
                   disabled={!isEditing}
                   className={isNewUser && !profile.height ? "border-orange-300" : ""}
                   placeholder="es. 175"
@@ -494,8 +494,8 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.currentWeight === null || profile.currentWeight === 0 ? '' : profile.currentWeight}
-                  onChange={handleInputChange}
+                  value={profile.currentWeight || ''}
+                  onChange={(e) => handleInputChange('currentWeight', e.target.value)}
                   disabled={!isEditing}
                   className={isNewUser && !profile.currentWeight ? "border-orange-300 bg-orange-50" : ""}
                   placeholder="es. 75.5"
@@ -512,8 +512,8 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                   min="40"
                   max="200"
                   step="0.1"
-                  value={profile.targetWeight === null || profile.targetWeight === 0 ? '' : profile.targetWeight}
-                  onChange={handleInputChange}
+                  value={profile.targetWeight || ''}
+                  onChange={(e) => handleInputChange('targetWeight', e.target.value)}
                   disabled={!isEditing}
                   className={isNewUser && !profile.targetWeight ? "border-orange-300 bg-orange-50" : ""}
                   placeholder="es. 70.0"
@@ -561,7 +561,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
                 min="0"
                 max="7"
                 value={profile.workoutDays || ''}
-                onChange={handleInputChange}
+                onChange={(e) => handleInputChange('workoutDays', e.target.value)}
                 disabled={!isEditing}
                 placeholder="es. 3"
               />
