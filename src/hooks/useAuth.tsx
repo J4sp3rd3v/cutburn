@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
+import { toast } from "@/components/ui/use-toast";
 
 type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
@@ -161,8 +162,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error) {
       console.error('[loadUserProfile] CRITICAL ERROR in profile loading:', error);
-      setUser(null);
-      await supabase.auth.signOut();
+      // Invece di un signOut forzato che causa un redirect loop,
+      // blocchiamo il caricamento e mostriamo l'errore all'utente.
+      // L'utente rimane "loggato" ma l'app si ferma qui, rendendo chiaro il problema.
+      toast({
+        title: "Errore Critico",
+        description: `Impossibile caricare il tuo profilo utente dopo il login. Potrebbe essere un problema di permessi sul database (RLS). Contatta il supporto. Errore: ${error instanceof Error ? error.message : String(error)}`,
+        variant: "destructive",
+        duration: Infinity, // Mostra l'errore finché la pagina non viene ricaricata
+      });
+      setUser(null); // Mantieni l'utente nullo per fermare l'UI
     } finally {
       console.log('[loadUserProfile] FINALLY block reached. Loading finished.');
       setLoading(false);
