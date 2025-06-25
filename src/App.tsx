@@ -11,7 +11,7 @@ import NotFound from "./pages/NotFound";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { usePWAInstall } from './hooks/usePWAInstall';
 import { Button } from './components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, TrendingDown } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +25,19 @@ const queryClient = new QueryClient({
 const AppRoutes = () => {
   const { user, loading, isNewUser } = useAuth();
   const { installPrompt, triggerInstall } = usePWAInstall();
+
+  // Mostra una schermata di caricamento globale mentre si verifica l'autenticazione
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col items-center justify-center">
+        <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+          <TrendingDown className="w-8 h-8 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-700">Caricamento in corso...</h1>
+        <p className="text-slate-500">Verifica della sessione sicura.</p>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
