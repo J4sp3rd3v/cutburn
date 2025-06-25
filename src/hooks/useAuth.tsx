@@ -78,63 +78,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Controlla sessione esistente all'avvio
   useEffect(() => {
-    // Non impostare loading a true qui per evitare di bloccare l'UI all'avvio
-    
-    const checkUser = async () => {
-      try {
-        console.log('🔄 Controllo sessione esistente...');
-        setLoading(true); // Inizia a caricare solo quando la funzione parte
-        
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('❌ Errore controllo sessione:', error);
-          setUser(null);
-          setLoading(false); // Fine caricamento
-          return;
-        }
-        
-        if (session?.user) {
-          console.log('✅ Sessione trovata per:', session.user.email);
-          await loadUserProfile(session.user);
-        } else {
-          console.log('ℹ️ Nessuna sessione attiva');
-          setUser(null);
-          setLoading(false); // Fine caricamento
-        }
-      } catch (error) {
-        console.error('❌ Errore critico controllo sessione:', error);
-        setUser(null);
-        setLoading(false); // Fine caricamento
-      }
-    };
+    // Imposta loading a true all'inizio per mostrare la schermata di caricamento.
+    setLoading(true);
 
-    checkUser();
-
-    // Ascolta cambiamenti autenticazione
+    // onAuthStateChange è l'unica fonte di verità.
+    // All'avvio, emette subito un evento 'INITIAL_SESSION'.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth state changed:', event);
-      setLoading(true); // Imposta loading all'inizio di ogni cambio di stato
+      console.log(`Auth Event: ${event}`);
       
-      try {
-        if (event === 'SIGNED_IN' && session?.user) {
-          console.log('✅ Utente loggato');
-          await loadUserProfile(session.user);
-        } else if (event === 'SIGNED_OUT') {
-          console.log('👋 Utente disconnesso');
-          setUser(null);
-        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-          console.log('🔄 Token aggiornato');
-          await loadUserProfile(session.user);
-        }
-      } catch (error) {
-        console.error('❌ Errore gestione auth state:', error);
-        setUser(null); // In caso di errore, resetta l'utente
-      } finally {
-        setLoading(false); // GARANTISCE che loading sia false alla fine di tutto
+      if (session?.user) {
+        // Gestisce INITIAL_SESSION (con utente), SIGNED_IN, TOKEN_REFRESHED
+        await loadUserProfile(session.user);
+      } else {
+        // Gestisce INITIAL_SESSION (senza utente) e SIGNED_OUT
+        setUser(null);
       }
+      
+      // Dopo il primo evento, l'app non è più in stato di caricamento iniziale.
+      setLoading(false);
     });
 
     return () => {
@@ -143,6 +105,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {
+    // NON GESTIRE setLoading qui. Viene gestito dal listener onAuthStateChange.
     try {
       console.log('🔄 Caricamento profilo per:', supabaseUser.id);
       
@@ -209,8 +172,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Eseguiamo il logout per forzare un nuovo tentativo di login.
       setUser(null);
       await supabase.auth.signOut();
-    } finally {
-      setLoading(false); // Imposta loading a false alla fine di tutto
     }
   };
 
