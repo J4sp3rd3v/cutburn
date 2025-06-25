@@ -116,26 +116,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Ascolta cambiamenti autenticazione
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('🔄 Auth state changed:', event);
+      setLoading(true); // Imposta loading all'inizio di ogni cambio di stato
       
       try {
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('✅ Utente loggato');
-          setLoading(true); // Mostra caricamento durante il login
           await loadUserProfile(session.user);
         } else if (event === 'SIGNED_OUT') {
           console.log('👋 Utente disconnesso');
           setUser(null);
-          setLoading(false); // Assicurati di fermare il caricamento
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           console.log('🔄 Token aggiornato');
-          // Non impostare loading a true qui per non bloccare l'UI
           await loadUserProfile(session.user);
         }
       } catch (error) {
         console.error('❌ Errore gestione auth state:', error);
-        setLoading(false); // Assicurati di fermare il caricamento in caso di errore
+        setUser(null); // In caso di errore, resetta l'utente
+      } finally {
+        setLoading(false); // GARANTISCE che loading sia false alla fine di tutto
       }
-      // Non mettere un finally qui, perché loadUserProfile gestisce già il suo stato di caricamento.
     });
 
     return () => {
