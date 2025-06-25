@@ -1,6 +1,9 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
+
+type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
 interface User {
   id: string;
@@ -79,32 +82,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    // Imposta loading a true all'inizio per mostrare la schermata di caricamento.
+    // Imposta loading a true all'inizio. Verrà impostato a false solo
+    // dentro loadUserProfile o se l'utente è esplicitamente null.
     setLoading(true);
 
-    // onAuthStateChange è l'unica fonte di verità.
-    // All'avvio, emette subito un evento 'INITIAL_SESSION'.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`Auth Event: ${event}`, { sessionExists: !!session });
       
-      if (event === 'INITIAL_SESSION') {
-        console.log('🔄 Gestione sessione iniziale...');
-      }
-
+      // Se c'è una sessione, carica il profilo utente.
+      // loadUserProfile si occuperà di impostare setLoading(false) alla fine.
       if (session?.user) {
-        // Gestisce INITIAL_SESSION (con utente), SIGNED_IN, TOKEN_REFRESHED
-        // Non impostare loading a false qui, attendi il caricamento del profilo
         await loadUserProfile(session.user);
       } else {
-        // Gestisce INITIAL_SESSION (senza utente) e SIGNED_OUT
-        console.log('👤 Nessun utente, logout completato.');
+        // Se non c'è sessione (INITIAL_SESSION senza utente o SIGNED_OUT),
+        // imposta l'utente a null e ferma il caricamento.
         setUser(null);
-        // Solo ora siamo sicuri che non c'è utente, quindi non si carica più nulla
         setLoading(false);
       }
-      
-      // La gestione di setLoading(false) viene spostata all'interno di loadUserProfile
-      // per attendere il completamento del caricamento del profilo.
     });
 
     return () => {
@@ -122,9 +116,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('auth_user_id', supabaseUser.id)
         .single();
 
-      console.log('[loadUserProfile] Executing profile query...');
-      const { data: profile, error } = await profileQuery;
-      console.log('[loadUserProfile] Query finished.');
+      console.log('[loadUserProfile] Executing profile query with 10s timeout...');
+      
+      // Aggiungo un timeout per forzare un errore invece di un blocco infinito
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database query for user profile timed out after 10 seconds.')), 10000)
+      );
+      
+      const result = await Promise.race([
+        profileQuery,
+        timeoutPromise
+      ]) as { data: UserProfile | null, error: any };
+
+      const { data: profile, error } = result;
+
+      console.log('[loadUserProfile] Query finished or timed out.');
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = 0 risultati, che è ok
         console.error('[loadUserProfile] Supabase query error:', error);
