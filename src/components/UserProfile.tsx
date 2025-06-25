@@ -232,9 +232,6 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
       return;
     }
 
-    setIsEditing(false);
-    setProfileComplete(true);
-    
     // Prepara i dati del profilo da salvare, usando snake_case per la compatibilità con Supabase
     const profileToSave = {
       name: profile.name,
@@ -248,16 +245,24 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
       lactose_intolerant: profile.lactoseIntolerant,
       target_calories: metrics.targetCalories,
       target_water: metrics.waterTarget,
-      start_weight: profile.startWeight || profile.currentWeight,
+      // Se il peso iniziale non è mai stato impostato, lo impostiamo ora
+      // Questo accade solo la prima volta che si salvano dati validi
+      ...(safeCurrentProfile.start_weight === null || safeCurrentProfile.start_weight === 0
+        ? { start_weight: profile.currentWeight }
+        : {}),
     };
     
-    if (isNewUser) {
-      // Per nuovi utenti, imposta start_weight = current_weight (nessuna perdita iniziale)
-      profileToSave.start_weight = profile.currentWeight;
-      markProfileCompleted();
-      console.log('✅ Profilo nuovo utente completato:', profileToSave);
-    }
+    console.log('💾 Salvataggio profilo in corso...', profileToSave);
+    onUpdateProfile(profileToSave);
+
+    setIsEditing(false);
+    setProfileComplete(true);
     
+    // Se è un nuovo utente, segna il profilo come completato
+    if (isNewUser) {
+      markProfileCompleted();
+    }
+
     // Salva il profilo usando la funzione passata dal parent
     console.log('🔄 Chiamata onUpdateProfile con dati:', profileToSave);
     onUpdateProfile(profileToSave);

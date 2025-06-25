@@ -85,18 +85,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // onAuthStateChange è l'unica fonte di verità.
     // All'avvio, emette subito un evento 'INITIAL_SESSION'.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`Auth Event: ${event}`);
+      console.log(`Auth Event: ${event}`, { sessionExists: !!session });
       
+      if (event === 'INITIAL_SESSION') {
+        console.log('🔄 Gestione sessione iniziale...');
+      }
+
       if (session?.user) {
         // Gestisce INITIAL_SESSION (con utente), SIGNED_IN, TOKEN_REFRESHED
+        // Non impostare loading a false qui, attendi il caricamento del profilo
         await loadUserProfile(session.user);
       } else {
         // Gestisce INITIAL_SESSION (senza utente) e SIGNED_OUT
+        console.log('👤 Nessun utente, logout completato.');
         setUser(null);
+        // Solo ora siamo sicuri che non c'è utente, quindi non si carica più nulla
+        setLoading(false);
       }
       
-      // Dopo il primo evento, l'app non è più in stato di caricamento iniziale.
-      setLoading(false);
+      // La gestione di setLoading(false) viene spostata all'interno di loadUserProfile
+      // per attendere il completamento del caricamento del profilo.
     });
 
     return () => {
@@ -105,26 +113,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {
-    // NON GESTIRE setLoading qui. Viene gestito dal listener onAuthStateChange.
     try {
-      console.log('🔄 Caricamento profilo per:', supabaseUser.id);
+      console.log(`[loadUserProfile] START for user ${supabaseUser.id}`);
       
-      const profileColumns = 'id, auth_user_id, name, created_at, age, height, current_weight, start_weight, target_weight, activity_level, goal, intermittent_fasting, lactose_intolerant, target_calories, target_water';
-
-      // Prova a caricare il profilo dal database
-      const { data: profile, error } = await supabase
+      const profileQuery = supabase
         .from('user_profiles')
-        .select(profileColumns)
+        .select('id, name, created_at') // Seleziono solo il minimo indispensabile
         .eq('auth_user_id', supabaseUser.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ Errore caricamento profilo:', error);
+      console.log('[loadUserProfile] Executing profile query...');
+      const { data: profile, error } = await profileQuery;
+      console.log('[loadUserProfile] Query finished.');
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = 0 risultati, che è ok
+        console.error('[loadUserProfile] Supabase query error:', error);
         throw error;
       }
-
+      
       if (profile) {
-        console.log('✅ Profilo trovato:', profile);
+        console.log('[loadUserProfile] Profile found in DB.');
         setUser({
           id: profile.id,
           auth_user_id: supabaseUser.id,
@@ -132,46 +140,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           name: profile.name,
           created_at: profile.created_at || supabaseUser.created_at
         });
+        setIsNewUser(false);
       } else {
-        console.log('⚠️ Profilo non trovato, creo uno nuovo...');
-        // Crea profilo se non esiste e lo restituisce
-        const { data: newProfile, error: insertError } = await supabase
-          .from('user_profiles')
-          .insert({
+        console.log('[loadUserProfile] Profile not found. Marking as new user to complete profile.');
+        // Imposto un utente parziale, il componente UserProfile forzerà il completamento
+        setUser({
+            id: '', // L'ID del profilo non esiste ancora
             auth_user_id: supabaseUser.id,
-            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Utente',
-            activity_level: 'moderate',
-            goal: 'fat-loss',
-          })
-          .select(profileColumns)
-          .single();
-
-        if (insertError) {
-          console.error('❌ Errore creazione profilo:', insertError);
-          throw insertError;
-        }
-        
-        if (newProfile) {
-            console.log('✅ Profilo creato e caricato:', newProfile);
-            setUser({
-              id: newProfile.id,
-              auth_user_id: supabaseUser.id,
-              email: supabaseUser.email || '',
-              name: newProfile.name,
-              created_at: newProfile.created_at || supabaseUser.created_at
-            });
-            setIsNewUser(true);
-        } else {
-            // Questo caso non dovrebbe accadere se l'insert va a buon fine
-            throw new Error("Creazione profilo fallita: nessun dato restituito.");
-        }
+            email: supabaseUser.email || '',
+            name: supabaseUser.user_metadata?.name || 'Utente',
+            created_at: supabaseUser.created_at
+        });
+        setIsNewUser(true);
       }
     } catch (error) {
-      console.error('❌ Errore critico durante il caricamento del profilo:', error);
-      // Se non possiamo caricare/creare un profilo, l'app non può funzionare.
-      // Eseguiamo il logout per forzare un nuovo tentativo di login.
+      console.error('[loadUserProfile] CRITICAL ERROR in profile loading:', error);
       setUser(null);
       await supabase.auth.signOut();
+    } finally {
+      console.log('[loadUserProfile] FINALLY block reached. Loading finished.');
+      setLoading(false);
     }
   };
 

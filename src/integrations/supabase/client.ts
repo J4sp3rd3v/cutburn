@@ -2,34 +2,23 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://bxmkiovgydlpomkhqohy.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4bWtpb3ZneWRscG9ta2hxb2h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4Mzg2NjEsImV4cCI6MjA2NjQxNDY2MX0.KySQqDDRxk0-vOT4R4rkXqoZn7JmmsukGIZcFz_4HLU";
+// Utilizza le variabili d'ambiente fornite da Vite
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Controllo di sicurezza: assicurati che le variabili siano definite
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  throw new Error('Supabase URL and Anon Key must be defined in .env file');
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
+    // Ritorno a una configurazione più standard per massima compatibilità
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    // Sessione persistente per 7 giorni
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    storageKey: 'cutburn-supabase-auth-token',
-    flowType: 'pkce'
-  },
-  global: {
-    headers: {
-      'x-client-info': 'cutburn-app/1.0.0',
-    },
-  },
-  // Configurazioni per sessioni lunghe
-  db: {
-    schema: 'public'
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 2
-    }
   }
 });
