@@ -40,7 +40,7 @@ const AppRoutes = () => {
   }
 
   return (
-    <BrowserRouter>
+    <>
       <Routes>
         <Route 
           path="/" 
@@ -65,20 +65,22 @@ const AppRoutes = () => {
           </Button>
         </div>
       )}
-    </BrowserRouter>
+    </>
   );
 };
 
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <AppRoutes />
-        </TooltipProvider>
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <AppRoutes />
+          </TooltipProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   </ErrorBoundary>
 );
