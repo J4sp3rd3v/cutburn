@@ -235,29 +235,25 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     setIsEditing(false);
     setProfileComplete(true);
     
-    // Prepara i dati del profilo da salvare
-    const profileToSave: any = {
+    // Prepara i dati del profilo da salvare, usando snake_case per la compatibilità con Supabase
+    const profileToSave = {
       name: profile.name,
       age: profile.age,
       height: profile.height,
-      currentWeight: profile.currentWeight,
-      targetWeight: profile.targetWeight,
-      activityLevel: profile.activityLevel,
-      intermittentFasting: profile.intermittentFasting,
-      lactoseIntolerant: profile.lactoseIntolerant,
+      current_weight: profile.currentWeight,
+      target_weight: profile.targetWeight,
+      activity_level: profile.activityLevel,
       goal: profile.goal,
-      targetCalories: metrics.targetCalories,
-      targetWater: metrics.waterTarget,
-      startWeight: profile.startWeight || profile.currentWeight, // Se non c'è, usa il peso attuale
       intermittent_fasting: profile.intermittentFasting,
       lactose_intolerant: profile.lactoseIntolerant,
-      workoutDays: profile.workoutDays,
-      experience: profile.experience
+      target_calories: metrics.targetCalories,
+      target_water: metrics.waterTarget,
+      start_weight: profile.startWeight || profile.currentWeight,
     };
     
     if (isNewUser) {
-      // Per nuovi utenti, imposta startWeight = currentWeight (nessuna perdita iniziale)
-      profileToSave.startWeight = profile.currentWeight;
+      // Per nuovi utenti, imposta start_weight = current_weight (nessuna perdita iniziale)
+      profileToSave.start_weight = profile.currentWeight;
       markProfileCompleted();
       console.log('✅ Profilo nuovo utente completato:', profileToSave);
     }
