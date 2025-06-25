@@ -27,73 +27,61 @@ interface UserProfileProps {
 const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgress, currentProfile }: UserProfileProps) => {
   const { signOut, user, isNewUser, markProfileCompleted } = useAuth();
   
-  // Usa valori di default se i dati non sono pronti
-  const safeCurrentProfile = currentProfile || {
-    name: user?.name || 'Utente',
-    age: null, height: null, currentWeight: null, targetWeight: null,
-    activityLevel: 'moderate', intermittentFasting: false, lactoseIntolerant: false, goal: 'fat-loss'
-  };
-  
+  // Gestione sicura del profilo corrente e delle statistiche
+  const safeCurrentProfile = currentProfile || {};
   const safeUserStats = userStats || {
-    targetWater: 2500, targetCalories: 1800, currentWeight: 0, startWeight: 0, startDate: new Date().toISOString()
+    targetWater: 0, targetCalories: 0, currentWeight: 0, startWeight: 0, startDate: ''
   };
-  
+
   const [profile, setProfile] = useState(() => {
-    // FORZA tutti i valori 0 a null per evitare zeri nei campi input
-    const cleanAge = safeCurrentProfile?.age === 0 || !safeCurrentProfile?.age ? null : safeCurrentProfile.age;
-    const cleanHeight = safeCurrentProfile?.height === 0 || !safeCurrentProfile?.height ? null : safeCurrentProfile.height;
-    const cleanCurrentWeight = safeCurrentProfile?.currentWeight === 0 || !safeCurrentProfile?.currentWeight ? null : safeCurrentProfile.currentWeight;
-    const cleanTargetWeight = safeCurrentProfile?.targetWeight === 0 || !safeCurrentProfile?.targetWeight ? null : safeCurrentProfile.targetWeight;
-    
+    // Inizializza il profilo con i dati disponibili o con valori di fallback
     return {
-      name: safeCurrentProfile?.name || user?.name || 'Utente',
-      age: cleanAge,
-      height: cleanHeight,
-      currentWeight: cleanCurrentWeight,
-      targetWeight: cleanTargetWeight,
-      activityLevel: safeCurrentProfile?.activityLevel || 'moderate',
-      intermittentFasting: safeCurrentProfile?.intermittentFasting || false,
-      lactoseIntolerant: safeCurrentProfile?.lactoseIntolerant || false,
-      goal: safeCurrentProfile?.goal || 'fat-loss',
+      name: safeCurrentProfile.name || user?.email || 'Nuovo Utente',
+      age: safeCurrentProfile.age || null,
+      height: safeCurrentProfile.height || null,
+      currentWeight: safeCurrentProfile.current_weight || safeUserStats.currentWeight || null,
+      startWeight: safeCurrentProfile.start_weight || safeUserStats.startWeight || null,
+      targetWeight: safeCurrentProfile.target_weight || null,
+      activityLevel: safeCurrentProfile.activity_level || 'moderate',
+      intermittentFasting: safeCurrentProfile.intermittent_fasting || false,
+      lactoseIntolerant: safeCurrentProfile.lactose_intolerant || false,
+      goal: safeCurrentProfile.goal || 'fat-loss',
       workoutDays: 3,
       experience: 'beginner'
     };
   });
-
+  
   const [isEditing, setIsEditing] = useState(isNewUser);
-  const [newWeight, setNewWeight] = useState(userStats.currentWeight.toString());
+  const [newWeight, setNewWeight] = useState(String(profile.currentWeight || ''));
   const [profileComplete, setProfileComplete] = useState(!isNewUser);
 
-  // Aggiorna il profilo quando cambia l'utente o currentProfile
-  useEffect(() => {
-    if (currentProfile) {
-      // FORZA tutti i valori 0 a null per evitare zeri nei campi input
-      const cleanAge = currentProfile.age === 0 || !currentProfile.age ? null : currentProfile.age;
-      const cleanHeight = currentProfile.height === 0 || !currentProfile.height ? null : currentProfile.height;
-      const cleanCurrentWeight = currentProfile.currentWeight === 0 || !currentProfile.currentWeight ? null : currentProfile.currentWeight;
-      const cleanTargetWeight = currentProfile.targetWeight === 0 || !currentProfile.targetWeight ? null : currentProfile.targetWeight;
-      
-      setProfile({
-        name: currentProfile.name || user?.name || 'Utente',
-        age: cleanAge,
-        height: cleanHeight,
-        currentWeight: cleanCurrentWeight,
-        targetWeight: cleanTargetWeight,
-        activityLevel: currentProfile.activityLevel || 'moderate',
-        intermittentFasting: currentProfile.intermittentFasting || false,
-        lactoseIntolerant: currentProfile.lactoseIntolerant || false,
-        goal: currentProfile.goal || 'fat-loss',
-        workoutDays: 3,
-        experience: 'beginner'
-      });
-    }
-  }, [currentProfile, user]);
-
+  // Forza la modalità di modifica se l'utente è nuovo
   useEffect(() => {
     if (isNewUser) {
       setIsEditing(true);
     }
   }, [isNewUser]);
+
+  // Sincronizza lo stato del profilo quando i dati da `useAuth` cambiano
+  useEffect(() => {
+    if (currentProfile) {
+      setProfile({
+        name: currentProfile.name || user?.email || 'Nuovo Utente',
+        age: currentProfile.age || null,
+        height: currentProfile.height || null,
+        currentWeight: currentProfile.current_weight || null,
+        startWeight: currentProfile.start_weight || null,
+        targetWeight: currentProfile.target_weight || null,
+        activityLevel: currentProfile.activity_level || 'moderate',
+        intermittentFasting: currentProfile.intermittent_fasting || false,
+        lactoseIntolerant: currentProfile.lactose_intolerant || false,
+        goal: currentProfile.goal || 'fat-loss',
+        workoutDays: 3,
+        experience: 'beginner'
+      });
+      setNewWeight(String(currentProfile.current_weight || ''));
+    }
+  }, [currentProfile, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -120,11 +108,13 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
 
   // Calcoli scientifici personalizzati
   const calculatePersonalizedMetrics = () => {
-    // Se non ci sono dati sufficienti, restituisci valori di default sicuri
+    // Utilizza 0 come fallback sicuro se i valori sono null o undefined
     const weight = profile.currentWeight || 0;
     const height = profile.height || 0;
     const age = profile.age || 0;
+    const targetWeight = profile.targetWeight || 0;
 
+    // Se i dati essenziali mancano, restituisci metriche vuote per evitare crash
     if (weight === 0 || height === 0 || age === 0) {
       return {
         bmr: 0,
@@ -137,7 +127,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
         deficit: 0,
         fastingWindow: "N/D",
         weightLossWeekly: 0,
-        timeToGoal: 0
+        timeToGoal: "N/D"
       };
     }
     
@@ -185,10 +175,12 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     // Timing digiuno intermittente
     const fastingWindow = profile.intermittentFasting ? "16/8" : "Normale";
     
-    const weightToLose = weight - (profile.targetWeight || weight);
+    const weightToLose = weight - targetWeight;
     const deficit = Math.round(tdee - targetCalories);
     const weightLossWeekly = deficit > 0 ? (deficit * 7) / 7700 : 0;
-    const timeToGoal = weightLossWeekly > 0 ? Math.ceil(weightToLose / weightLossWeekly) : 0;
+    const timeToGoal = weightLossWeekly > 0 && weightToLose > 0 
+      ? Math.ceil(weightToLose / weightLossWeekly) 
+      : "N/D";
 
     return {
       bmr: Math.round(bmr),
@@ -255,7 +247,12 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
       lactoseIntolerant: profile.lactoseIntolerant,
       goal: profile.goal,
       targetCalories: metrics.targetCalories,
-      targetWater: metrics.waterTarget
+      targetWater: metrics.waterTarget,
+      startWeight: profile.startWeight || profile.currentWeight, // Se non c'è, usa il peso attuale
+      intermittent_fasting: profile.intermittentFasting,
+      lactose_intolerant: profile.lactoseIntolerant,
+      workoutDays: profile.workoutDays,
+      experience: profile.experience
     };
     
     if (isNewUser) {
@@ -270,33 +267,42 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     onUpdateProfile(profileToSave);
     console.log('💾 Profilo salvato localmente:', profileToSave);
     console.log('📊 Metriche calcolate:', metrics);
+
+    // Se il peso è stato aggiornato, chiama anche onUpdateWeight
+    if (profile.currentWeight && profile.currentWeight !== (userStats?.currentWeight || 0)) {
+      onUpdateWeight(profile.currentWeight);
+    }
+    
+    if (markProfileCompleted) {
+      markProfileCompleted();
+    }
   };
 
   const calculateBMI = () => {
-    const weight = profile.currentWeight || 0;
-    const height = profile.height || 0;
-    if (height === 0 || weight === 0) return "0.0";
-    const heightInMeters = height / 100;
-    return (weight / (heightInMeters * heightInMeters)).toFixed(1);
+    if (!profile.height || !profile.currentWeight) return 0;
+    const heightInMeters = profile.height / 100;
+    return profile.currentWeight / (heightInMeters * heightInMeters);
   };
 
+  const bmi = calculateBMI();
+
   const getBodyFatEstimate = () => {
-    const age = profile.age || 0;
-    if (age === 0) return "0.0";
-    const bmi = parseFloat(calculateBMI());
-    const estimate = (1.39 * bmi) + (0.16 * age) - 19.34;
-    return Math.max(8, Math.min(25, estimate)).toFixed(1);
+    if (!profile.age || bmi === 0) return 0;
+    // Formula semplificata per la stima del grasso corporeo (dipende dal sesso, qui usiamo una media)
+    // Per una stima più accurata, sarebbero necessarie più misurazioni.
+    // Uomo: (1.20 * BMI) + (0.23 * Età) - 16.2
+    // Donna: (1.20 * BMI) + (0.23 * Età) - 5.4
+    // Usiamo una versione media-semplificata, da considerare solo come stima grezza.
+    return (1.20 * bmi) + (0.23 * profile.age) - 10.8;
   };
 
   const getTotalWeightLoss = () => {
-    if (isNewUser || (userStats.startWeight || 0) === (userStats.currentWeight || 0)) {
-      return "0.0";
-    }
-    return ((userStats.startWeight || 0) - (userStats.currentWeight || 0)).toFixed(1);
+    if (!profile.startWeight || !profile.currentWeight) return 0;
+    return profile.startWeight - profile.currentWeight;
   };
 
   const hasRealProgress = () => {
-    return !isNewUser && (userStats.startWeight || 0) !== (userStats.currentWeight || 0);
+    return weeklyProgress && weeklyProgress.length > 1;
   };
 
   const getBMICategory = (bmi: number) => {
@@ -306,8 +312,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
     return { text: "Obeso", color: "text-red-600" };
   };
 
-  const bmiValue = calculateBMI();
-  const bmiCategory = getBMICategory(parseFloat(bmiValue));
+  const bmiCategory = getBMICategory(bmi);
 
   return (
     <div className="space-y-4">
@@ -358,7 +363,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold">
-              {profile.currentWeight && profile.height ? calculateBMI() : "---"}
+              {profile.currentWeight && profile.height ? calculateBMI().toFixed(1) : "---"}
             </div>
             <div className="text-sm opacity-90">BMI</div>
           </div>
@@ -639,11 +644,11 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center bg-slate-50 rounded-lg p-3">
-              <div className={`text-lg font-bold ${bmiCategory.color}`}>{calculateBMI()}</div>
+              <div className={`text-lg font-bold ${bmiCategory.color}`}>{bmi.toFixed(1)}</div>
               <div className="text-sm text-slate-600">BMI - {bmiCategory.text}</div>
             </div>
             <div className="text-center bg-slate-50 rounded-lg p-3">
-              <div className="text-lg font-bold text-orange-600">{getBodyFatEstimate()}%</div>
+              <div className="text-lg font-bold text-orange-600">{getBodyFatEstimate().toFixed(1)}%</div>
               <div className="text-sm text-slate-600">Grasso corporeo stimato</div>
             </div>
           </div>
@@ -654,7 +659,7 @@ const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgres
               <h4 className="font-medium text-slate-700 mb-3">📈 Progressi</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center bg-green-50 rounded-lg p-3">
-                  <div className="text-lg font-bold text-green-600">-{getTotalWeightLoss()}kg</div>
+                  <div className="text-lg font-bold text-green-600">-{getTotalWeightLoss().toFixed(1)}kg</div>
                   <div className="text-sm text-slate-600">Peso perso</div>
                 </div>
                 <div className="text-center bg-blue-50 rounded-lg p-3">
