@@ -31,90 +31,26 @@ import UserProfile from '@/components/UserProfile';
 import DailyShots from '@/components/DailyShots';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 import RecipeSection from '@/components/RecipeSection';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const LoadingScreen = () => (
+  <div className="flex items-center justify-center h-screen bg-slate-50">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p className="mt-4 text-slate-600">Caricamento dati in corso...</p>
+    </div>
+  </div>
+);
 
 const Index = () => {
   const { user, loading: authLoading, isNewUser, markProfileCompleted } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [redirectTimer, setRedirectTimer] = useState<NodeJS.Timeout | null>(null);
 
-  // Redirect al login se non autenticato - con ritardo per permettere il recupero della sessione
-  useEffect(() => {
-    // Cancella timer precedente se esiste
-    if (redirectTimer) {
-      clearTimeout(redirectTimer);
-    }
-
-    if (!authLoading && !user) {
-      // Attendi 3 secondi prima del redirect per dare tempo al recupero della sessione
-      const timer = setTimeout(() => {
-        console.log('❌ Utente non autenticato dopo timeout - redirect al login');
-        navigate('/auth');
-      }, 3000);
-      
-      setRedirectTimer(timer);
-    } else if (user) {
-      // Se l'utente è trovato, cancella il timer
-      if (redirectTimer) {
-        clearTimeout(redirectTimer);
-        setRedirectTimer(null);
-      }
-    }
-
-    // Cleanup
-    return () => {
-      if (redirectTimer) {
-        clearTimeout(redirectTimer);
-      }
-    };
-  }, [user, authLoading, navigate]);
-
-  // Redirect automatico al profilo per nuovi utenti
-  useEffect(() => {
-    if (isNewUser && user) {
-      console.log('🔄 Nuovo utente rilevato - redirect al profilo per setup iniziale');
-      setActiveTab("profile");
-    }
-  }, [isNewUser, user]);
-
-  // Gestione azioni PWA
-  useEffect(() => {
-    const pwaAction = sessionStorage.getItem('pwa-action');
-    if (pwaAction && user) {
-      console.log('🚀 Azione PWA rilevata:', pwaAction);
-      
-      switch (pwaAction) {
-        case 'weight':
-        case 'track-weight':
-          setActiveTab("profile");
-          // Trigger weight input focus after component mounts
-          setTimeout(() => {
-            const weightInput = document.querySelector('input[type="number"]') as HTMLInputElement;
-            if (weightInput) weightInput.focus();
-          }, 1000);
-          break;
-        case 'diet':
-        case 'view-diet':
-          setActiveTab("diet");
-          break;
-        case 'workout':
-          setActiveTab("workout");
-          break;
-        case 'dashboard':
-        default:
-          setActiveTab("dashboard");
-          break;
-      }
-      
-      // Clear the action
-      sessionStorage.removeItem('pwa-action');
-    }
-  }, [user]);
-  
   const {
     dailyProgress,
     userProfile,
-    loading,
+    loading: progressLoading,
     isOnline,
     pendingSync,
     addWater,
@@ -135,6 +71,43 @@ const Index = () => {
     markMealAsEaten
   } = useNutritionTracking(userProfile);
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      console.log('🚪 Auth check complete, no user. Redirecting to /auth.');
+      navigate('/auth');
+    }
+  }, [authLoading, user, navigate]);
+  
+  useEffect(() => {
+    if (user && (!userProfile && !progressLoading || isNewUser)) {
+        console.log('👤 New user or missing profile, forcing profile tab.');
+        setActiveTab("profile");
+    }
+  }, [user, userProfile, progressLoading, isNewUser]);
+
+  if (authLoading) {
+    return <LoadingScreen />;
+  }
+  
+  if (!user) {
+    return null;
+  }
+
+  if (progressLoading || !userProfile) {
+     return (
+        <div className="p-4 space-y-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-8 w-full mb-4" />
+            <div className="grid grid-cols-2 gap-4">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+            </div>
+        </div>
+     );
+  }
+
   const [weeklyProgress, setWeeklyProgress] = useState<Array<{ date: string; weight: number }>>([]);
 
   useEffect(() => {
@@ -143,19 +116,6 @@ const Index = () => {
       setWeeklyProgress(progress);
     }
   }, [user, getWeeklyProgress]);
-
-  // Reindirizzamento immediato senza loading per non autenticati
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
-
-  // Se l'utente o il profilo non sono ancora stati caricati, non renderizzare nulla.
-  // Questo previene il "flickering" di una UI incompleta o di messaggi di caricamento.
-  if (authLoading || loading || !user || !userProfile) {
-    return null;
-  }
 
   const weightChange = !isNewUser && weeklyProgress.length >= 2 
     ? (weeklyProgress[weeklyProgress.length - 1]?.weight || userProfile.currentWeight) - (weeklyProgress[0]?.weight || userProfile.startWeight)
