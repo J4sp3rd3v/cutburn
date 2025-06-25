@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { User, Target, Settings, Clock, TrendingDown, Scale, LogOut, Save, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfileProps {
   userStats: {
@@ -25,8 +26,27 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ userStats, onUpdateWeight, onUpdateProfile, weeklyProgress, currentProfile }: UserProfileProps) => {
-  const { signOut, user, isNewUser, markProfileCompleted } = useAuth();
+  const { signOut, user, isNewUser, markProfileCompleted, loading } = useAuth();
   
+  // Se l'autenticazione è in corso o il profilo non è ancora stato caricato, 
+  // mostra uno skeleton per evitare crash. È la patch di sicurezza fondamentale.
+  if (loading || !currentProfile) {
+    return (
+      <Card className="p-6 space-y-4">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </Card>
+    );
+  }
+
   // Gestione sicura del profilo corrente e delle statistiche
   const safeCurrentProfile = currentProfile || {};
   const safeUserStats = userStats || {
