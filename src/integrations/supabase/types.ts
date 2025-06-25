@@ -9,218 +9,13 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      daily_progress: {
-        Row: {
-          calories: number | null
-          created_at: string | null
-          date: string
-          id: string
-          shots_consumed: string[] | null
-          supplements_taken: number | null
-          updated_at: string | null
-          user_id: string
-          water: number | null
-          weight: number | null
-          workout_completed: boolean | null
-        }
-        Insert: {
-          calories?: number | null
-          created_at?: string | null
-          date: string
-          id?: string
-          shots_consumed?: string[] | null
-          supplements_taken?: number | null
-          updated_at?: string | null
-          user_id: string
-          water?: number | null
-          weight?: number | null
-          workout_completed?: boolean | null
-        }
-        Update: {
-          calories?: number | null
-          created_at?: string | null
-          date?: string
-          id?: string
-          shots_consumed?: string[] | null
-          supplements_taken?: number | null
-          updated_at?: string | null
-          user_id?: string
-          water?: number | null
-          weight?: number | null
-          workout_completed?: boolean | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_daily_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      meals: {
-        Row: {
-          calories: number
-          carbs: number
-          created_at: string | null
-          date: string
-          eaten: boolean | null
-          eaten_at: string | null
-          fat: number
-          foods: string[]
-          id: string
-          meal_type: string
-          protein: number
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          calories: number
-          carbs: number
-          created_at?: string | null
-          date: string
-          eaten?: boolean | null
-          eaten_at?: string | null
-          fat: number
-          foods: string[]
-          id?: string
-          meal_type: string
-          protein: number
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          calories?: number
-          carbs?: number
-          created_at?: string | null
-          date?: string
-          eaten?: boolean | null
-          eaten_at?: string | null
-          fat?: number
-          foods?: string[]
-          id?: string
-          meal_type?: string
-          protein?: number
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_meals_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_profiles: {
-        Row: {
-          activity_level: string
-          age: number | null
-          auth_user_id: string | null
-          created_at: string | null
-          current_weight: number | null
-          goal: string
-          height: number | null
-          id: string
-          intermittent_fasting: boolean | null
-          lactose_intolerant: boolean | null
-          name: string
-          start_weight: number | null
-          target_calories: number | null
-          target_water: number | null
-          target_weight: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          activity_level?: string
-          age?: number | null
-          auth_user_id?: string | null
-          created_at?: string | null
-          current_weight?: number | null
-          goal?: string
-          height?: number | null
-          id?: string
-          intermittent_fasting?: boolean | null
-          lactose_intolerant?: boolean | null
-          name: string
-          start_weight?: number | null
-          target_calories?: number | null
-          target_water?: number | null
-          target_weight?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          activity_level?: string
-          age?: number | null
-          auth_user_id?: string | null
-          created_at?: string | null
-          current_weight?: number | null
-          goal?: string
-          height?: number | null
-          id?: string
-          intermittent_fasting?: boolean | null
-          lactose_intolerant?: boolean | null
-          name?: string
-          start_weight?: number | null
-          target_calories?: number | null
-          target_water?: number | null
-          target_weight?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_user_profiles_auth_user_id_fkey"
-            columns: ["auth_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      weekly_progress: {
-        Row: {
-          created_at: string | null
-          date: string
-          id: string
-          user_id: string
-          weight: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          date: string
-          id?: string
-          user_id: string
-          weight?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          date?: string
-          id?: string
-          user_id?: string
-          weight?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "public_weekly_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      update_updated_at_column: {
-        Args: Record<PropertyKey, never>
-        Returns: unknown
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
@@ -231,25 +26,29 @@ export type Database = {
   }
 }
 
+type DefaultSchema = Database[Extract<keyof Database, "public">]
+
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-        Database["public"]["Views"])
-    ? (Database["public"]["Tables"] &
-        Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -257,20 +56,22 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -278,20 +79,22 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -299,16 +102,33 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof Database["public"]["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
-    ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -316,39 +136,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
-// Custom app-specific types
-export interface UserProfile {
-  id: string;
-  name: string;
-  age: number | null;
-  height: number | null;
-  currentWeight: number | null;
-  startWeight: number | null;
-  targetWeight: number | null;
-  activityLevel: string;
-  goal: string;
-  intermittentFasting: boolean | null;
-  lactoseIntolerant: boolean | null;
-  targetCalories: number | null;
-  targetWater: number | null;
-  created_at: string | null;
-}
-
-export interface DailyProgress {
-  date: string;
-  water: number;
-  calories: number;
-  workoutCompleted: boolean;
-  supplementsTaken: number;
-  shotsConsumed: string[];
-  weight?: number | null;
-}
-
-export interface PendingData {
-  id: string;
-  type: 'profile' | 'progress';
-  data: any;
-  timestamp: number;
-  attempts: number;
-}

@@ -18,9 +18,9 @@
     <meta name="apple-mobile-web-app-title" content="CutBurn Pro" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="msapplication-TileColor" content="#ef4444" />
+    <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="theme-color" content="#ef4444" />
+    <meta name="theme-color" content="#ffffff" />
     
     <!-- Apple Touch Icons - Icona fantastica per iOS -->
     <link rel="apple-touch-icon" sizes="57x57" href="/icon.svg" />
@@ -34,7 +34,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icon.svg" />
     
     <!-- Icona per Safari Pinned Tab -->
-    <link rel="mask-icon" href="/icon.svg" color="#ef4444" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
@@ -101,158 +101,8 @@
   </head>
 
   <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-      // Register Service Worker - DISABLED IN DEVELOPMENT
-      if (false && 'serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
-          try {
-            const registration = await navigator.serviceWorker.register('/sw.js', {
-              scope: '/'
-            });
-            
-            console.log('✅ Service Worker registered:', registration.scope);
-            
-            // Listen for messages from Service Worker
-            navigator.serviceWorker.addEventListener('message', (event) => {
-              console.log('📨 Message from Service Worker:', event.data);
-              
-              if (event.data.type === 'REQUEST_PENDING_DATA') {
-                // Send pending data to service worker
-                const pendingData = JSON.parse(localStorage.getItem('pendingSync') || '[]');
-                navigator.serviceWorker.controller?.postMessage({
-                  type: 'PENDING_DATA_RESPONSE',
-                  data: pendingData
-                });
-              } else if (event.data.type === 'BACKGROUND_SYNC' || event.data.type === 'TRIGGER_SYNC') {
-                // Trigger sync in React app
-                window.dispatchEvent(new CustomEvent('triggerSync', {
-                  detail: event.data
-                }));
-              }
-            });
-            
-            // Check for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              if (newWorker) {
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New version available
-                    if (confirm('Nuova versione disponibile! Ricarica per aggiornare?')) {
-                      window.location.reload();
-                    }
-                  }
-                });
-              }
-            });
-            
-          } catch (error) {
-            console.warn('❌ Service Worker registration failed:', error);
-          }
-        });
-      }
-      
-      // PWA Install Prompt
-      let deferredPrompt;
-      
-      window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('💾 PWA install prompt available');
-        e.preventDefault();
-        deferredPrompt = e;
-        
-        // Show custom install button after 30 seconds
-        setTimeout(() => {
-          if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
-            showInstallPrompt();
-          }
-        }, 30000);
-      });
-      
-      function showInstallPrompt() {
-        const installBanner = document.createElement('div');
-        installBanner.innerHTML = `
-          <div style="
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          ">
-            <div>
-              <div style="font-weight: 600; margin-bottom: 4px;">📱 Installa CutBurn Pro</div>
-              <div style="font-size: 14px; opacity: 0.9;">Aggiungi alla home per un'esperienza migliore</div>
-            </div>
-            <div>
-              <button onclick="installPWA()" style="
-                background: rgba(255,255,255,0.2);
-                border: none;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 6px;
-                font-weight: 600;
-                margin-right: 8px;
-                cursor: pointer;
-              ">Installa</button>
-              <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
-                background: none;
-                border: none;
-                color: white;
-                padding: 8px;
-                cursor: pointer;
-                opacity: 0.7;
-              ">✕</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(installBanner);
-      }
-      
-      window.installPWA = async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log('PWA install outcome:', outcome);
-          deferredPrompt = null;
-          
-          // Remove banner
-          const banner = document.querySelector('[style*="position: fixed"]');
-          if (banner) banner.remove();
-        }
-      };
-      
-      // Track PWA usage
-      window.addEventListener('appinstalled', () => {
-        console.log('✅ PWA installed successfully');
-        deferredPrompt = null;
-      });
-      
-      // Detect if running as PWA
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('🚀 Running as PWA');
-        document.documentElement.classList.add('pwa-mode');
-      }
-      
-      // Handle PWA navigation
-      if (window.location.search.includes('action=')) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const action = urlParams.get('action');
-        
-        // Store action for React app to handle
-        sessionStorage.setItem('pwa-action', action);
-      }
-    </script>
   </body>
 </html>

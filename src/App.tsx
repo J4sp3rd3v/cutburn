@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,9 @@ import Auth from "./pages/Auth";
 import EmailConfirm from "./pages/EmailConfirm";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { usePWAInstall } from './hooks/usePWAInstall';
+import { Button } from './components/ui/button';
+import { Download } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +23,8 @@ const queryClient = new QueryClient({
 });
 
 const AppRoutes = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isNewUser } = useAuth();
+  const { installPrompt, triggerInstall } = usePWAInstall();
 
   return (
     <BrowserRouter>
@@ -40,6 +43,15 @@ const AppRoutes = () => {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      
+      {installPrompt && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Button onClick={triggerInstall} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg animate-bounce">
+            <Download className="mr-2 h-4 w-4" />
+            Installa App
+          </Button>
+        </div>
+      )}
     </BrowserRouter>
   );
 };
