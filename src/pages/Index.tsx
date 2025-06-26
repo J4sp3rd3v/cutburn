@@ -12,7 +12,8 @@ import {
   ShoppingCart,
   TrendingDown,
   Zap,
-  ChefHat
+  ChefHat,
+  ClipboardList
 } from 'lucide-react';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { useNutritionTracking } from '@/hooks/useNutritionTracking';
@@ -23,6 +24,7 @@ import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 import RecipeSection from '@/components/RecipeSection';
+import DietPlanSection from '@/components/DietPlanSection';
 
 const LoadingScreen = () => (
   <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -85,10 +87,11 @@ const Index = () => {
       <main className="max-w-md mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="px-4 pt-4">
-            <TabsList className="grid w-full grid-cols-6 bg-white/70 backdrop-blur-sm text-xs">
+            <TabsList className="grid w-full grid-cols-7 bg-white/70 backdrop-blur-sm text-xs">
               <TabsTrigger value="dashboard"><span><Target className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="meals"><span><ChefHat className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="diet"><span><Calendar className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="recipes"><span><ChefHat className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="diet-plan"><span><Calendar className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="tracker"><span><ClipboardList className="w-4 h-4" /></span></TabsTrigger>
               <TabsTrigger value="supplements"><span><Zap className="w-4 h-4" /></span></TabsTrigger>
               <TabsTrigger value="workout"><span><Dumbbell className="w-4 h-4" /></span></TabsTrigger>
               <TabsTrigger value="shopping"><span><ShoppingCart className="w-4 h-4" /></span></TabsTrigger>
@@ -143,11 +146,11 @@ const Index = () => {
             
             <TabsContent value="profile"><UserProfile /></TabsContent>
             
-            {/* Sezione Pasti (ora contiene le ricette del piano di 14 giorni) */}
-            <TabsContent value="meals"><RecipeSection /></TabsContent>
+            <TabsContent value="recipes"><RecipeSection /></TabsContent>
             
-            {/* Sezione Dieta (ora contiene il tracker dei pasti giornalieri) */}
-            <TabsContent value="diet"><AdvancedMealTracker meals={todayMeals} onMarkMealAsEaten={markMealAsEaten} nutritionData={nutritionData} dailyTotals={dailyTotals} /></TabsContent>
+            <TabsContent value="diet-plan"><DietPlanSection /></TabsContent>
+
+            <TabsContent value="tracker"><AdvancedMealTracker meals={todayMeals} onMarkMealAsEaten={markMealAsEaten} nutritionData={nutritionData} dailyTotals={dailyTotals} /></TabsContent>
             
             <TabsContent value="supplements"><SupplementSection /></TabsContent>
             <TabsContent value="workout"><WorkoutSection workoutCompleted={dailyProgress.workout_completed} onWorkoutToggle={() => saveProgress({ workout_completed: !dailyProgress.workout_completed })} /></TabsContent>
