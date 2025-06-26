@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { toast } from '@/hooks/use-toast';
 
-// Tipi ridefiniti localmente, dato che i tipi di Supabase sono stati rimossi.
-// Semplificati per l'uso con lo storage locale.
+// Tipi per l'applicazione con storage locale
 export interface UserProfile {
   id: string;
   name: string;
