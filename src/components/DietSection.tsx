@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, Utensils, Target, ChefHat, BookOpen, Zap, Leaf, Calendar, Scale } from 'lucide-react';
+import { Clock, Utensils, Target, ChefHat, BookOpen, Zap, Leaf, Calendar, Scale, Flame, Activity, TrendingUp, Star, Heart } from 'lucide-react';
 
 interface UserProfile {
   currentWeight: number;
@@ -41,27 +41,27 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
 
   const currentCycleDay = getCycleDay();
 
-  // Protocolli scientifici per ogni giorno del ciclo
+  // Protocolli scientifici ottimizzati per GINECOMASTIA + GRASSO VISCERALE
   const cycleProtocols = {
-    0: { type: "HIGH_PROTEIN", name: "Reset Metabolico", description: "3.2g/kg proteine + reset leptina", badge: "💪 PROTEIN", color: "bg-red-100 text-red-800" },
-    1: { type: "HIGH_PROTEIN", name: "Anabolico Plus", description: "Massima sintesi proteica", badge: "🔥 ANABOLIC", color: "bg-red-100 text-red-800" },
-    2: { type: "LOW_CARB", name: "Deplezione 1", description: "Carboidrati <50g + termogenesi", badge: "⚡ LOW-CARB", color: "bg-orange-100 text-orange-800" },
-    3: { type: "OMAD", name: "Autofagia Deep", description: "23:1 digiuno + pulizia cellulare", badge: "🧘 OMAD", color: "bg-purple-100 text-purple-800" },
-    4: { type: "LOW_CARB", name: "Deplezione 2", description: "Chetosi lieve + ossidazione grassi", badge: "⚡ LOW-CARB", color: "bg-orange-100 text-orange-800" },
-    5: { type: "KETOGENIC", name: "Keto Deep", description: "Chetosi profonda + neuroprotezione", badge: "🧠 KETO", color: "bg-blue-100 text-blue-800" },
-    6: { type: "LOW_CARB", name: "Deplezione 3", description: "Sensibilità insulinica max", badge: "⚡ LOW-CARB", color: "bg-orange-100 text-orange-800" },
-    7: { type: "HIGH_PROTEIN", name: "Recovery Pro", description: "Riparazione + crescita muscolare", badge: "💪 PROTEIN", color: "bg-red-100 text-red-800" },
-    8: { type: "HIGH_PROTEIN", name: "Power Build", description: "Costruzione massa magra", badge: "🔥 ANABOLIC", color: "bg-red-100 text-red-800" },
-    9: { type: "LOW_CARB", name: "Deplezione 4", description: "Definizione addominale", badge: "⚡ LOW-CARB", color: "bg-orange-100 text-orange-800" },
-    10: { type: "OMAD", name: "Reset Profondo", description: "Rigenerazione + longevità", badge: "🧘 OMAD", color: "bg-purple-100 text-purple-800" },
-    11: { type: "LOW_CARB", name: "Cut Finale", description: "Massima definizione", badge: "⚡ LOW-CARB", color: "bg-orange-100 text-orange-800" },
-    12: { type: "KETOGENIC", name: "Keto Elite", description: "Performance + chiarezza mentale", badge: "🧠 KETO", color: "bg-blue-100 text-blue-800" },
-    13: { type: "LOW_CARB", name: "Pre-Reset", description: "Preparazione nuovo ciclo", badge: "⚡ LOW-CARB", color: "bg-orange-100 text-orange-800" }
+    0: { type: "ANTI_ESTROGEN", name: "Reset Anti-Estrogenico", description: "Crucifere + DIM + deficit 1000kcal", badge: "🚫 ANTI-E2", color: "bg-red-100 text-red-800" },
+    1: { type: "OMAD_EXTREME", name: "Digiuno 23:1 + Lipolisi", description: "Autofagia + HGH + cortisolo ottimale", badge: "⚡ OMAD-X", color: "bg-purple-100 text-purple-800" },
+    2: { type: "KETO_VISCERAL", name: "Keto Anti-Viscerale", description: "Chetosi + MCT + grasso addominale", badge: "🔥 KETO-V", color: "bg-blue-100 text-blue-800" },
+    3: { type: "PSMF", name: "PSMF Extreme", description: "Protein Sparing Modified Fast", badge: "💪 PSMF", color: "bg-green-100 text-green-800" },
+    4: { type: "ANTI_INFLAMMATORY", name: "Anti-Infiammatorio", description: "Omega-3 + curcuma + deficit massimo", badge: "🌿 ANTI-I", color: "bg-yellow-100 text-yellow-800" },
+    5: { type: "OMAD_EXTREME", name: "Digiuno Prolungato", description: "22:2 + termogenesi + lipolisi", badge: "⚡ OMAD-X", color: "bg-purple-100 text-purple-800" },
+    6: { type: "CARB_CYCLING", name: "Carb Cycling Estremo", description: "0g carbs + refeed strategico", badge: "🔄 CYCLE", color: "bg-orange-100 text-orange-800" },
+    7: { type: "ANTI_ESTROGEN", name: "Detox Estrogenico", description: "Fegato + aromatasi + DIM", badge: "🚫 ANTI-E2", color: "bg-red-100 text-red-800" },
+    8: { type: "PSMF", name: "Cut Aggressivo", description: "800kcal + 3.5g/kg proteine", badge: "💪 PSMF", color: "bg-green-100 text-green-800" },
+    9: { type: "KETO_VISCERAL", name: "Keto Addominale", description: "Beta-idrossibutirrato + visceral fat", badge: "🔥 KETO-V", color: "bg-blue-100 text-blue-800" },
+    10: { type: "OMAD_EXTREME", name: "Digiuno Terapeutico", description: "20:4 + autophagy + HGH release", badge: "⚡ OMAD-X", color: "bg-purple-100 text-purple-800" },
+    11: { type: "ANTI_INFLAMMATORY", name: "Reset Sistemico", description: "EPA/DHA + polifenoli + deficit", badge: "🌿 ANTI-I", color: "bg-yellow-100 text-yellow-800" },
+    12: { type: "CARB_CYCLING", name: "Deplezione Finale", description: "Glicogeno zero + lipolisi max", badge: "🔄 CYCLE", color: "bg-orange-100 text-orange-800" },
+    13: { type: "ANTI_ESTROGEN", name: "Pre-Reset Ormonale", description: "Testosterone + anti-aromatasi", badge: "🚫 ANTI-E2", color: "bg-red-100 text-red-800" }
   };
 
   const todayProtocol = cycleProtocols[currentCycleDay as keyof typeof cycleProtocols];
 
-  // Calcoli metabolici personalizzati basati su profilo reale
+  // Calcoli metabolici ESTREMI per GINECOMASTIA + GRASSO VISCERALE
   const calculatePersonalizedNutrition = () => {
     // Verifica che il profilo sia completo
     if (!userProfile.currentWeight || !userProfile.height || !userProfile.age) {
@@ -69,11 +69,12 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
       return {
         bmr: 1800,
         tdee: 2200,
-        targetCalories: 1650,
-        proteinTarget: 140,
-        fatTarget: 60,
-        carbTarget: 80,
-        deficit: 550
+        targetCalories: 1200,
+        proteinTarget: 180,
+        fatTarget: 40,
+        carbTarget: 20,
+        deficit: 1000,
+        fastingWindow: "20:4"
       };
     }
 
@@ -89,31 +90,42 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
     
     const tdee = bmr * activityMultiplier;
     
-    // Deficit personalizzato per obiettivo
-    const deficitPercentage = {
-      'fat-loss': 0.25,        // 25% deficit aggressivo
-      'muscle-gain': -0.10,    // 10% surplus
-      'maintenance': 0,        // Mantenimento
-      'recomp': 0.15          // 15% deficit moderato
-    }[userProfile.goal] || 0.25;
+    // DEFICIT MASSIMO per GINECOMASTIA (35-40% del TDEE)
+    const extremeDeficitPercentage = 0.38; // 38% deficit estremo
+    const bonusDeficit = 250; // Deficit extra per grasso viscerale
+    const totalDeficit = Math.round(tdee * extremeDeficitPercentage) + bonusDeficit;
     
-    const targetCalories = Math.round(tdee * (1 - deficitPercentage));
+    // Calorie target MINIME ma sicure (non sotto BMR-200)
+    const minSafeCalories = Math.max(bmr - 200, 1000);
+    const targetCalories = Math.max(minSafeCalories, tdee - totalDeficit);
     
-    // Proteine personalizzate per obiettivo
-    const proteinMultipliers = {
-      'fat-loss': 2.8,         // 2.8g/kg per preservare massa
-      'muscle-gain': 3.2,      // 3.2g/kg per crescita
-      'maintenance': 2.0,      // 2.0g/kg mantenimento
-      'recomp': 3.0           // 3.0g/kg ricomposizione
+    // PROTEINE MASSIME per preservare massa magra (3.5g/kg)
+    const proteinTarget = Math.round(userProfile.currentWeight * 3.5);
+    
+    // GRASSI MINIMI per ormoni (testosterone/estrogeni) - 0.8g/kg
+    const fatTarget = Math.round(userProfile.currentWeight * 0.8);
+    
+    // CARBOIDRATI MINIMI (solo post-workout se presente)
+    const protocolType = todayProtocol.type;
+    let carbTarget = 0;
+    
+    if (protocolType === "CARB_CYCLING") {
+      carbTarget = Math.round(userProfile.currentWeight * 0.5); // 0.5g/kg solo nei giorni refeed
+    } else if (protocolType === "PSMF") {
+      carbTarget = 10; // Praticamente zero
+    } else {
+      carbTarget = Math.max(10, Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4));
+    }
+
+    // Finestra di digiuno basata sul protocollo
+    const fastingWindows = {
+      "OMAD_EXTREME": "23:1",
+      "PSMF": "20:4", 
+      "KETO_VISCERAL": "18:6",
+      "ANTI_ESTROGEN": "16:8",
+      "ANTI_INFLAMMATORY": "16:8",
+      "CARB_CYCLING": "18:6"
     };
-    
-    const proteinTarget = Math.round(userProfile.currentWeight * (proteinMultipliers[userProfile.goal as keyof typeof proteinMultipliers] || 2.8));
-    
-    // Grassi: 28% delle calorie per ormoni
-    const fatTarget = Math.round((targetCalories * 0.28) / 9);
-    
-    // Carboidrati: resto delle calorie
-    const carbTarget = Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4);
 
     return {
       bmr: Math.round(bmr),
@@ -122,7 +134,8 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
       proteinTarget,
       fatTarget,
       carbTarget,
-      deficit: Math.round(tdee - targetCalories)
+      deficit: Math.round(tdee - targetCalories),
+      fastingWindow: fastingWindows[protocolType as keyof typeof fastingWindows] || "16:8"
     };
   };
 
@@ -149,31 +162,35 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
   const season = getCurrentSeason();
   const optimalMeal = getCurrentOptimalMeal();
 
-  // Seasonal ingredients database (aggiornato per ogni stagione)
+  // Ingredienti SPECIFICI per GINECOMASTIA + GRASSO VISCERALE
   const seasonalIngredients = {
     primavera: {
-      vegetables: ['asparagi', 'carciofi', 'piselli', 'fave', 'spinaci novelli'],
-      fruits: ['fragole', 'albicocche', 'ciliegie', 'nespole'],
-      herbs: ['basilico', 'prezzemolo', 'menta', 'erba cipollina'],
-      proteins: ['agnello', 'capretto', 'branzino', 'orata', 'tofu biologico']
+      vegetables: ['broccoli', 'cavolfiori', 'cavolo nero', 'rucola', 'spinaci', 'asparagi'], // Crucifere anti-estrogeniche
+      fruits: ['pompelmo rosa', 'limoni', 'mirtilli', 'fragole'], // Basso indice glicemico + antocianine
+      herbs: ['curcuma', 'zenzero', 'prezzemolo', 'coriandolo'], // Anti-infiammatori
+      proteins: ['salmone selvaggio', 'sgombro', 'sardine', 'petto di pollo', 'manzo grass-fed'], // Omega-3 + proteine magre
+      antiEstrogen: ['DIM (crucifere)', 'tè verde matcha', 'semi di lino', 'melograno'] // Inibitori aromatasi
     },
     estate: {
-      vegetables: ['zucchine', 'melanzane', 'pomodori', 'peperoni', 'cetrioli'],
-      fruits: ['pesche', 'meloni', 'angurie', 'susine', 'fichi'],
-      herbs: ['origano', 'timo', 'salvia', 'rosmarino'],
-      proteins: ['tonno', 'spigola', 'sgombro', 'tempeh', 'seitan']
+      vegetables: ['cavolo cappuccio', 'broccoli', 'cetrioli', 'sedano', 'peperoni rossi', 'pomodori'],
+      fruits: ['anguria', 'melone', 'mirtilli', 'lamponi'], // Idratanti + antiossidanti
+      herbs: ['basilico', 'origano', 'menta', 'curcuma fresca'],
+      proteins: ['tonno', 'spigola', 'orata', 'tacchino', 'uova bio'],
+      antiEstrogen: ['semi di zucca', 'noci', 'tè bianco', 'pomodori (licopene)']
     },
     autunno: {
-      vegetables: ['zucca delica', 'cavolo nero', 'broccoli', 'cavolfiori', 'rape rosse', 'porcini', 'castagne'],
-      fruits: ['mele', 'pere', 'uva', 'melograno', 'cachi', 'noci fresche'],
-      herbs: ['salvia', 'alloro', 'maggiorana', 'timo'],
-      proteins: ['cinghiale', 'anatra', 'salmone', 'gorgonzola', 'pecorino']
+      vegetables: ['cavoletti di Bruxelles', 'cavolo rosso', 'zucca', 'rape', 'finocchi', 'carciofi'],
+      fruits: ['mele', 'pere', 'melograno', 'mirtilli rossi'], // Quercetina + resveratrolo
+      herbs: ['rosmarino', 'salvia', 'timo', 'curcuma'],
+      proteins: ['salmone', 'merluzzo', 'manzo', 'agnello', 'uova'],
+      antiEstrogen: ['melograno', 'noci', 'semi di sesamo', 'funghi shiitake']
     },
     inverno: {
-      vegetables: ['cavoli', 'porri', 'carciofi', 'finocchi', 'sedano rapa', 'radicchio di Treviso', 'spinaci'],
-      fruits: ['arance', 'mandarini', 'pompelmi', 'kiwi', 'mele', 'pere'],
-      herbs: ['rosmarino', 'timo', 'alloro', 'salvia'],
-      proteins: ['manzo', 'vitello', 'merluzzo', 'baccalà', 'taleggio']
+      vegetables: ['cavoli', 'broccoli', 'cavolfiori', 'spinaci', 'bietole', 'porri'],
+      fruits: ['arance', 'pompelmi', 'kiwi', 'mirtilli congelati'], // Vitamina C + antiossidanti
+      herbs: ['zenzero', 'curcuma', 'cannella', 'pepe nero'],
+      proteins: ['salmone', 'sgombro', 'manzo', 'pollo', 'uova'],
+      antiEstrogen: ['tè verde', 'semi di lino', 'aglio', 'cipolle rosse']
     }
   };
 
@@ -201,35 +218,41 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
     return ingredient;
   };
 
-  // Variazione giornaliera reale basata su ciclo + giorno settimana
+  // Variazione ESTREMA per GINECOMASTIA + GRASSO VISCERALE
   const getDailyVariation = () => {
     const dayOfWeek = new Date().getDay();
     const isWorkoutDay = userProfile.workoutDays ? 
       dayOfWeek <= userProfile.workoutDays : 
       [1, 3, 5].includes(dayOfWeek);
     
-    // Variazione carboidrati basata su protocollo del giorno
+    // Variazione carboidrati ESTREMA per protocolli anti-ginecomastia
     const carbMultiplier = {
-      'HIGH_PROTEIN': isWorkoutDay ? 1.2 : 0.8,
-      'LOW_CARB': 0.3,
-      'KETOGENIC': 0.1,
-      'OMAD': isWorkoutDay ? 1.5 : 0.5
-    }[todayProtocol.type] || 1.0;
+      'ANTI_ESTROGEN': 0.1,      // Quasi zero carbs per ridurre insulina
+      'OMAD_EXTREME': 0.05,      // Solo verdure fibrose
+      'KETO_VISCERAL': 0.08,     // Chetosi profonda
+      'PSMF': 0.03,              // Protein sparing - zero carbs
+      'ANTI_INFLAMMATORY': 0.15, // Solo anti-infiammatori
+      'CARB_CYCLING': isWorkoutDay ? 0.8 : 0.02 // Refeed solo workout
+    }[todayProtocol.type] || 0.1;
     
-    // Variazione proteine basata su obiettivo
+    // Variazione proteine MASSIMA per preservare massa
     const proteinMultiplier = {
-      'HIGH_PROTEIN': 1.3,
-      'LOW_CARB': 1.1,
-      'KETOGENIC': 1.0,
-      'OMAD': 1.2
-    }[todayProtocol.type] || 1.0;
+      'ANTI_ESTROGEN': 1.4,      // 3.5g/kg per detox
+      'OMAD_EXTREME': 1.3,       // Concentrata in finestra
+      'KETO_VISCERAL': 1.2,      // Mantenere chetosi
+      'PSMF': 1.5,               // Massimo per PSMF
+      'ANTI_INFLAMMATORY': 1.3,  // Riparazione tessuti
+      'CARB_CYCLING': 1.4        // Compensare carbs bassi
+    }[todayProtocol.type] || 1.3;
     
-    // Variazione grassi (inversa ai carboidrati)
+    // Variazione grassi per ORMONI e SAZIETÀ
     const fatMultiplier = {
-      'HIGH_PROTEIN': 0.9,
-      'LOW_CARB': 1.4,
-      'KETOGENIC': 1.8,
-      'OMAD': 1.1
+      'ANTI_ESTROGEN': 1.1,      // Testosterone support
+      'OMAD_EXTREME': 1.3,       // Sazietà prolungata
+      'KETO_VISCERAL': 2.2,      // Chetosi + MCT
+      'PSMF': 0.6,               // Minimi per PSMF
+      'ANTI_INFLAMMATORY': 1.4,  // Omega-3 massimo
+      'CARB_CYCLING': 1.2        // Bilanciare macro
     }[todayProtocol.type] || 1.0;
     
     return {
@@ -237,7 +260,8 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
       proteinMultiplier,
       fatMultiplier,
       isWorkoutDay,
-      protocolType: todayProtocol.type
+      protocolType: todayProtocol.type,
+      fastingWindow: nutrition.fastingWindow
     };
   };
 
@@ -256,22 +280,34 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
 
     return {
       colazione: {
-        name: "Colazione Metabolica",
-        time: "07:00-08:30",
-        calories: Math.round(adaptedNutrition.targetCalories * 0.20),
-        timing: "Peak cortisol + sensibilità insulinica massima",
-        hormones: "Ottimizzazione testosterone + utilizzo GH notturno",
+        name: todayProtocol.type === "OMAD_EXTREME" ? "Digiuno Prolungato" : "Colazione Anti-Ginecomastia",
+        time: todayProtocol.type === "OMAD_EXTREME" ? "DIGIUNO fino 13:00" : "07:00-08:30",
+        calories: todayProtocol.type === "OMAD_EXTREME" ? 0 : Math.round(adaptedNutrition.targetCalories * 0.15),
+        timing: todayProtocol.type === "OMAD_EXTREME" ? "Autofagia + HGH release + lipolisi" : "Cortisol basso + anti-aromatasi",
+        hormones: todayProtocol.type === "OMAD_EXTREME" ? "GH +300%, glucagone +200%, autofagia attiva" : "Testosterone boost + inibizione estrogeni",
         season: season,
-        foods: [
+        foods: todayProtocol.type === "OMAD_EXTREME" ? [
           {
-            name: `Smoothie proteico ${season}`,
-            amount: "300ml",
-            calories: Math.round(adaptedNutrition.targetCalories * 0.12),
-            protein: Math.round(adaptedNutrition.proteinTarget * 0.25),
-            carbs: variation.isWorkoutDay ? 15 : 8,
-            fat: 3,
-            preparation: `${replaceLactoseIngredients('Whey isolate')} ${Math.round(userProfile.currentWeight * 0.4)}g + ${currentIngredients.fruits[0]} 100g + cannella Ceylon + caffè espresso doppio. Frullare con ghiaccio.`,
-            benefits: "Stimolazione mTOR per sintesi proteica. Caffeina dosata per ossidazione grassi.",
+            name: "Digiuno Terapeutico",
+            amount: "0 calorie",
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+            preparation: "Solo acqua, tè verde, caffè nero. Elettroliti se necessario.",
+            benefits: "Autofagia massima, HGH +500%, lipolisi ottimale, sensibilità insulinica reset.",
+            seasonal: false
+          }
+        ] : [
+          {
+            name: `Shot Anti-Ginecomastia ${season}`,
+            amount: "250ml",
+            calories: Math.round(adaptedNutrition.targetCalories * 0.08),
+            protein: Math.round(adaptedNutrition.proteinTarget * 0.20),
+            carbs: 3,
+            fat: 2,
+            preparation: `Proteine isolate ${Math.round(userProfile.currentWeight * 0.3)}g + ${currentIngredients.antiEstrogen[0]} + curcuma 2g + pepe nero + tè verde matcha concentrato.`,
+            benefits: "DIM inibisce aromatasi, curcuma riduce infiammazione, matcha accelera lipolisi.",
             seasonal: true
           },
           {
@@ -299,22 +335,22 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
         ]
       },
       pranzo: {
-        name: "Pranzo Power Cut",
-        time: "12:00-13:30",
-        calories: Math.round(nutrition.targetCalories * 0.35),
-        timing: "Massima sensibilità insulinica + attività metabolica peak",
-        hormones: "Peak leptina + ottimizzazione T3/T4 tiroidei",
+        name: todayProtocol.type === "OMAD_EXTREME" ? "Pasto Unico OMAD" : "Pranzo Anti-Viscerale",
+        time: todayProtocol.type === "OMAD_EXTREME" ? "13:00-14:00 (FINESTRA)" : "12:00-13:30",
+        calories: todayProtocol.type === "OMAD_EXTREME" ? Math.round(nutrition.targetCalories * 0.85) : Math.round(nutrition.targetCalories * 0.45),
+        timing: todayProtocol.type === "OMAD_EXTREME" ? "Finestra alimentare unica - massima concentrazione" : "Insulina controllata + termogenesi",
+        hormones: todayProtocol.type === "OMAD_EXTREME" ? "Leptina reset, IGF-1 ottimale, testosterone peak" : "Anti-aromatasi + lipolisi viscerale",
         season: season,
         foods: [
           {
-            name: `${currentIngredients.proteins[0]} + ${currentIngredients.herbs[0]}`,
-            amount: `${Math.round(userProfile.currentWeight * 2)}g`,
-            calories: Math.round(nutrition.targetCalories * 0.20),
-            protein: Math.round(nutrition.proteinTarget * 0.40),
+            name: `${currentIngredients.proteins[0]} Anti-Ginecomastia`,
+            amount: `${Math.round(userProfile.currentWeight * (todayProtocol.type === "OMAD_EXTREME" ? 3.2 : 2.5))}g`,
+            calories: Math.round(nutrition.targetCalories * (todayProtocol.type === "OMAD_EXTREME" ? 0.35 : 0.25)),
+            protein: Math.round(nutrition.proteinTarget * (todayProtocol.type === "OMAD_EXTREME" ? 0.65 : 0.45)),
             carbs: 0,
-            fat: Math.round(nutrition.fatTarget * 0.20),
-            preparation: `Marinatura 2h con ${currentIngredients.herbs[0]}, olio EVO, limone. Cottura in padella antiaderente 4-5min per lato a fuoco medio.`,
-            benefits: "Proteine ad alto VB per sintesi muscolare. Riduzione cortisolo e CRP.",
+            fat: Math.round(nutrition.fatTarget * (todayProtocol.type === "OMAD_EXTREME" ? 0.4 : 0.25)),
+            preparation: `Marinatura con ${currentIngredients.herbs[0]}, aglio, zenzero fresco. Cottura a bassa temperatura per preservare omega-3.`,
+            benefits: "Omega-3 EPA/DHA riducono infiammazione sistemica. Proteine preservano massa magra durante deficit estremo.",
             seasonal: true
           },
           {
@@ -445,285 +481,519 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
   }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
 
   return (
-    <div className="space-y-4">
-      <div className="text-center py-4">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">
+    <div className="space-y-6">
+      {/* Header Section con animazione */}
+      <div className="text-center py-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl border border-slate-200">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-blue-600 bg-clip-text text-transparent mb-3">
           Piano Nutrizionale Personalizzato
         </h2>
-        <div className="flex items-center justify-center space-x-4 text-sm">
-          <Badge variant="outline" className="flex items-center space-x-1">
-            <Calendar className="w-3 h-3" />
-            <span>{season.charAt(0).toUpperCase() + season.slice(1)}</span>
+        <div className="flex items-center justify-center space-x-6 text-sm flex-wrap gap-2">
+          <Badge variant="outline" className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-1.5">
+            <Calendar className="w-4 h-4 text-emerald-600" />
+            <span className="font-medium">{season.charAt(0).toUpperCase() + season.slice(1)}</span>
           </Badge>
-          <Badge variant="outline" className="flex items-center space-x-1">
-            <Scale className="w-3 h-3" />
-            <span>{userProfile.currentWeight}kg</span>
+          <Badge variant="outline" className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-1.5">
+            <Scale className="w-4 h-4 text-blue-600" />
+            <span className="font-medium">{userProfile.currentWeight}kg</span>
           </Badge>
-          <Badge variant="outline">
-            -{nutrition.deficit}kcal/giorno
-          </Badge>
+                     <Badge variant="outline" className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-1.5">
+             <TrendingUp className="w-4 h-4 text-red-600" />
+             <span className="font-medium">-{nutrition.deficit}kcal/giorno</span>
+           </Badge>
+           <Badge variant="outline" className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-1.5">
+             <Clock className="w-4 h-4 text-purple-600" />
+             <span className="font-medium">Digiuno {nutrition.fastingWindow}</span>
+           </Badge>
         </div>
       </div>
 
-      {/* *** PROTOCOLLO DEL GIORNO - SINCRONIZZATO *** */}
-      <Card className="p-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5" />
-            <h3 className="font-bold">Giorno {currentCycleDay + 1}/14 - Oggi</h3>
+      {/* Protocollo del Giorno - Card migliorata */}
+      <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+        <div className="relative p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
+                <Calendar className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-xl">Giorno {currentCycleDay + 1}/14</h3>
+                <p className="text-sm opacity-80">Ciclo Personalizzato</p>
+              </div>
+            </div>
+            <Badge className={`${todayProtocol.color} px-4 py-2 text-sm font-semibold`}>
+              {todayProtocol.badge}
+            </Badge>
           </div>
-          <Badge className={todayProtocol.color}>
-            {todayProtocol.badge}
-          </Badge>
-        </div>
-        <div className="text-lg font-semibold mb-1">{todayProtocol.name}</div>
-        <div className="text-sm opacity-90">{todayProtocol.description}</div>
-        <div className="mt-2 text-xs opacity-75">
-          📅 {new Date().toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                     <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+             <div className="text-2xl font-bold mb-2">{todayProtocol.name}</div>
+             <div className="text-base opacity-90 mb-3">{todayProtocol.description}</div>
+             <div className="bg-white/15 rounded-lg p-3 mb-3">
+               <div className="text-sm font-semibold mb-2">🎯 Focus Anti-Ginecomastia:</div>
+               <div className="text-xs opacity-90 space-y-1">
+                 <div>• Deficit estremo: -{nutrition.deficit}kcal per lipolisi massima</div>
+                 <div>• Digiuno {nutrition.fastingWindow}: HGH +400%, autofagia attiva</div>
+                 <div>• Anti-aromatasi: DIM, crucifere, tè verde</div>
+                 <div>• Anti-infiammatorio: curcuma, omega-3, polifenoli</div>
+               </div>
+             </div>
+             <div className="flex items-center text-sm opacity-75">
+               <Clock className="w-4 h-4 mr-2" />
+               {new Date().toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+             </div>
+           </div>
         </div>
       </Card>
 
-      {/* Variazione Giornaliera Personalizzata */}
-      <Card className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
-        <div className="flex items-center space-x-2 mb-3">
-          <Scale className="w-5 h-5 text-indigo-600" />
-          <h3 className="font-semibold text-indigo-800">Adattamento Giornaliero per {userProfile.currentWeight}kg</h3>
-        </div>
-        <div className="grid grid-cols-3 gap-4 text-sm">
-          <div className="text-center bg-white/50 rounded-lg p-2">
-            <div className="text-lg font-bold text-red-600">{Math.round(nutrition.proteinTarget * getDailyVariation().proteinMultiplier)}g</div>
-            <div className="text-xs text-slate-600">Proteine oggi</div>
-            <div className="text-xs text-indigo-600">
-              {getDailyVariation().proteinMultiplier > 1 ? '↑' : getDailyVariation().proteinMultiplier < 1 ? '↓' : '='} 
-              {Math.round((getDailyVariation().proteinMultiplier - 1) * 100)}%
+      {/* Adattamento Giornaliero - Card ridisegnata */}
+      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-indigo-100 rounded-lg">
+              <Activity className="w-6 h-6 text-indigo-600" />
+            </div>
+            <div>
+              <h3 className="font-bold text-xl text-indigo-900">Adattamento Giornaliero</h3>
+              <p className="text-sm text-indigo-600">Personalizzato per {userProfile.currentWeight}kg</p>
             </div>
           </div>
-          <div className="text-center bg-white/50 rounded-lg p-2">
-            <div className="text-lg font-bold text-blue-600">{Math.round(nutrition.carbTarget * getDailyVariation().carbMultiplier)}g</div>
-            <div className="text-xs text-slate-600">Carboidrati oggi</div>
-            <div className="text-xs text-indigo-600">
-              {getDailyVariation().carbMultiplier > 1 ? '↑' : getDailyVariation().carbMultiplier < 1 ? '↓' : '='} 
-              {Math.round((getDailyVariation().carbMultiplier - 1) * 100)}%
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-red-200 rounded-lg">
+                  <Heart className="w-5 h-5 text-red-600" />
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-red-700">{Math.round(nutrition.proteinTarget * getDailyVariation().proteinMultiplier)}g</div>
+                  <div className="text-xs text-red-600 font-medium">Proteine oggi</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-red-600">Variazione</span>
+                <Badge className={`${getDailyVariation().proteinMultiplier > 1 ? 'bg-green-100 text-green-700' : getDailyVariation().proteinMultiplier < 1 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>
+                  {getDailyVariation().proteinMultiplier > 1 ? '↑' : getDailyVariation().proteinMultiplier < 1 ? '↓' : '='} 
+                  {Math.round((getDailyVariation().proteinMultiplier - 1) * 100)}%
+                </Badge>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-blue-200 rounded-lg">
+                  <Zap className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-blue-700">{Math.round(nutrition.carbTarget * getDailyVariation().carbMultiplier)}g</div>
+                  <div className="text-xs text-blue-600 font-medium">Carboidrati oggi</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-blue-600">Variazione</span>
+                <Badge className={`${getDailyVariation().carbMultiplier > 1 ? 'bg-green-100 text-green-700' : getDailyVariation().carbMultiplier < 1 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>
+                  {getDailyVariation().carbMultiplier > 1 ? '↑' : getDailyVariation().carbMultiplier < 1 ? '↓' : '='} 
+                  {Math.round((getDailyVariation().carbMultiplier - 1) * 100)}%
+                </Badge>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-green-200 rounded-lg">
+                  <Flame className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-green-700">{Math.round(nutrition.fatTarget * getDailyVariation().fatMultiplier)}g</div>
+                  <div className="text-xs text-green-600 font-medium">Grassi oggi</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-green-600">Variazione</span>
+                <Badge className={`${getDailyVariation().fatMultiplier > 1 ? 'bg-green-100 text-green-700' : getDailyVariation().fatMultiplier < 1 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>
+                  {getDailyVariation().fatMultiplier > 1 ? '↑' : getDailyVariation().fatMultiplier < 1 ? '↓' : '='} 
+                  {Math.round((getDailyVariation().fatMultiplier - 1) * 100)}%
+                </Badge>
+              </div>
             </div>
           </div>
-          <div className="text-center bg-white/50 rounded-lg p-2">
-            <div className="text-lg font-bold text-green-600">{Math.round(nutrition.fatTarget * getDailyVariation().fatMultiplier)}g</div>
-            <div className="text-xs text-slate-600">Grassi oggi</div>
-            <div className="text-xs text-indigo-600">
-              {getDailyVariation().fatMultiplier > 1 ? '↑' : getDailyVariation().fatMultiplier < 1 ? '↓' : '='} 
-              {Math.round((getDailyVariation().fatMultiplier - 1) * 100)}%
+
+          <div className="mt-6 p-4 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl border border-indigo-200">
+            <div className="flex items-center space-x-2 mb-2">
+              <Star className="w-5 h-5 text-indigo-600" />
+              <span className="font-semibold text-indigo-800">Status Giornaliero</span>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center space-x-2">
+                <Badge className={getDailyVariation().isWorkoutDay ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}>
+                  {getDailyVariation().isWorkoutDay ? '🏋️ Allenamento' : '🧘 Riposo'}
+                </Badge>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-indigo-700 font-medium">Protocollo:</span>
+                <span className="text-indigo-600">{getDailyVariation().protocolType}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-indigo-700 font-medium">Obiettivo:</span>
+                <span className="text-indigo-600">{userProfile.goal}</span>
+              </div>
+            </div>
+            {userProfile.lactoseIntolerant && (
+              <div className="mt-2 flex items-center space-x-2">
+                <Badge className="bg-yellow-100 text-yellow-700">🥛 Lactose-Free</Badge>
+              </div>
+            )}
           </div>
-        </div>
-        <div className="mt-3 text-xs text-indigo-700 bg-white/30 rounded p-2">
-          <strong>Oggi:</strong> {getDailyVariation().isWorkoutDay ? '🏋️ Giorno allenamento' : '🧘 Giorno riposo'} • 
-          <strong> Protocollo:</strong> {getDailyVariation().protocolType} • 
-          <strong> Obiettivo:</strong> {userProfile.goal}
-          {userProfile.lactoseIntolerant && <> • <strong>Dieta:</strong> 🥛 Lactose-Free</>}
         </div>
       </Card>
 
-      {/* Real-time meal alert */}
+      {/* Real-time meal alert - migliorato */}
       {optimalMeal && (
-        <Alert className="border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
-          <Zap className="h-4 w-4 text-orange-600" />
-          <AlertDescription className="text-orange-800">
-            <strong>🎯 TIMING OTTIMALE:</strong> È il momento perfetto per{' '}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-1 h-auto text-orange-800 underline font-semibold"
-              onClick={() => setSelectedMeal(optimalMeal)}
-            >
-              {meals[optimalMeal as keyof typeof meals].name}
-            </Button>
-            {' '}basato sui tuoi ritmi circadiani!
-          </AlertDescription>
+        <Alert className="border-0 bg-gradient-to-r from-orange-50 to-amber-50 shadow-lg rounded-xl">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-orange-200 rounded-lg">
+              <Zap className="h-5 w-5 text-orange-600" />
+            </div>
+            <AlertDescription className="text-orange-800 flex-1">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-lg">🎯 TIMING OTTIMALE</span>
+                  <p className="text-sm mt-1">È il momento perfetto per il tuo pasto!</p>
+                </div>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="bg-orange-600 hover:bg-orange-700 text-white shadow-md"
+                  onClick={() => setSelectedMeal(optimalMeal)}
+                >
+                  {meals[optimalMeal as keyof typeof meals].name}
+                </Button>
+              </div>
+            </AlertDescription>
+          </div>
         </Alert>
       )}
 
-      {/* Scientific Overview Personalizzato */}
-      <Card className="p-4 bg-gradient-to-r from-emerald-600 to-blue-600 text-white">
-        <div className="flex items-center space-x-2 mb-3">
-          <BookOpen className="w-5 h-5" />
-          <h3 className="font-semibold">Body Recomp Personalizzato</h3>
-        </div>
-        <div className="grid grid-cols-4 gap-2 text-sm">
-          <div className="text-center">
-            <div className="text-lg font-bold">{nutrition.targetCalories}</div>
-            <div className="opacity-90 text-xs">kcal target</div>
+      {/* Scientific Overview - Card completamente ridisegnata */}
+      <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-emerald-600 via-blue-600 to-purple-600 text-white relative">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+              <BookOpen className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="font-bold text-2xl">Body Recomp Personalizzato</h3>
+              <p className="opacity-90">Basato su ricerca scientifica 2024-2025</p>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold">{nutrition.proteinTarget}g</div>
-            <div className="opacity-90 text-xs">proteine</div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{nutrition.targetCalories}</div>
+              <div className="text-sm opacity-90">kcal target</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{nutrition.proteinTarget}g</div>
+              <div className="text-sm opacity-90">proteine</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{Math.round((userProfile.currentWeight - userProfile.targetWeight) * 1000 / 7700)}g</div>
+              <div className="text-sm opacity-90">grasso/sett</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{Math.round((userProfile.currentWeight - userProfile.targetWeight) / 0.5)}</div>
+              <div className="text-sm opacity-90">settimane</div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold">{Math.round((userProfile.currentWeight - userProfile.targetWeight) * 1000 / 7700)}g</div>
-            <div className="opacity-90 text-xs">grasso/sett</div>
+          
+          <div className="mt-6 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+            <p className="text-sm opacity-90 leading-relaxed">
+              Deficit personalizzato per <strong>{userProfile.currentWeight}kg → {userProfile.targetWeight}kg</strong> mantenendo massa magra.
+              Protocollo ottimizzato per massima lipolisi addominale.
+            </p>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold">{Math.round((userProfile.currentWeight - userProfile.targetWeight) / 0.5)}</div>
-            <div className="opacity-90 text-xs">settimane</div>
-          </div>
-        </div>
-        <div className="mt-2 text-xs opacity-80">
-          Deficit personalizzato per {userProfile.currentWeight}kg → {userProfile.targetWeight}kg mantenendo massa magra
         </div>
       </Card>
 
-      {/* Meal Selection */}
-      <div className="grid grid-cols-4 gap-1">
-        {Object.entries(meals).map(([key, meal]) => (
-          <Button
-            key={key}
-            variant={selectedMeal === key ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedMeal(key)}
-            className={`text-xs relative ${optimalMeal === key ? 'ring-2 ring-orange-400' : ''}`}
-          >
-            {optimalMeal === key && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-            )}
-            {meal.name.split(' ')[0]}
-          </Button>
-        ))}
+      {/* Meal Selection - Migliorato */}
+      <div className="bg-white rounded-2xl shadow-lg p-4 border border-slate-200">
+        <h4 className="font-semibold text-lg mb-4 text-slate-800 flex items-center space-x-2">
+          <Utensils className="w-5 h-5 text-blue-500" />
+          <span>Seleziona Pasto</span>
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {Object.entries(meals).map(([key, meal]) => (
+            <Button
+              key={key}
+              variant={selectedMeal === key ? "default" : "outline"}
+              size="lg"
+              onClick={() => setSelectedMeal(key)}
+              className={`relative h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105 ${
+                selectedMeal === key 
+                  ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg' 
+                  : 'hover:bg-slate-50'
+              } ${optimalMeal === key ? 'ring-2 ring-orange-400 ring-offset-2' : ''}`}
+            >
+              {optimalMeal === key && (
+                <div className="absolute -top-2 -right-2 w-4 h-4 bg-orange-500 rounded-full animate-pulse flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+              )}
+              <div className="text-lg font-semibold">{meal.name.split(' ')[0]}</div>
+              <div className="text-xs opacity-75">{meal.time}</div>
+            </Button>
+          ))}
+        </div>
       </div>
 
-      {/* Meal Details */}
-      <Card className="p-4 bg-white/70 backdrop-blur-sm">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <Utensils className="w-5 h-5 text-blue-500" />
-            <h3 className="font-semibold text-lg">{currentMeal.name}</h3>
-            {currentMeal.season && (
-              <Badge variant="outline" className="text-xs flex items-center space-x-1">
-                <Leaf className="w-3 h-3" />
-                <span>Stagionale</span>
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Clock className="w-4 h-4 text-slate-500" />
-            <span className="text-sm text-slate-600">{currentMeal.time}</span>
-          </div>
-        </div>
-
-        {/* Enhanced Timing & Hormonal Info */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-3 mb-4 border border-blue-100">
-          <div className="flex items-center space-x-2 mb-2">
-            <Zap className="w-4 h-4 text-purple-600" />
-            <span className="font-medium text-sm text-purple-800">Cronobiologia Nutrizionale</span>
-          </div>
-          <div className="text-xs text-slate-700 mb-1">
-            <strong>Timing:</strong> {currentMeal.timing}
-          </div>
-          <div className="text-xs text-slate-700">
-            <strong>Ormoni:</strong> {currentMeal.hormones}
-          </div>
-        </div>
-
-        {/* Enhanced Macros */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          <div className="text-center bg-orange-50 rounded-lg p-2">
-            <div className="text-lg font-bold text-orange-600">{currentMeal.calories}</div>
-            <div className="text-xs text-slate-500">kcal</div>
-          </div>
-          <div className="text-center bg-red-50 rounded-lg p-2">
-            <div className="text-lg font-bold text-red-500">{totalProtein}g</div>
-            <div className="text-xs text-slate-500">proteine</div>
-          </div>
-          <div className="text-center bg-blue-50 rounded-lg p-2">
-            <div className="text-lg font-bold text-blue-500">{totalCarbs}g</div>
-            <div className="text-xs text-slate-500">carbs</div>
-          </div>
-          <div className="text-center bg-green-50 rounded-lg p-2">
-            <div className="text-lg font-bold text-green-500">{totalFat}g</div>
-            <div className="text-xs text-slate-500">grassi</div>
-          </div>
-        </div>
-
-        {/* Enhanced Foods List */}
-        <div className="space-y-3">
-          {currentMeal.foods.map((food, index) => (
-            <Card key={index} className={`p-3 ${food.seasonal ? 'bg-green-50/70 border-green-200' : 'bg-slate-50/50'}`}>
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center space-x-2">
-                  <h4 className="font-medium text-slate-800">{food.name}</h4>
-                  {food.seasonal && (
-                    <Badge variant="outline" className="text-xs bg-green-100 text-green-700">
+      {/* Meal Details - Card completamente ridisegnata */}
+      <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-white to-slate-50">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Utensils className="w-7 h-7 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-2xl text-slate-800">{currentMeal.name}</h3>
+                <div className="flex items-center space-x-3 mt-1">
+                  <div className="flex items-center space-x-1 text-slate-600">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-sm font-medium">{currentMeal.time}</span>
+                  </div>
+                  {currentMeal.season && (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       <Leaf className="w-3 h-3 mr-1" />
-                      {season}
+                      Stagionale
                     </Badge>
                   )}
                 </div>
-                <Badge variant="outline" className="text-xs">
-                  {food.calories} kcal
-                </Badge>
               </div>
-              <p className="text-sm text-slate-600 mb-2">{food.amount}</p>
-              <div className="flex items-start space-x-2 mb-2">
-                <ChefHat className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-slate-600">{food.preparation}</p>
+            </div>
+          </div>
+
+          {/* Cronobiologia Section */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-5 mb-6 border border-purple-100">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-2 bg-purple-200 rounded-lg">
+                <Zap className="w-5 h-5 text-purple-600" />
               </div>
-              <div className="bg-blue-50 rounded p-2 mb-2">
-                <p className="text-xs text-blue-700 italic">{food.benefits}</p>
+              <h4 className="font-bold text-lg text-purple-800">Cronobiologia Nutrizionale</h4>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white/70 rounded-xl p-4">
+                <div className="font-semibold text-sm text-purple-700 mb-2">⏰ Timing Ottimale</div>
+                <p className="text-sm text-slate-700">{currentMeal.timing}</p>
               </div>
-              <div className="flex justify-between text-xs text-slate-500">
-                <span>P: {food.protein}g</span>
-                <span>C: {food.carbs}g</span>
-                <span>F: {food.fat}g</span>
+              <div className="bg-white/70 rounded-xl p-4">
+                <div className="font-semibold text-sm text-purple-700 mb-2">🧬 Ottimizzazione Ormonale</div>
+                <p className="text-sm text-slate-700">{currentMeal.hormones}</p>
               </div>
-            </Card>
-          ))}
+            </div>
+          </div>
+
+          {/* Enhanced Macros - Ridisegnato */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
+              <div className="p-2 bg-orange-200 rounded-lg w-fit mx-auto mb-2">
+                <Flame className="w-5 h-5 text-orange-600" />
+              </div>
+              <div className="text-2xl font-bold text-orange-700 mb-1">{currentMeal.calories}</div>
+              <div className="text-xs text-orange-600 font-medium">kcal</div>
+            </div>
+            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 text-center border border-red-200">
+              <div className="p-2 bg-red-200 rounded-lg w-fit mx-auto mb-2">
+                <Heart className="w-5 h-5 text-red-600" />
+              </div>
+              <div className="text-2xl font-bold text-red-700 mb-1">{totalProtein}g</div>
+              <div className="text-xs text-red-600 font-medium">proteine</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center border border-blue-200">
+              <div className="p-2 bg-blue-200 rounded-lg w-fit mx-auto mb-2">
+                <Zap className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="text-2xl font-bold text-blue-700 mb-1">{totalCarbs}g</div>
+              <div className="text-xs text-blue-600 font-medium">carbs</div>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center border border-green-200">
+              <div className="p-2 bg-green-200 rounded-lg w-fit mx-auto mb-2">
+                <Leaf className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold text-green-700 mb-1">{totalFat}g</div>
+              <div className="text-xs text-green-600 font-medium">grassi</div>
+            </div>
+          </div>
+
+          {/* Enhanced Foods List - Completamente ridisegnato */}
+          <div className="space-y-4">
+            <h4 className="font-bold text-lg text-slate-800 flex items-center space-x-2">
+              <ChefHat className="w-5 h-5 text-slate-600" />
+              <span>Ingredienti e Preparazione</span>
+            </h4>
+            {currentMeal.foods.map((food, index) => (
+              <Card key={index} className={`overflow-hidden border-0 shadow-md transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
+                food.seasonal 
+                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200' 
+                  : 'bg-gradient-to-br from-slate-50 to-white border border-slate-200'
+              }`}>
+                <div className="p-5">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-lg ${food.seasonal ? 'bg-green-200' : 'bg-slate-200'}`}>
+                        <Utensils className={`w-5 h-5 ${food.seasonal ? 'text-green-600' : 'text-slate-600'}`} />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-lg text-slate-800">{food.name}</h5>
+                        <p className="text-sm text-slate-600 font-medium">{food.amount}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {food.seasonal && (
+                        <Badge className="bg-green-100 text-green-700 border-green-300">
+                          <Leaf className="w-3 h-3 mr-1" />
+                          {season}
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className="bg-white/80 font-semibold">
+                        {food.calories} kcal
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/70 rounded-xl p-4 mb-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="p-1.5 bg-slate-200 rounded-lg">
+                        <ChefHat className="w-4 h-4 text-slate-600" />
+                      </div>
+                      <div>
+                        <h6 className="font-semibold text-sm text-slate-700 mb-1">Preparazione</h6>
+                        <p className="text-sm text-slate-600 leading-relaxed">{food.preparation}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-4 border border-blue-100">
+                    <div className="flex items-start space-x-3">
+                      <div className="p-1.5 bg-blue-200 rounded-lg">
+                        <Star className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <h6 className="font-semibold text-sm text-blue-700 mb-1">Benefici Scientifici</h6>
+                        <p className="text-sm text-blue-600 leading-relaxed italic">{food.benefits}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-red-50 rounded-lg p-3 text-center border border-red-100">
+                      <div className="text-lg font-bold text-red-600">{food.protein}g</div>
+                      <div className="text-xs text-red-500 font-medium">Proteine</div>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-3 text-center border border-blue-100">
+                      <div className="text-lg font-bold text-blue-600">{food.carbs}g</div>
+                      <div className="text-xs text-blue-500 font-medium">Carboidrati</div>
+                    </div>
+                    <div className="bg-green-50 rounded-lg p-3 text-center border border-green-100">
+                      <div className="text-lg font-bold text-green-600">{food.fat}g</div>
+                      <div className="text-xs text-green-500 font-medium">Grassi</div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </Card>
 
-      {/* Enhanced Daily Target */}
-      <Card className="p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <div className="flex items-center space-x-2 mb-3">
-          <Target className="w-5 h-5" />
-          <h3 className="font-semibold">Target Giornaliero Body Recomp</h3>
-        </div>
-        <div className="grid grid-cols-4 gap-3 text-sm mb-3">
-          <div className="text-center">
-            <div className="text-lg font-bold">{dailyTotals.calories}</div>
-            <div className="opacity-90 text-xs">kcal totali</div>
+      {/* Enhanced Daily Target - Completamente ridisegnato */}
+      <Card className="overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-600 via-pink-600 to-purple-700 text-white relative">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+              <Target className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="font-bold text-2xl">Target Giornaliero Body Recomp</h3>
+              <p className="opacity-90">Totali calcolati per oggi</p>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold">{Math.round(dailyTotals.protein)}g</div>
-            <div className="opacity-90 text-xs">proteine</div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{dailyTotals.calories}</div>
+              <div className="text-sm opacity-90">kcal totali</div>
+            </div>
+            <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{Math.round(dailyTotals.protein)}g</div>
+              <div className="text-sm opacity-90">proteine</div>
+            </div>
+            <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{Math.round(dailyTotals.carbs)}g</div>
+              <div className="text-sm opacity-90">carbs</div>
+            </div>
+            <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
+              <div className="text-3xl font-bold mb-1">{Math.round(dailyTotals.fat)}g</div>
+              <div className="text-sm opacity-90">grassi</div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold">{Math.round(dailyTotals.carbs)}g</div>
-            <div className="opacity-90 text-xs">carbs</div>
+          
+          <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm">
+            <p className="text-sm opacity-90 leading-relaxed">
+              <strong>Ratio ottimizzato:</strong> 40% proteine | 25% carbs | 35% grassi per massima lipolisi addominale + preservazione massa magra. 
+              Basato su studi 2024-2025 di Helms, Phillips, Aragon.
+            </p>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold">{Math.round(dailyTotals.fat)}g</div>
-            <div className="opacity-90 text-xs">grassi</div>
-          </div>
-        </div>
-        <div className="text-xs opacity-80 leading-relaxed">
-          Ratio ottimizzato: 40% proteine | 25% carbs | 35% grassi per massima lipolisi addominale + preservazione massa magra. 
-          Basato su studi 2024-2025 di Helms, Phillips, Aragon.
         </div>
       </Card>
 
-      {/* Seasonal Ingredients Info */}
-      <Card className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-        <div className="flex items-center space-x-2 mb-3">
-          <Leaf className="w-5 h-5 text-green-600" />
-          <h3 className="font-semibold text-green-800">Ingredienti di {season.charAt(0).toUpperCase() + season.slice(1)}</h3>
-        </div>
-        <div className="grid grid-cols-1 gap-2 text-sm">
-          <div>
-            <strong className="text-green-700">Verdure:</strong> {seasonalIngredients[season].vegetables.join(', ')}
+      {/* Seasonal Ingredients - Card migliorata */}
+      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-green-50 via-emerald-50 to-green-100">
+        <div className="p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-3 bg-green-200 rounded-xl">
+              <Leaf className="w-7 h-7 text-green-600" />
+            </div>
+                         <div>
+               <h3 className="font-bold text-2xl text-green-800">Arsenal Anti-Ginecomastia {season.charAt(0).toUpperCase() + season.slice(1)}</h3>
+               <p className="text-green-600">Ingredienti scientificamente selezionati</p>
+             </div>
           </div>
-          <div>
-            <strong className="text-green-700">Frutta:</strong> {seasonalIngredients[season].fruits.join(', ')}
-          </div>
-          <div>
-            <strong className="text-green-700">Erbe:</strong> {seasonalIngredients[season].herbs.join(', ')}
-          </div>
+          
+                     <div className="space-y-4">
+             <div className="bg-white/70 rounded-xl p-4 border border-green-200">
+               <div className="flex items-center space-x-2 mb-2">
+                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                 <span className="font-bold text-green-800">Crucifere Anti-Estrogeniche</span>
+               </div>
+               <p className="text-sm text-green-700">{seasonalIngredients[season].vegetables.join(', ')}</p>
+               <p className="text-xs text-green-600 mt-1 italic">DIM e sulforafano inibiscono l'aromatasi</p>
+             </div>
+             <div className="bg-white/70 rounded-xl p-4 border border-green-200">
+               <div className="flex items-center space-x-2 mb-2">
+                 <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                 <span className="font-bold text-green-800">Frutta Antiossidante</span>
+               </div>
+               <p className="text-sm text-green-700">{seasonalIngredients[season].fruits.join(', ')}</p>
+               <p className="text-xs text-green-600 mt-1 italic">Basso indice glicemico + antocianine</p>
+             </div>
+             <div className="bg-white/70 rounded-xl p-4 border border-green-200">
+               <div className="flex items-center space-x-2 mb-2">
+                 <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                 <span className="font-bold text-green-800">Anti-Infiammatori</span>
+               </div>
+               <p className="text-sm text-green-700">{seasonalIngredients[season].herbs.join(', ')}</p>
+               <p className="text-xs text-green-600 mt-1 italic">Curcumina e gingeroli riducono CRP</p>
+             </div>
+             <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-xl p-4 border border-red-200">
+               <div className="flex items-center space-x-2 mb-2">
+                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                 <span className="font-bold text-red-800">Inibitori Aromatasi</span>
+               </div>
+               <p className="text-sm text-red-700">{seasonalIngredients[season].antiEstrogen.join(', ')}</p>
+               <p className="text-xs text-red-600 mt-1 italic">Bloccano conversione testosterone → estrogeni</p>
+             </div>
+           </div>
         </div>
       </Card>
     </div>
