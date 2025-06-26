@@ -26,6 +26,7 @@ import UserProfile from '@/components/UserProfile';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 import RecipeSection from '@/components/RecipeSection';
 import PersonalizedDietPlan from '@/components/PersonalizedDietPlan';
+import DebugDiet from '@/components/DebugDiet';
 import WeightHistory from '@/components/WeightHistory';
 import BodyFatHistory from '@/components/BodyFatHistory';
 import ScientificDashboard from '@/components/ScientificDashboard';
@@ -111,7 +112,12 @@ const Index = () => {
             
             <TabsContent value="recipes"><RecipeSection /></TabsContent>
             
-            <TabsContent value="diet-plan"><PersonalizedDietPlan /></TabsContent>
+            <TabsContent value="diet-plan">
+              <DebugDiet />
+              <div className="mt-6">
+                <PersonalizedDietPlan />
+              </div>
+            </TabsContent>
             
             <TabsContent value="supplements"><SupplementSection /></TabsContent>
             <TabsContent value="workout"><WorkoutSection workoutCompleted={dailyProgress.workout_completed} onWorkoutToggle={() => addOrUpdateDailyProgress({ workout_completed: !dailyProgress.workout_completed })} /></TabsContent>
