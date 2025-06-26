@@ -532,7 +532,7 @@ const RecipeSection: React.FC = () => {
         ],
         preparation: [
           "Sedano e mela tagliati a pezzi, zenzero grattugiato",
-          "Tutti ingredienti nel boccale con acqua",
+          "Tutti gli ingredienti nel boccale con acqua",
           "Frullare 1 min / Vel 10 per estrazione completa",
           "Filtrare per succo liscio se desiderato",
           "Bere subito per effetto rivitalizzante"
@@ -2523,39 +2523,6 @@ const RecipeSection: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <div className="text-center py-4">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">
-          👨‍🍳 Ricettario Body Recomp Science
-        </h2>
-        <div className="flex items-center justify-center space-x-2 text-sm mb-4">
-          <Badge variant="outline" className="flex items-center space-x-1">
-            <Dna className="w-3 h-3" />
-            <span>Ricette Stellate</span>
-          </Badge>
-          <Badge variant="outline" className="flex items-center space-x-1">
-            <ChefHat className="w-3 h-3" />
-            <span>Bimby TM5</span>
-          </Badge>
-          <Badge variant="outline" className="flex items-center space-x-1 bg-green-100 text-green-700">
-            <span>🏠</span>
-            <span>Ingredienti Supermercato</span>
-          </Badge>
-        </div>
-
-        {/* Info ricette semplificate */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <span className="text-green-600">✅</span>
-            <span className="font-medium text-green-800 text-sm">
-              Ricette Semplificate per Tutti
-            </span>
-          </div>
-          <p className="text-xs text-green-700">
-            🏠 Ingredienti da supermercato, Bimby TM5, tecniche casalinghe, nessun sottovuoto. Stessa efficacia scientifica!
-          </p>
-        </div>
-      </div>
-
       {/* Category Selection */}
       <div className="grid grid-cols-2 gap-2">
         {categories.map((category) => (

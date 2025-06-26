@@ -8,6 +8,7 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
+  gender: 'male' | 'female';
   current_weight: number | null;
   age: number | null;
   height: number | null;
@@ -32,6 +33,7 @@ export interface DailyProgress {
   water: number;
   calories: number;
   weight: number | null;
+  bodyFat?: number | null;
   workout_completed: boolean;
   supplements_taken: number;
   shots_consumed: string[];
@@ -45,6 +47,7 @@ export function useProgressTracking() {
       id: 'local-user',
       name: 'Utente Demo',
       email: 'user@example.com',
+      gender: 'male',
       current_weight: 75,
       age: 30,
       height: 175,
@@ -63,39 +66,79 @@ export function useProgressTracking() {
       target_water: 2500
   });
 
-  const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress | null>(`dailyProgress_${today}`, null);
+  // Storico di tutti i progressi
+  const [progressHistory, setProgressHistory] = useLocalStorage<DailyProgress[]>('progressHistory', []);
+
+  // Progresso specifico di OGGI
+  const [dailyProgress, setDailyProgress] = useState<DailyProgress | null>(null);
   
   const [loading, setLoading] = useState(true);
 
-  // Effetto per inizializzare i progressi giornalieri se non esistono per oggi
+  // Effetto per trovare e impostare il progresso di oggi dallo storico, o crearne uno nuovo
   useEffect(() => {
     setLoading(true);
-    // Controlla solo se dailyProgress è null per evitare loop
-    if (dailyProgress === null) {
-      console.log("📝 Nessun progresso per oggi, creo un record di default.");
+    const todayEntry = progressHistory.find(p => p.date === today);
+
+    if (todayEntry) {
+      setDailyProgress(todayEntry);
+    } else {
+      console.log("📝 Nessun progresso per oggi nello storico, creo un record di default.");
       const defaultProgress: DailyProgress = {
         date: today,
         water: 0,
         calories: 0,
-        weight: userProfile?.current_weight ?? 0,
+        weight: userProfile?.current_weight ?? null,
+        bodyFat: null,
         workout_completed: false,
         supplements_taken: 0,
         shots_consumed: [],
       };
       setDailyProgress(defaultProgress);
+      // Non lo aggiungiamo subito allo storico, ma solo al primo salvataggio
     }
     setLoading(false);
-  }, [today, dailyProgress, setDailyProgress, userProfile]);
+  }, [today, progressHistory, userProfile]);
 
-  const saveProgress = useCallback((updates: Partial<DailyProgress>) => {
-    setDailyProgress(prev => {
-        // Se non ci sono progressi precedenti, non fare nulla (anche se non dovrebbe succedere)
-        if (!prev) return null; 
-        const updatedProgress = { ...prev, ...updates };
-        toast({ title: 'Progressi Salvati', description: 'I tuoi progressi sono stati salvati localmente.' });
-        return updatedProgress;
+  const addOrUpdateDailyProgress = useCallback((updates: Partial<DailyProgress>) => {
+    setProgressHistory(prevHistory => {
+        const today = new Date().toISOString().split('T')[0];
+        let entryUpdated = false;
+
+        const updatedHistory = prevHistory.map(p => {
+            if (p.date === today) {
+                entryUpdated = true;
+                return { ...p, ...updates };
+            }
+            return p;
+        });
+
+        if (!entryUpdated) {
+             const newEntry: DailyProgress = {
+                date: today,
+                water: 0,
+                calories: 0,
+                weight: null,
+                bodyFat: null,
+                workout_completed: false,
+                supplements_taken: 0,
+                shots_consumed: [],
+                ...updates
+             };
+             updatedHistory.push(newEntry);
+        }
+        
+        // Aggiorna anche lo stato del profilo se il peso è stato modificato
+        if (updates.weight) {
+            setUserProfile(prevProfile => {
+                if (!prevProfile) return null;
+                return { ...prevProfile, current_weight: updates.weight };
+            });
+        }
+
+        toast({ title: 'Progressi Salvati', description: 'I tuoi progressi sono stati salvati nello storico.' });
+        return updatedHistory;
     });
-  }, [setDailyProgress]);
+  }, [setProgressHistory, setUserProfile]);
   
   const updateProfile = useCallback((profileData: Partial<UserProfile>) => {
     setUserProfile(prev => {
@@ -108,8 +151,9 @@ export function useProgressTracking() {
 
   return { 
     dailyProgress, 
+    progressHistory,
     userProfile,
-    saveProgress,
+    addOrUpdateDailyProgress,
     updateProfile,
     loading,
   };

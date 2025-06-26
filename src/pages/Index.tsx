@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,8 @@ import {
   TrendingDown,
   Zap,
   ChefHat,
-  ClipboardList
+  ClipboardList,
+  LineChart as LineChartIcon
 } from 'lucide-react';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 import { useNutritionTracking } from '@/hooks/useNutritionTracking';
@@ -24,7 +25,9 @@ import ShoppingList from '@/components/ShoppingList';
 import UserProfile from '@/components/UserProfile';
 import AdvancedMealTracker from '@/components/AdvancedMealTracker';
 import RecipeSection from '@/components/RecipeSection';
-import DietPlanSection from '@/components/DietPlanSection';
+import PersonalizedDietPlan from '@/components/PersonalizedDietPlan';
+import WeightHistory from '@/components/WeightHistory';
+import BodyFatHistory from '@/components/BodyFatHistory';
 
 const LoadingScreen = () => (
   <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -42,7 +45,7 @@ const Index = () => {
     dailyProgress,
     userProfile,
     loading: progressLoading,
-    saveProgress,
+    addOrUpdateDailyProgress,
   } = useProgressTracking();
 
   const {
@@ -87,14 +90,16 @@ const Index = () => {
       <main className="max-w-md mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="px-4 pt-4">
-            <TabsList className="grid w-full grid-cols-7 bg-white/70 backdrop-blur-sm text-xs">
-              <TabsTrigger value="dashboard"><span><Target className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="recipes"><span><ChefHat className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="diet-plan"><span><Calendar className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="tracker"><span><ClipboardList className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="supplements"><span><Zap className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="workout"><span><Dumbbell className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="shopping"><span><ShoppingCart className="w-4 h-4" /></span></TabsTrigger>
+            <TabsList className="w-full bg-white/70 backdrop-blur-sm text-xs flex overflow-x-auto whitespace-nowrap p-1 h-auto">
+              <TabsTrigger value="dashboard" className="flex-shrink-0"><span><Target className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="recipes" className="flex-shrink-0"><span><ChefHat className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="diet-plan" className="flex-shrink-0"><span><Calendar className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="tracker" className="flex-shrink-0"><span><ClipboardList className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="supplements" className="flex-shrink-0"><span><Zap className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="workout" className="flex-shrink-0"><span><Dumbbell className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="shopping" className="flex-shrink-0"><span><ShoppingCart className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="weight-history" className="flex-shrink-0"><span><LineChartIcon className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="bodyfat-history" className="flex-shrink-0"><span><TrendingDown className="w-4 h-4" /></span></TabsTrigger>
             </TabsList>
           </div>
 
@@ -148,13 +153,15 @@ const Index = () => {
             
             <TabsContent value="recipes"><RecipeSection /></TabsContent>
             
-            <TabsContent value="diet-plan"><DietPlanSection /></TabsContent>
+            <TabsContent value="diet-plan"><PersonalizedDietPlan /></TabsContent>
 
             <TabsContent value="tracker"><AdvancedMealTracker meals={todayMeals} onMarkMealAsEaten={markMealAsEaten} nutritionData={nutritionData} dailyTotals={dailyTotals} /></TabsContent>
             
             <TabsContent value="supplements"><SupplementSection /></TabsContent>
-            <TabsContent value="workout"><WorkoutSection workoutCompleted={dailyProgress.workout_completed} onWorkoutToggle={() => saveProgress({ workout_completed: !dailyProgress.workout_completed })} /></TabsContent>
+            <TabsContent value="workout"><WorkoutSection workoutCompleted={dailyProgress.workout_completed} onWorkoutToggle={() => addOrUpdateDailyProgress({ workout_completed: !dailyProgress.workout_completed })} /></TabsContent>
             <TabsContent value="shopping"><ShoppingList /></TabsContent>
+            <TabsContent value="weight-history"><WeightHistory /></TabsContent>
+            <TabsContent value="bodyfat-history"><BodyFatHistory /></TabsContent>
           </div>
         </Tabs>
       </main>
