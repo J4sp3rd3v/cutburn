@@ -234,13 +234,30 @@ const UserProfile = () => {
                 </div>
                 <div>
                     <Label>Sesso</Label>
-                    <Select value={profile.gender || 'male'} onValueChange={(v) => handleSelectChange('gender', v)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="male">Maschio</SelectItem>
-                            <SelectItem value="female">Femmina</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <div className="flex space-x-2 mt-2">
+                        <Button
+                            type="button"
+                            variant={profile.gender === 'male' ? 'default' : 'outline'}
+                            className="flex-1"
+                            onClick={() => {
+                                console.log('🔄 Debug - Gender button clicked: male');
+                                setProfile(prev => ({ ...prev, gender: 'male' }));
+                            }}
+                        >
+                            Maschio
+                        </Button>
+                        <Button
+                            type="button"
+                            variant={profile.gender === 'female' ? 'default' : 'outline'}
+                            className="flex-1"
+                            onClick={() => {
+                                console.log('🔄 Debug - Gender button clicked: female');
+                                setProfile(prev => ({ ...prev, gender: 'female' }));
+                            }}
+                        >
+                            Femmina
+                        </Button>
+                    </div>
                 </div>
                 <div>
                     <Label htmlFor="height">Altezza (cm)</Label>
@@ -262,28 +279,52 @@ const UserProfile = () => {
                 </div>
                 <div>
                     <Label>Obiettivo Principale</Label>
-                     <Select value={profile.goal || 'weight_loss'} onValueChange={(v) => handleSelectChange('goal', v)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="weight_loss">Perdita Peso</SelectItem>
-                            <SelectItem value="targeted_fat_loss">Grasso Localizzato</SelectItem>
-                            <SelectItem value="muscle_gain">Aumento Muscolare</SelectItem>
-                            <SelectItem value="maintenance">Mantenimento</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                        {[
+                            { value: 'weight_loss', label: 'Perdita Peso' },
+                            { value: 'targeted_fat_loss', label: 'Grasso Localizzato' },
+                            { value: 'muscle_gain', label: 'Aumento Muscolare' },
+                            { value: 'maintenance', label: 'Mantenimento' }
+                        ].map((option) => (
+                            <Button
+                                key={option.value}
+                                type="button"
+                                variant={profile.goal === option.value ? 'default' : 'outline'}
+                                className="text-sm"
+                                onClick={() => {
+                                    console.log(`🔄 Debug - Goal button clicked: ${option.value}`);
+                                    setProfile(prev => ({ ...prev, goal: option.value as any }));
+                                }}
+                            >
+                                {option.label}
+                            </Button>
+                        ))}
+                    </div>
                 </div>
                 <div>
                     <Label>Livello Attività Fisica</Label>
-                     <Select value={profile.activity_level || 'moderate'} onValueChange={(v) => handleSelectChange('activity_level', v)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="sedentary">Sedentario (ufficio)</SelectItem>
-                            <SelectItem value="light">Leggero (1-2 gg/sett)</SelectItem>
-                            <SelectItem value="moderate">Moderato (3-5 gg/sett)</SelectItem>
-                            <SelectItem value="active">Attivo (6-7 gg/sett)</SelectItem>
-                            <SelectItem value="very_active">Molto Attivo (lavoro fisico)</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                        {[
+                            { value: 'sedentary', label: 'Sedentario (ufficio)' },
+                            { value: 'light', label: 'Leggero (1-2 gg/sett)' },
+                            { value: 'moderate', label: 'Moderato (3-5 gg/sett)' },
+                            { value: 'active', label: 'Attivo (6-7 gg/sett)' },
+                            { value: 'very_active', label: 'Molto Attivo (lavoro fisico)' }
+                        ].map((option) => (
+                            <Button
+                                key={option.value}
+                                type="button"
+                                variant={profile.activity_level === option.value ? 'default' : 'outline'}
+                                className="justify-start text-sm"
+                                onClick={() => {
+                                    console.log(`🔄 Debug - Activity button clicked: ${option.value}`);
+                                    setProfile(prev => ({ ...prev, activity_level: option.value as any }));
+                                }}
+                            >
+                                {option.label}
+                            </Button>
+                        ))}
+                    </div>
                 </div>
                  <div className="md:col-span-2 flex flex-col space-y-2 pt-4">
                      <div className="flex items-center space-x-2">
