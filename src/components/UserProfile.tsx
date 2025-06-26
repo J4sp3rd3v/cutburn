@@ -53,6 +53,7 @@ const UserProfile = () => {
   };
 
   const handleSelectChange = (name: keyof UserProfileType, value: string) => {
+    console.log(`🔄 Debug - Select cambiato: ${name} = ${value}`);
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
@@ -95,13 +96,44 @@ const UserProfile = () => {
   const metrics = calculatePersonalizedMetrics();
 
   const handleSave = () => {
-    if (!profile.age || profile.age < 16 || profile.age > 80) { toast({ title: 'Errore', description: 'Età non valida', variant: 'destructive' }); return; }
-    if (!profile.height || profile.height < 140 || profile.height > 220) { toast({ title: 'Errore', description: 'Altezza non valida', variant: 'destructive' }); return; }
-    if (!profile.current_weight || profile.current_weight < 40 || profile.current_weight > 200) { toast({ title: 'Errore', description: 'Peso attuale non valido', variant: 'destructive' }); return; }
-    if (!profile.target_weight || profile.target_weight < 40 || profile.target_weight > 200) { toast({ title: 'Errore', description: 'Peso obiettivo non valido', variant: 'destructive' }); return; }
+    console.log('🔍 Debug - Dati profilo prima del salvataggio:', profile);
+    
+    // Validazioni con messaggi più specifici
+    if (!profile.age || profile.age < 16 || profile.age > 80) { 
+      toast({ title: 'Errore', description: 'Età non valida (16-80 anni)', variant: 'destructive' }); 
+      return; 
+    }
+    if (!profile.height || profile.height < 140 || profile.height > 220) { 
+      toast({ title: 'Errore', description: 'Altezza non valida (140-220 cm)', variant: 'destructive' }); 
+      return; 
+    }
+    if (!profile.current_weight || profile.current_weight < 40 || profile.current_weight > 200) { 
+      toast({ title: 'Errore', description: 'Peso attuale non valido (40-200 kg)', variant: 'destructive' }); 
+      return; 
+    }
+    if (!profile.target_weight || profile.target_weight < 40 || profile.target_weight > 200) { 
+      toast({ title: 'Errore', description: 'Peso obiettivo non valido (40-200 kg)', variant: 'destructive' }); 
+      return; 
+    }
+    if (!profile.gender) {
+      toast({ title: 'Errore', description: 'Seleziona il sesso', variant: 'destructive' }); 
+      return; 
+    }
+    if (!profile.activity_level) {
+      toast({ title: 'Errore', description: 'Seleziona il livello di attività', variant: 'destructive' }); 
+      return; 
+    }
+    if (!profile.goal) {
+      toast({ title: 'Errore', description: 'Seleziona l\'obiettivo principale', variant: 'destructive' }); 
+      return; 
+    }
 
     const profileDataToSave: Partial<UserProfileType> = {
       ...profile,
+      // Assicuriamoci che i campi Select siano inclusi esplicitamente
+      gender: profile.gender,
+      activity_level: profile.activity_level,
+      goal: profile.goal,
       target_calories: metrics.targetCalories,
       target_protein: metrics.proteinTarget,
       target_carbs: metrics.carbTarget,
@@ -110,9 +142,11 @@ const UserProfile = () => {
       start_weight: userProfile.start_weight || profile.current_weight,
     };
     
+    console.log('💾 Debug - Dati da salvare:', profileDataToSave);
+    
     updateProfile(profileDataToSave);
     setIsEditing(false);
-    toast({ title: 'Profilo Salvato', description: 'I tuoi dati sono stati aggiornati.' });
+    toast({ title: 'Profilo Salvato', description: 'I tuoi dati sono stati aggiornati con successo!' });
   };
 
   const getTotalWeightLoss = () => {
