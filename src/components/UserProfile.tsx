@@ -43,7 +43,7 @@ const UserProfile = () => {
   
   const handleInputChange = (fieldName: keyof UserProfileType, value: string) => {
     let finalValue: string | number | null = value;
-    if (['age', 'height', 'current_weight', 'target_weight', 'workoutDays'].includes(fieldName)) {
+    if (['age', 'height', 'current_weight', 'target_weight', 'workoutDays', 'body_fat_percentage'].includes(fieldName)) {
       finalValue = value === '' ? null : parseFloat(value);
       if (finalValue !== null && isNaN(finalValue)) {
         finalValue = profile[fieldName] as number | null;
@@ -178,12 +178,26 @@ const UserProfile = () => {
                     <Input id="age" type="number" value={profile.age || ''} onChange={(e) => handleInputChange('age', e.target.value)} />
                 </div>
                 <div>
+                    <Label>Sesso</Label>
+                    <Select value={profile.gender || 'male'} onValueChange={(v) => handleSelectChange('gender', v)}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="male">Maschio</SelectItem>
+                            <SelectItem value="female">Femmina</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div>
                     <Label htmlFor="height">Altezza (cm)</Label>
                     <Input id="height" type="number" value={profile.height || ''} onChange={(e) => handleInputChange('height', e.target.value)} />
                 </div>
                 <div>
                     <Label htmlFor="current_weight">Peso Attuale (kg)</Label>
                     <Input id="current_weight" type="number" step="0.1" value={profile.current_weight || ''} onChange={(e) => handleInputChange('current_weight', e.target.value)} />
+                </div>
+                <div>
+                    <Label htmlFor="body_fat_percentage">% Grasso Corporeo (opzionale)</Label>
+                    <Input id="body_fat_percentage" type="number" step="0.1" placeholder="es. 15.5" value={profile.body_fat_percentage || ''} onChange={(e) => handleInputChange('body_fat_percentage', e.target.value)} />
                 </div>
                 
                 <div className="md:col-span-2 font-bold text-lg text-slate-700 pt-4">Obiettivi e Stile di Vita</div>
@@ -193,12 +207,12 @@ const UserProfile = () => {
                 </div>
                 <div>
                     <Label>Obiettivo Principale</Label>
-                     <Select value={profile.goal || 'fat-loss'} onValueChange={(v) => handleSelectChange('goal', v)}>
+                     <Select value={profile.goal || 'weight_loss'} onValueChange={(v) => handleSelectChange('goal', v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="fat-loss">Perdita Grasso</SelectItem>
-                            <SelectItem value="recomp">Ricomposizione</SelectItem>
-                            <SelectItem value="muscle-gain">Aumento Massa</SelectItem>
+                            <SelectItem value="weight_loss">Perdita Peso</SelectItem>
+                            <SelectItem value="targeted_fat_loss">Grasso Localizzato</SelectItem>
+                            <SelectItem value="muscle_gain">Aumento Muscolare</SelectItem>
                             <SelectItem value="maintenance">Mantenimento</SelectItem>
                         </SelectContent>
                     </Select>
