@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ChefHat, Zap, Droplets, Flame, Dna, Calendar } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Clock, Users, ChefHat, Zap, Droplets, Flame, Dna, Calendar, Bot } from 'lucide-react';
 import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 const RecipeSection: React.FC = () => {
@@ -11,6 +12,7 @@ const RecipeSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
   const [selectedDay, setSelectedDay] = useState(0);
   const [recipeFilter, setRecipeFilter] = useState("all"); // "all", "dolci", "salate"
+  const [activeRecipeTab, setActiveRecipeTab] = useState("bimby");
   
   // Controllo intolleranza lattosio
   const isLactoseIntolerant = userProfile?.lactose_intolerant || false;
@@ -395,6 +397,121 @@ const RecipeSection: React.FC = () => {
       return modifiedIngredient;
     });
   };
+
+  // === RICETTE BIMBY TM5 MIGLIORATE ===
+  const bimbyRecipes = [
+    {
+      id: 'snack_proteici_migliorati',
+      name: 'Snack Proteici Vegani Falafel Style',
+      category: 'spuntini',
+      time: '30 min',
+      servings: '15 snack (150g totali)',
+      difficulty: 'Facile',
+      proteins: '26g proteine/100g',
+      badge: 'ANTI-FAME',
+      benefits: ['Spezza la fame tra i pasti', 'Boost proteico vegano', 'Perfetto pre-workout'],
+      ingredients: [
+        'Farina di ceci 150g (facilmente reperibile)',
+        'Fiocchi di avena 80g',
+        'Farina di arachidi sgrassata 60g (online o negozi specializzati)',
+        'Semi di canapa decorticati 25g (sostituibili con semi di girasole)',
+        'Acqua tiepida 100ml',
+        'Olio EVO 10ml',
+        'Curry in polvere 8g (supermercato)',
+        'Cumino in polvere 3g',
+        'Aglio in polvere 2g',
+        'Sale fino 2g',
+        'Zucchero di cocco 5g (sostituibile con normale)'
+      ],
+      instructions: [
+        'Boccale asciutto: curry + cumino + aglio + 30g mix farine. Polverizzare 15 sec / Vel 9',
+        'Aggiungere tutti gli ingredienti secchi restanti. Mescolare 10 sec / Vel 3',
+        'Versare acqua e olio. Impastare 30 sec / Vel 2 fino a composto omogeneo',
+        'Formare 15 palline da 10g. Schiacciare leggermente per forme irregolari',
+        'Forno ventilato 160°C per 25-28 min. Girare a metà cottura'
+      ],
+      tips: [
+        'Se non hai farina di arachidi: usa 40g farina di ceci extra',
+        'Semi di canapa sostituibili con semi di girasole tritati',
+        'Conservare in contenitore ermetico per 5 giorni',
+        'Perfetti con tè verde per boost metabolico'
+      ]
+    },
+    {
+      id: 'burger_vegano_semplificato',
+      name: 'Burger Proteico Cannellini Facile',
+      category: 'secondo',
+      time: '20 min + 20 min riposo',
+      servings: '4 burger sostanziosi',
+      difficulty: 'Facile',
+      proteins: '16g proteine/burger',
+      badge: 'PLANT-PROTEIN',
+      benefits: ['Sostituto carne 100% vegetale', 'Zero colesterolo', 'Ricco di fibre'],
+      ingredients: [
+        'Fagioli cannellini lessati 400g (2 scatolette grandi)',
+        'Cipolla media 60g',
+        'Farina di ceci 50g (facilmente reperibile)',
+        'Pangrattato 30g (sostituibile con farina normale)',
+        'Aglio fresco 1 spicchio (o 3g in polvere)',
+        'Prezzemolo fresco 10g (o 2g secco)',
+        'Sale e pepe nero q.b.',
+        'Olio di girasole 8ml per cottura',
+        'Salsa di soia 10ml (facoltativa, per caramellatura)'
+      ],
+      instructions: [
+        'Sciacquare bene i fagioli e scolarli. Nel boccale: fagioli. Tritare 3-4 impulsi / Vel 3 (lasciare pezzi grossolani)',
+        'Aggiungere cipolla e aglio. Tritare 5 sec / Vel 4',
+        'Aggiungere farina di ceci, pangrattato, prezzemolo, sale e pepe. Impastare modalità Spiga 45 sec',
+        'Far riposare l\'impasto in frigorifero 20 min (importante per compattezza)',
+        'Formare 4 burger con le mani inumidite. Cuocere in padella antiaderente 3-4 min per lato'
+      ],
+      tips: [
+        'Non hai pangrattato? Usa 30g farina normale extra',
+        'L\'impasto sembra troppo morbido? Aggiungi 10g farina di ceci',
+        'Si possono preparare e congelare crudi per uso futuro',
+        'Servire con pane integrale e verdure grigliate'
+      ]
+    },
+    {
+      id: 'cinnamon_rolls_fit',
+      name: 'Cinnamon Rolls Fit Domenicali',
+      category: 'dolce',
+      time: '3.5 ore (con lievitazioni)',
+      servings: '6 rolls grandi',
+      difficulty: 'Medio',
+      proteins: 'Cheat meal bilanciato',
+      badge: 'WEEKEND-TREAT',
+      benefits: ['Dolce fit per cheat meal', 'Versione vegana alleggerita', 'Perfetto per la domenica'],
+      ingredients: [
+        'Farina 00 350g (supermercato)',
+        'Latte di soia tiepido 180ml (non troppo caldo!)',
+        'Lievito di birra fresco 12g (panificio o supermercato)',
+        'Zucchero semolato 30g (impasto)',
+        'Margarina vegetale 60g (marca Vallé o simili)',
+        'Sale fino 4g',
+        'Vanillina 1 bustina (o estratto vaniglia)',
+        'Olio di semi 15ml',
+        'Cannella in polvere 12g (farcitura)',
+        'Zucchero di canna 50g (farcitura)',
+        'Margarina fusa 25g (spennellatura)'
+      ],
+      instructions: [
+        'Latte tiepido (35°C) + lievito sbriciolato + 1 cucchiaio zucchero nel boccale. 20 sec / Vel 2. Aspettare 5 min che faccia schiuma',
+        'Aggiungere farina, zucchero restante, sale, vanillina, olio. Modalità Spiga 2 min',
+        'Aggiungere margarina a pezzetti. Modalità Spiga 4-5 min fino a impasto liscio che si stacca',
+        'Prima lievitazione: contenitore unto, impasto a palla. Forno spento con luce accesa 2 ore (deve raddoppiare)',
+        'Stendere rettangolo 35x25 cm. Spennellare margarina fusa. Mescolare cannella+zucchero e distribuire',
+        'Arrotolare dal lato lungo. Tagliare 6 rotoli spessi. Teglia unta, lievitare 1 ora',
+        'Forno 180°C per 16-18 min fino a doratura. Non aprire nei primi 12 min!'
+      ],
+      tips: [
+        'Latte troppo caldo uccide il lievito - controllare la temperatura',
+        'Si possono preparare la sera prima fino al punto 6, poi infornare la mattina',
+        'Glassare con zucchero a velo + pochissima acqua solo quando freddi',
+        'Perfetti riscaldati 20 sec al microonde'
+      ]
+    }
+  ];
 
   const recipes = {
     detox: [

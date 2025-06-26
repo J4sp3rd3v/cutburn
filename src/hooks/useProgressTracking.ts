@@ -18,6 +18,7 @@ export interface UserProfile {
   intermittent_fasting: boolean | null;
   lactose_intolerant: boolean | null;
   goal: 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss' | null;
+  targeted_fat_area?: 'abdominal' | 'gynecomastia' | 'love_handles' | 'thighs' | 'back_fat' | 'overall' | null;
   workoutDays: number | null;
   experience: string | null;
   target_calories?: number;

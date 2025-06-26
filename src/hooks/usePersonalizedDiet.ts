@@ -11,6 +11,7 @@ interface UserProfile {
   gender: 'male' | 'female';
   activity_level: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
   goal: 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss';
+  targeted_fat_area?: 'abdominal' | 'gynecomastia' | 'love_handles' | 'thighs' | 'back_fat' | 'overall';
   body_fat_percentage?: number;
 }
 
@@ -331,11 +332,26 @@ const calculateDailyWaterIntake = (weight: number, activityLevel: string, season
 };
 
 // Algoritmo per deficit calorico ottimale basato su obiettivi specifici
-const calculateOptimalDeficit = (goal: string, currentWeight: number, targetWeight: number, bodyFat?: number): number => {
+const calculateOptimalDeficit = (goal: string, targetedFatArea: string | undefined, currentWeight: number, targetWeight: number, bodyFat?: number): number => {
   switch (goal) {
     case 'targeted_fat_loss':
-      // Deficit moderato per preservare massa muscolare
-      return 0.15; // 15%
+      // Deficit specifico per tipo di grasso localizzato
+      switch (targetedFatArea) {
+        case 'abdominal':
+          return 0.25; // 25% - grasso viscerale richiede deficit maggiore
+        case 'gynecomastia':
+          return 0.22; // 22% - approccio anti-aromatasi
+        case 'love_handles':
+          return 0.20; // 20% - grasso ostinato
+        case 'thighs':
+          return 0.18; // 18% - approccio femminile più conservativo
+        case 'back_fat':
+          return 0.20; // 20% - grasso inter-scapolare
+        case 'overall':
+          return 0.18; // 18% - approccio sistemico
+        default:
+          return 0.20; // 20% - default per grasso localizzato
+      }
     case 'weight_loss':
       // Deficit standard
       return 0.20; // 20%
@@ -350,14 +366,48 @@ const calculateOptimalDeficit = (goal: string, currentWeight: number, targetWeig
 };
 
 // Distribuzione macronutrienti ottimizzata per obiettivo
-const calculateOptimalMacros = (goal: string, totalCalories: number, weight: number): { protein: number; carbs: number; fat: number; fiber: number } => {
+const calculateOptimalMacros = (goal: string, targetedFatArea: string | undefined, totalCalories: number, weight: number): { protein: number; carbs: number; fat: number; fiber: number } => {
   let proteinRatio, carbRatio, fatRatio;
   
   switch (goal) {
     case 'targeted_fat_loss':
-      proteinRatio = 0.45; // 45% proteine per preservare massa muscolare
-      carbRatio = 0.25;    // 25% carboidrati per controllo insulinico
-      fatRatio = 0.30;     // 30% grassi per produzione ormonale
+      // Macronutrienti specifici per tipo di grasso localizzato
+      switch (targetedFatArea) {
+        case 'abdominal':
+          proteinRatio = 0.50; // 50% proteine - controllo insulinico
+          carbRatio = 0.20;    // 20% carboidrati - riduzione grasso viscerale
+          fatRatio = 0.30;     // 30% grassi - ormoni
+          break;
+        case 'gynecomastia':
+          proteinRatio = 0.48; // 48% proteine - anti-aromatasi
+          carbRatio = 0.22;    // 22% carboidrati - controllo estrogeni
+          fatRatio = 0.30;     // 30% grassi - testosterone
+          break;
+        case 'love_handles':
+          proteinRatio = 0.45; // 45% proteine - preservazione massa
+          carbRatio = 0.25;    // 25% carboidrati - energia per allenamento
+          fatRatio = 0.30;     // 30% grassi - sazietà
+          break;
+        case 'thighs':
+          proteinRatio = 0.42; // 42% proteine - approccio femminile
+          carbRatio = 0.28;    // 28% carboidrati - energia
+          fatRatio = 0.30;     // 30% grassi - ormoni femminili
+          break;
+        case 'back_fat':
+          proteinRatio = 0.46; // 46% proteine - riparazione tessuti
+          carbRatio = 0.24;    // 24% carboidrati - controllo infiammazione
+          fatRatio = 0.30;     // 30% grassi - anti-infiammatori
+          break;
+        case 'overall':
+          proteinRatio = 0.44; // 44% proteine - bilanciato
+          carbRatio = 0.26;    // 26% carboidrati - sostenibile
+          fatRatio = 0.30;     // 30% grassi - equilibrio ormonale
+          break;
+        default:
+          proteinRatio = 0.45; // 45% proteine - default
+          carbRatio = 0.25;    // 25% carboidrati
+          fatRatio = 0.30;     // 30% grassi
+      }
       break;
     case 'muscle_gain':
       proteinRatio = 0.35; // 35% proteine
@@ -430,11 +480,11 @@ export const usePersonalizedDiet = () => {
       const tdee = bmr * (advancedActivityFactors[activity_level] || 1.50);
       
       // --- 3. DEFICIT/SURPLUS PERSONALIZZATO ---
-      const deficitRatio = calculateOptimalDeficit(goal || 'weight_loss', current_weight, userProfile.target_weight, body_fat_percentage);
+      const deficitRatio = calculateOptimalDeficit(goal || 'weight_loss', userProfile.targeted_fat_area, current_weight, userProfile.target_weight, body_fat_percentage);
       const targetCalories = tdee + (tdee * deficitRatio);
       
       // --- 4. MACRONUTRIENTI OTTIMIZZATI ---
-      const targetMacros = calculateOptimalMacros(goal || 'weight_loss', targetCalories, current_weight);
+      const targetMacros = calculateOptimalMacros(goal || 'weight_loss', userProfile.targeted_fat_area, targetCalories, current_weight);
       
       // --- 5. IDRATAZIONE PERSONALIZZATA ---
       const currentSeason = getCurrentSeason(new Date());
@@ -555,7 +605,18 @@ export const usePersonalizedDiet = () => {
           expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
         },
         scientificRationale: goal === 'targeted_fat_loss' 
-          ? "Piano ottimizzato per la riduzione del grasso localizzato attraverso alimenti anti-infiammatori e modulatori metabolici"
+          ? (() => {
+              const fatAreaDescriptions = {
+                'abdominal': 'Piano specifico per grasso addominale con focus su riduzione insulino-resistenza, controllo cortisolo e alimenti anti-infiammatori per combattere il grasso viscerale',
+                'gynecomastia': 'Strategia anti-aromatasi con inibitori naturali di estrogeni (DIM, crucifere), modulatori ormonali e deficit calibrato per ridurre il tessuto mammario maschile',
+                'love_handles': 'Approccio mirato per grasso ostinato dei fianchi con protocollo anti-infiammatorio, allenamento rotazionale e nutrizione per mobilizzare i depositi laterali',
+                'thighs': 'Piano femminile-specifico per grasso femorale con focus su circolazione, drenaggio linfatico, alimenti anti-cellulite e modulazione ormonale estrogeni-progesterone',
+                'back_fat': 'Strategia per grasso inter-scapolare con combinazione di allenamento dorsale, correzione posturale e nutrizione anti-infiammatoria per ridurre depositi posteriori',
+                'overall': 'Approccio sistemico multi-area che combina strategie anti-infiammatorie, modulazione ormonale e protocolli specifici per riduzione generale del grasso localizzato'
+              };
+              return fatAreaDescriptions[userProfile.targeted_fat_area as keyof typeof fatAreaDescriptions] || 
+                     'Piano ottimizzato per la riduzione del grasso localizzato attraverso alimenti anti-infiammatori e modulatori metabolici';
+            })()
           : `Piano scientificamente calibrato per ${goal || 'perdita peso'} con approccio metabolico personalizzato`
       };
       

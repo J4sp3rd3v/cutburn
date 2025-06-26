@@ -12,6 +12,7 @@ interface UserProfile {
   age: number;
   activityLevel: string;
   goal: string;
+  targeted_fat_area?: string;
   lactoseIntolerant?: boolean;
   intermittentFasting?: boolean;
   workoutDays?: number;
@@ -503,7 +504,7 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
            <Badge variant="outline" className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-3 py-1.5">
              <Clock className="w-4 h-4 text-purple-600" />
              <span className="font-medium">Digiuno {nutrition.fastingWindow}</span>
-           </Badge>
+          </Badge>
         </div>
       </div>
 
@@ -515,16 +516,16 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
                 <Calendar className="w-6 h-6" />
-              </div>
+          </div>
               <div>
                 <h3 className="font-bold text-xl">Giorno {currentCycleDay + 1}/14</h3>
                 <p className="text-sm opacity-80">Ciclo Personalizzato</p>
               </div>
             </div>
             <Badge className={`${todayProtocol.color} px-4 py-2 text-sm font-semibold`}>
-              {todayProtocol.badge}
-            </Badge>
-          </div>
+            {todayProtocol.badge}
+          </Badge>
+        </div>
                      <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
              <div className="text-2xl font-bold mb-2">{todayProtocol.name}</div>
              <div className="text-base opacity-90 mb-3">{todayProtocol.description}</div>
@@ -551,7 +552,7 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-indigo-100 rounded-lg">
               <Activity className="w-6 h-6 text-indigo-600" />
-            </div>
+        </div>
             <div>
               <h3 className="font-bold text-xl text-indigo-900">Adattamento Giornaliero</h3>
               <p className="text-sm text-indigo-600">Personalizzato per {userProfile.currentWeight}kg</p>
@@ -572,11 +573,11 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-red-600">Variazione</span>
                 <Badge className={`${getDailyVariation().proteinMultiplier > 1 ? 'bg-green-100 text-green-700' : getDailyVariation().proteinMultiplier < 1 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>
-                  {getDailyVariation().proteinMultiplier > 1 ? '↑' : getDailyVariation().proteinMultiplier < 1 ? '↓' : '='} 
-                  {Math.round((getDailyVariation().proteinMultiplier - 1) * 100)}%
+              {getDailyVariation().proteinMultiplier > 1 ? '↑' : getDailyVariation().proteinMultiplier < 1 ? '↓' : '='} 
+              {Math.round((getDailyVariation().proteinMultiplier - 1) * 100)}%
                 </Badge>
-              </div>
             </div>
+          </div>
 
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
               <div className="flex items-center justify-between mb-2">
@@ -591,11 +592,11 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-blue-600">Variazione</span>
                 <Badge className={`${getDailyVariation().carbMultiplier > 1 ? 'bg-green-100 text-green-700' : getDailyVariation().carbMultiplier < 1 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>
-                  {getDailyVariation().carbMultiplier > 1 ? '↑' : getDailyVariation().carbMultiplier < 1 ? '↓' : '='} 
-                  {Math.round((getDailyVariation().carbMultiplier - 1) * 100)}%
+              {getDailyVariation().carbMultiplier > 1 ? '↑' : getDailyVariation().carbMultiplier < 1 ? '↓' : '='} 
+              {Math.round((getDailyVariation().carbMultiplier - 1) * 100)}%
                 </Badge>
-              </div>
             </div>
+          </div>
 
             <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
               <div className="flex items-center justify-between mb-2">
@@ -610,12 +611,12 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-green-600">Variazione</span>
                 <Badge className={`${getDailyVariation().fatMultiplier > 1 ? 'bg-green-100 text-green-700' : getDailyVariation().fatMultiplier < 1 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'}`}>
-                  {getDailyVariation().fatMultiplier > 1 ? '↑' : getDailyVariation().fatMultiplier < 1 ? '↓' : '='} 
-                  {Math.round((getDailyVariation().fatMultiplier - 1) * 100)}%
+              {getDailyVariation().fatMultiplier > 1 ? '↑' : getDailyVariation().fatMultiplier < 1 ? '↓' : '='} 
+              {Math.round((getDailyVariation().fatMultiplier - 1) * 100)}%
                 </Badge>
-              </div>
             </div>
           </div>
+        </div>
 
           <div className="mt-6 p-4 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl border border-indigo-200">
             <div className="flex items-center space-x-2 mb-2">
@@ -659,16 +660,16 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
                   <span className="font-bold text-lg">🎯 TIMING OTTIMALE</span>
                   <p className="text-sm mt-1">È il momento perfetto per il tuo pasto!</p>
                 </div>
-                <Button 
+            <Button 
                   variant="default" 
-                  size="sm" 
+              size="sm" 
                   className="bg-orange-600 hover:bg-orange-700 text-white shadow-md"
-                  onClick={() => setSelectedMeal(optimalMeal)}
-                >
-                  {meals[optimalMeal as keyof typeof meals].name}
-                </Button>
+              onClick={() => setSelectedMeal(optimalMeal)}
+            >
+              {meals[optimalMeal as keyof typeof meals].name}
+            </Button>
               </div>
-            </AlertDescription>
+          </AlertDescription>
           </div>
         </Alert>
       )}
@@ -680,26 +681,26 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
               <BookOpen className="w-7 h-7" />
-            </div>
+        </div>
             <div>
               <h3 className="font-bold text-2xl">Body Recomp Personalizzato</h3>
               <p className="opacity-90">Basato su ricerca scientifica 2024-2025</p>
-            </div>
+          </div>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{nutrition.targetCalories}</div>
               <div className="text-sm opacity-90">kcal target</div>
-            </div>
+          </div>
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{nutrition.proteinTarget}g</div>
               <div className="text-sm opacity-90">proteine</div>
-            </div>
+          </div>
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{Math.round((userProfile.currentWeight - userProfile.targetWeight) * 1000 / 7700)}g</div>
               <div className="text-sm opacity-90">grasso/sett</div>
-            </div>
+        </div>
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{Math.round((userProfile.currentWeight - userProfile.targetWeight) / 0.5)}</div>
               <div className="text-sm opacity-90">settimane</div>
@@ -722,27 +723,27 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           <span>Seleziona Pasto</span>
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {Object.entries(meals).map(([key, meal]) => (
-            <Button
-              key={key}
-              variant={selectedMeal === key ? "default" : "outline"}
+        {Object.entries(meals).map(([key, meal]) => (
+          <Button
+            key={key}
+            variant={selectedMeal === key ? "default" : "outline"}
               size="lg"
-              onClick={() => setSelectedMeal(key)}
+            onClick={() => setSelectedMeal(key)}
               className={`relative h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105 ${
                 selectedMeal === key 
                   ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg' 
                   : 'hover:bg-slate-50'
               } ${optimalMeal === key ? 'ring-2 ring-orange-400 ring-offset-2' : ''}`}
-            >
-              {optimalMeal === key && (
+          >
+            {optimalMeal === key && (
                 <div className="absolute -top-2 -right-2 w-4 h-4 bg-orange-500 rounded-full animate-pulse flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
-              )}
+            )}
               <div className="text-lg font-semibold">{meal.name.split(' ')[0]}</div>
               <div className="text-xs opacity-75">{meal.time}</div>
-            </Button>
-          ))}
+          </Button>
+        ))}
         </div>
       </div>
 
@@ -761,25 +762,25 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
                     <Clock className="w-4 h-4" />
                     <span className="text-sm font-medium">{currentMeal.time}</span>
                   </div>
-                  {currentMeal.season && (
+            {currentMeal.season && (
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       <Leaf className="w-3 h-3 mr-1" />
                       Stagionale
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
+              </Badge>
+            )}
           </div>
+              </div>
+          </div>
+        </div>
 
           {/* Cronobiologia Section */}
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-5 mb-6 border border-purple-100">
             <div className="flex items-center space-x-3 mb-4">
               <div className="p-2 bg-purple-200 rounded-lg">
                 <Zap className="w-5 h-5 text-purple-600" />
-              </div>
+          </div>
               <h4 className="font-bold text-lg text-purple-800">Cronobiologia Nutrizionale</h4>
-            </div>
+          </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-white/70 rounded-xl p-4">
                 <div className="font-semibold text-sm text-purple-700 mb-2">⏰ Timing Ottimale</div>
@@ -789,22 +790,22 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
                 <div className="font-semibold text-sm text-purple-700 mb-2">🧬 Ottimizzazione Ormonale</div>
                 <p className="text-sm text-slate-700">{currentMeal.hormones}</p>
               </div>
-            </div>
           </div>
+        </div>
 
           {/* Enhanced Macros - Ridisegnato */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200">
               <div className="p-2 bg-orange-200 rounded-lg w-fit mx-auto mb-2">
                 <Flame className="w-5 h-5 text-orange-600" />
-              </div>
+          </div>
               <div className="text-2xl font-bold text-orange-700 mb-1">{currentMeal.calories}</div>
               <div className="text-xs text-orange-600 font-medium">kcal</div>
-            </div>
+          </div>
             <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 text-center border border-red-200">
               <div className="p-2 bg-red-200 rounded-lg w-fit mx-auto mb-2">
                 <Heart className="w-5 h-5 text-red-600" />
-              </div>
+          </div>
               <div className="text-2xl font-bold text-red-700 mb-1">{totalProtein}g</div>
               <div className="text-xs text-red-600 font-medium">proteine</div>
             </div>
@@ -821,8 +822,8 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
               </div>
               <div className="text-2xl font-bold text-green-700 mb-1">{totalFat}g</div>
               <div className="text-xs text-green-600 font-medium">grassi</div>
-            </div>
           </div>
+        </div>
 
           {/* Enhanced Foods List - Completamente ridisegnato */}
           <div className="space-y-4">
@@ -830,7 +831,7 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
               <ChefHat className="w-5 h-5 text-slate-600" />
               <span>Ingredienti e Preparazione</span>
             </h4>
-            {currentMeal.foods.map((food, index) => (
+          {currentMeal.foods.map((food, index) => (
               <Card key={index} className={`overflow-hidden border-0 shadow-md transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                 food.seasonal 
                   ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200' 
@@ -847,24 +848,24 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
                         <p className="text-sm text-slate-600 font-medium">{food.amount}</p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {food.seasonal && (
+                <div className="flex items-center space-x-2">
+                  {food.seasonal && (
                         <Badge className="bg-green-100 text-green-700 border-green-300">
-                          <Leaf className="w-3 h-3 mr-1" />
-                          {season}
-                        </Badge>
-                      )}
+                      <Leaf className="w-3 h-3 mr-1" />
+                      {season}
+                    </Badge>
+                  )}
                       <Badge variant="outline" className="bg-white/80 font-semibold">
-                        {food.calories} kcal
-                      </Badge>
-                    </div>
-                  </div>
+                  {food.calories} kcal
+                </Badge>
+              </div>
+              </div>
 
                   <div className="bg-white/70 rounded-xl p-4 mb-4">
                     <div className="flex items-start space-x-3">
                       <div className="p-1.5 bg-slate-200 rounded-lg">
                         <ChefHat className="w-4 h-4 text-slate-600" />
-                      </div>
+              </div>
                       <div>
                         <h6 className="font-semibold text-sm text-slate-700 mb-1">Preparazione</h6>
                         <p className="text-sm text-slate-600 leading-relaxed">{food.preparation}</p>
@@ -898,9 +899,9 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
                       <div className="text-xs text-green-500 font-medium">Grassi</div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+              </div>
+            </Card>
+          ))}
           </div>
         </div>
       </Card>
@@ -912,26 +913,26 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
               <Target className="w-7 h-7" />
-            </div>
+        </div>
             <div>
               <h3 className="font-bold text-2xl">Target Giornaliero Body Recomp</h3>
               <p className="opacity-90">Totali calcolati per oggi</p>
-            </div>
+          </div>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{dailyTotals.calories}</div>
               <div className="text-sm opacity-90">kcal totali</div>
-            </div>
+          </div>
             <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{Math.round(dailyTotals.protein)}g</div>
               <div className="text-sm opacity-90">proteine</div>
-            </div>
+          </div>
             <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{Math.round(dailyTotals.carbs)}g</div>
               <div className="text-sm opacity-90">carbs</div>
-            </div>
+        </div>
             <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm text-center">
               <div className="text-3xl font-bold mb-1">{Math.round(dailyTotals.fat)}g</div>
               <div className="text-sm opacity-90">grassi</div>
@@ -941,7 +942,7 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           <div className="bg-white/15 rounded-xl p-4 backdrop-blur-sm">
             <p className="text-sm opacity-90 leading-relaxed">
               <strong>Ratio ottimizzato:</strong> 40% proteine | 25% carbs | 35% grassi per massima lipolisi addominale + preservazione massa magra. 
-              Basato su studi 2024-2025 di Helms, Phillips, Aragon.
+          Basato su studi 2024-2025 di Helms, Phillips, Aragon.
             </p>
           </div>
         </div>
@@ -953,11 +954,11 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-3 bg-green-200 rounded-xl">
               <Leaf className="w-7 h-7 text-green-600" />
-            </div>
-                         <div>
+        </div>
+          <div>
                <h3 className="font-bold text-2xl text-green-800">Arsenal Anti-Ginecomastia {season.charAt(0).toUpperCase() + season.slice(1)}</h3>
                <p className="text-green-600">Ingredienti scientificamente selezionati</p>
-             </div>
+          </div>
           </div>
           
                      <div className="space-y-4">
@@ -993,7 +994,7 @@ const DietSection: React.FC<DietSectionProps> = ({ userProfile }) => {
                <p className="text-sm text-red-700">{seasonalIngredients[season].antiEstrogen.join(', ')}</p>
                <p className="text-xs text-red-600 mt-1 italic">Bloccano conversione testosterone → estrogeni</p>
              </div>
-           </div>
+          </div>
         </div>
       </Card>
     </div>

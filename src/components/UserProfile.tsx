@@ -325,6 +325,99 @@ const UserProfile = () => {
                             ))}
                         </div>
                     </div>
+
+                    {/* Selezione Tipo di Grasso Localizzato */}
+                    {profile.goal === 'targeted_fat_loss' && (
+                        <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                            <Label className="text-base font-medium text-orange-800 mb-3 block">
+                                🎯 Tipo di Grasso Localizzato
+                            </Label>
+                            <div className="grid grid-cols-1 gap-3">
+                                {[
+                                    { 
+                                        value: 'abdominal', 
+                                        label: '🔥 Grasso Addominale', 
+                                        desc: 'Pancia, grasso viscerale, circonferenza vita',
+                                        icon: '🔥'
+                                    },
+                                    { 
+                                        value: 'gynecomastia', 
+                                        label: '💪 Ginecomastia', 
+                                        desc: 'Tessuto mammario maschile, petto',
+                                        icon: '💪'
+                                    },
+                                    { 
+                                        value: 'love_handles', 
+                                        label: '⚡ Maniglie dell\'Amore', 
+                                        desc: 'Fianchi, grasso laterale, obliqui',
+                                        icon: '⚡'
+                                    },
+                                    { 
+                                        value: 'thighs', 
+                                        label: '🦵 Cosce e Glutei', 
+                                        desc: 'Grasso femmorale, cellulite, parte inferiore',
+                                        icon: '🦵'
+                                    },
+                                    { 
+                                        value: 'back_fat', 
+                                        label: '🎯 Grasso Dorsale', 
+                                        desc: 'Schiena, sotto le scapole, braccia posteriori',
+                                        icon: '🎯'
+                                    },
+                                    { 
+                                        value: 'overall', 
+                                        label: '🌟 Combinato', 
+                                        desc: 'Approccio multi-area, anti-infiammatorio generale',
+                                        icon: '🌟'
+                                    }
+                                ].map((fatType) => (
+                                    <Button
+                                        key={fatType.value}
+                                        type="button"
+                                        variant={profile.targeted_fat_area === fatType.value ? 'default' : 'outline'}
+                                        className="h-auto p-3 justify-start text-left hover:bg-orange-100"
+                                        onClick={() => setProfile(prev => ({ ...prev, targeted_fat_area: fatType.value as any }))}
+                                    >
+                                        <div className="flex items-start space-x-3">
+                                            <span className="text-lg">{fatType.icon}</span>
+                                            <div className="flex flex-col items-start">
+                                                <span className="font-medium text-sm">{fatType.label}</span>
+                                                <span className="text-xs text-muted-foreground mt-1">{fatType.desc}</span>
+                                            </div>
+                                        </div>
+                                    </Button>
+                                ))}
+                            </div>
+                            
+                            {profile.targeted_fat_area && (
+                                <div className="mt-3 p-3 bg-white rounded-lg border border-orange-300">
+                                    <div className="flex items-center space-x-2 mb-2">
+                                        <span className="text-orange-600 font-medium">✨ Piano Personalizzato:</span>
+                                    </div>
+                                    <p className="text-sm text-slate-600">
+                                        {profile.targeted_fat_area === 'abdominal' && 
+                                            "Protocollo anti-infiammatorio con focus su grasso viscerale, insulino-resistenza e cortisolo. Alimenti termogenici e HIIT specifico."
+                                        }
+                                        {profile.targeted_fat_area === 'gynecomastia' && 
+                                            "Strategia anti-aromatasi con inibitori naturali di estrogeni, DIM, tè verde e allenamento petto specifico."
+                                        }
+                                        {profile.targeted_fat_area === 'love_handles' && 
+                                            "Approccio multi-angolare con rotazioni, plank laterali e nutrizione per ridurre grasso ostinato dei fianchi."
+                                        }
+                                        {profile.targeted_fat_area === 'thighs' && 
+                                            "Piano femminile-specifico con focus su circolazione, drenaggio linfatico e alimenti anti-cellulite."
+                                        }
+                                        {profile.targeted_fat_area === 'back_fat' && 
+                                            "Combinazione di allenamento dorsale, postura e nutrizione anti-infiammatoria per grasso inter-scapolare."
+                                        }
+                                        {profile.targeted_fat_area === 'overall' && 
+                                            "Strategia sistemica che combina tutti gli approcci per una riduzione del grasso corporeo generale ma mirata."
+                                        }
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Sezione Attività */}
