@@ -419,31 +419,11 @@ export const usePersonalizedDiet = () => {
       // --- 1. VALIDAZIONE DATI UTENTE ---
       const { current_weight, height, age, gender, activity_level, goal, body_fat_percentage } = userProfile;
       
-      // Debug: Log dei dati utente
-      console.log('🔍 Debug Profilo Utente:', {
-        current_weight,
-        height,
-        age,
-        gender,
-        activity_level,
-        goal,
-        body_fat_percentage
-      });
-      
       if (!current_weight || !height || !age || !gender || !activity_level) {
-        console.log('❌ Dati mancanti per generare la dieta:', {
-          current_weight: !!current_weight,
-          height: !!height,
-          age: !!age,
-          gender: !!gender,
-          activity_level: !!activity_level
-        });
         setDietPlan(null); 
         setLoading(false);
         return;
       }
-      
-      console.log('✅ Tutti i dati necessari sono presenti, genero la dieta...');
       
       // --- 2. CALCOLI METABOLICI AVANZATI ---
       const bmr = calculateAdvancedBMR(current_weight, height, age, gender, body_fat_percentage);
@@ -479,13 +459,7 @@ export const usePersonalizedDiet = () => {
       let lunches = functionalMeals.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
       let dinners = functionalMeals.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
       
-      console.log('🍽️ Ricette trovate:', {
-        stagione: currentSeason,
-        totaleFunzionali: functionalMeals.length,
-        colazioni: breakfasts.length,
-        pranzi: lunches.length,
-        cene: dinners.length
-      });
+
       
       // --- 7. CONTROLLO DISPONIBILITÀ RICETTE CON FALLBACK ROBUSTO ---
       if (breakfasts.length === 0) {
@@ -584,12 +558,6 @@ export const usePersonalizedDiet = () => {
           ? "Piano ottimizzato per la riduzione del grasso localizzato attraverso alimenti anti-infiammatori e modulatori metabolici"
           : `Piano scientificamente calibrato per ${goal || 'perdita peso'} con approccio metabolico personalizzato`
       };
-      
-      console.log('🎉 Piano dietetico generato con successo!', {
-        giorniPiano: finalPlan.weeklyPlan.length,
-        calorieTarget: finalPlan.targetCalories,
-        proteine: finalPlan.targetMacros.protein
-      });
       
       setDietPlan(finalPlan);
       setLoading(false);

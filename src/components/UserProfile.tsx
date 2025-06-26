@@ -52,31 +52,7 @@ const UserProfile = () => {
     setProfile(prev => ({ ...prev, [fieldName]: finalValue }));
   };
 
-  const handleSelectChange = (name: keyof UserProfileType, value: string) => {
-    try {
-      console.log(`🔄 Debug - Select cambiato: ${name} = ${value}`);
-      
-      // Gestione specifica per ogni tipo di campo
-      if (name === 'gender') {
-        setProfile(prev => ({ ...prev, gender: value as 'male' | 'female' }));
-      } else if (name === 'activity_level') {
-        setProfile(prev => ({ ...prev, activity_level: value as 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active' }));
-      } else if (name === 'goal') {
-        setProfile(prev => ({ ...prev, goal: value as 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss' }));
-      } else {
-        setProfile(prev => ({ ...prev, [name]: value }));
-      }
-      
-      console.log(`✅ Debug - Select aggiornato con successo: ${name}`);
-    } catch (error) {
-      console.error(`❌ Errore nell'aggiornamento del Select ${name}:`, error);
-      toast({ 
-        title: 'Errore', 
-        description: `Errore nell'aggiornamento del campo ${name}`, 
-        variant: 'destructive' 
-      });
-    }
-  };
+
 
   const handleCheckedChange = (name: keyof UserProfileType, checked: boolean) => {
     setProfile(prev => ({ ...prev, [name]: checked }));
@@ -117,7 +93,6 @@ const UserProfile = () => {
   const metrics = calculatePersonalizedMetrics();
 
   const handleSave = () => {
-    console.log('🔍 Debug - Dati profilo prima del salvataggio:', profile);
     
     // Validazioni con messaggi più specifici
     if (!profile.age || profile.age < 16 || profile.age > 80) { 
@@ -162,8 +137,6 @@ const UserProfile = () => {
       target_water: metrics.waterTarget,
       start_weight: userProfile.start_weight || profile.current_weight,
     };
-    
-    console.log('💾 Debug - Dati da salvare:', profileDataToSave);
     
     updateProfile(profileDataToSave);
     setIsEditing(false);
@@ -222,118 +195,198 @@ const UserProfile = () => {
                 </div>
             </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div className="md:col-span-2 font-bold text-lg text-slate-700">Dati Personali</div>
-                <div>
-                    <Label htmlFor="name">Nome</Label>
-                    <Input id="name" value={profile.name || ''} onChange={(e) => handleInputChange('name', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="age">Età</Label>
-                    <Input id="age" type="number" value={profile.age || ''} onChange={(e) => handleInputChange('age', e.target.value)} />
-                </div>
-                <div>
-                    <Label>Sesso</Label>
-                    <div className="flex space-x-2 mt-2">
-                        <Button
-                            type="button"
-                            variant={profile.gender === 'male' ? 'default' : 'outline'}
-                            className="flex-1"
-                            onClick={() => {
-                                console.log('🔄 Debug - Gender button clicked: male');
-                                setProfile(prev => ({ ...prev, gender: 'male' }));
-                            }}
-                        >
-                            Maschio
-                        </Button>
-                        <Button
-                            type="button"
-                            variant={profile.gender === 'female' ? 'default' : 'outline'}
-                            className="flex-1"
-                            onClick={() => {
-                                console.log('🔄 Debug - Gender button clicked: female');
-                                setProfile(prev => ({ ...prev, gender: 'female' }));
-                            }}
-                        >
-                            Femmina
-                        </Button>
+            <div className="space-y-8">
+                {/* Sezione Dati Personali */}
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
+                        👤 Dati Personali
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="name">Nome</Label>
+                            <Input 
+                                id="name" 
+                                value={profile.name || ''} 
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="age">Età (anni)</Label>
+                            <Input 
+                                id="age" 
+                                type="number" 
+                                value={profile.age || ''} 
+                                onChange={(e) => handleInputChange('age', e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
+                        <div>
+                            <Label>Sesso</Label>
+                            <div className="flex space-x-2 mt-1">
+                                <Button
+                                    type="button"
+                                    variant={profile.gender === 'male' ? 'default' : 'outline'}
+                                    className="flex-1"
+                                    onClick={() => setProfile(prev => ({ ...prev, gender: 'male' }))}
+                                >
+                                    👨 Maschio
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant={profile.gender === 'female' ? 'default' : 'outline'}
+                                    className="flex-1"
+                                    onClick={() => setProfile(prev => ({ ...prev, gender: 'female' }))}
+                                >
+                                    👩 Femmina
+                                </Button>
+                            </div>
+                        </div>
+                        <div>
+                            <Label htmlFor="height">Altezza (cm)</Label>
+                            <Input 
+                                id="height" 
+                                type="number" 
+                                value={profile.height || ''} 
+                                onChange={(e) => handleInputChange('height', e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <Label htmlFor="height">Altezza (cm)</Label>
-                    <Input id="height" type="number" value={profile.height || ''} onChange={(e) => handleInputChange('height', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="current_weight">Peso Attuale (kg)</Label>
-                    <Input id="current_weight" type="number" step="0.1" value={profile.current_weight || ''} onChange={(e) => handleInputChange('current_weight', e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="body_fat_percentage">% Grasso Corporeo (opzionale)</Label>
-                    <Input id="body_fat_percentage" type="number" step="0.1" placeholder="es. 15.5" value={profile.body_fat_percentage || ''} onChange={(e) => handleInputChange('body_fat_percentage', e.target.value)} />
-                </div>
-                
-                <div className="md:col-span-2 font-bold text-lg text-slate-700 pt-4">Obiettivi e Stile di Vita</div>
-                <div>
-                    <Label htmlFor="target_weight">Peso Obiettivo (kg)</Label>
-                    <Input id="target_weight" type="number" step="0.1" value={profile.target_weight || ''} onChange={(e) => handleInputChange('target_weight', e.target.value)} />
-                </div>
-                <div>
-                    <Label>Obiettivo Principale</Label>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                        {[
-                            { value: 'weight_loss', label: 'Perdita Peso' },
-                            { value: 'targeted_fat_loss', label: 'Grasso Localizzato' },
-                            { value: 'muscle_gain', label: 'Aumento Muscolare' },
-                            { value: 'maintenance', label: 'Mantenimento' }
-                        ].map((option) => (
-                            <Button
-                                key={option.value}
-                                type="button"
-                                variant={profile.goal === option.value ? 'default' : 'outline'}
-                                className="text-sm"
-                                onClick={() => {
-                                    console.log(`🔄 Debug - Goal button clicked: ${option.value}`);
-                                    setProfile(prev => ({ ...prev, goal: option.value as any }));
-                                }}
-                            >
-                                {option.label}
-                            </Button>
-                        ))}
+
+                {/* Sezione Peso */}
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
+                        ⚖️ Peso e Composizione
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <Label htmlFor="current_weight">Peso Attuale (kg)</Label>
+                            <Input 
+                                id="current_weight" 
+                                type="number" 
+                                step="0.1" 
+                                value={profile.current_weight || ''} 
+                                onChange={(e) => handleInputChange('current_weight', e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="target_weight">Peso Obiettivo (kg)</Label>
+                            <Input 
+                                id="target_weight" 
+                                type="number" 
+                                step="0.1" 
+                                value={profile.target_weight || ''} 
+                                onChange={(e) => handleInputChange('target_weight', e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="body_fat_percentage">% Grasso Corporeo</Label>
+                            <Input 
+                                id="body_fat_percentage" 
+                                type="number" 
+                                step="0.1" 
+                                placeholder="es. 15.5 (opzionale)" 
+                                value={profile.body_fat_percentage || ''} 
+                                onChange={(e) => handleInputChange('body_fat_percentage', e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <Label>Livello Attività Fisica</Label>
-                    <div className="grid grid-cols-1 gap-2 mt-2">
-                        {[
-                            { value: 'sedentary', label: 'Sedentario (ufficio)' },
-                            { value: 'light', label: 'Leggero (1-2 gg/sett)' },
-                            { value: 'moderate', label: 'Moderato (3-5 gg/sett)' },
-                            { value: 'active', label: 'Attivo (6-7 gg/sett)' },
-                            { value: 'very_active', label: 'Molto Attivo (lavoro fisico)' }
-                        ].map((option) => (
-                            <Button
-                                key={option.value}
-                                type="button"
-                                variant={profile.activity_level === option.value ? 'default' : 'outline'}
-                                className="justify-start text-sm"
-                                onClick={() => {
-                                    console.log(`🔄 Debug - Activity button clicked: ${option.value}`);
-                                    setProfile(prev => ({ ...prev, activity_level: option.value as any }));
-                                }}
-                            >
-                                {option.label}
-                            </Button>
-                        ))}
+
+                {/* Sezione Obiettivi */}
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
+                        🎯 Obiettivi
+                    </h3>
+                    <div>
+                        <Label className="text-base font-medium">Obiettivo Principale</Label>
+                        <div className="grid grid-cols-2 gap-3 mt-2">
+                            {[
+                                { value: 'weight_loss', label: '📉 Perdita Peso', desc: 'Dimagrimento generale' },
+                                { value: 'targeted_fat_loss', label: '🎯 Grasso Localizzato', desc: 'Focus anti-infiammatorio' },
+                                { value: 'muscle_gain', label: '💪 Aumento Muscolare', desc: 'Crescita massa magra' },
+                                { value: 'maintenance', label: '⚖️ Mantenimento', desc: 'Peso stabile' }
+                            ].map((option) => (
+                                <Button
+                                    key={option.value}
+                                    type="button"
+                                    variant={profile.goal === option.value ? 'default' : 'outline'}
+                                    className="h-auto p-3 flex flex-col items-start text-left"
+                                    onClick={() => setProfile(prev => ({ ...prev, goal: option.value as any }))}
+                                >
+                                    <span className="font-medium text-sm">{option.label}</span>
+                                    <span className="text-xs text-muted-foreground mt-1">{option.desc}</span>
+                                </Button>
+                            ))}
+                        </div>
                     </div>
                 </div>
-                 <div className="md:col-span-2 flex flex-col space-y-2 pt-4">
-                     <div className="flex items-center space-x-2">
-                        <Switch id="intermittent_fasting" checked={profile.intermittent_fasting || false} onCheckedChange={(c) => handleCheckedChange('intermittent_fasting', c)} />
-                        <Label htmlFor="intermittent_fasting">Seguo il Digiuno Intermittente (16/8)</Label>
+
+                {/* Sezione Attività */}
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
+                        🏃‍♂️ Attività Fisica
+                    </h3>
+                    <div>
+                        <Label className="text-base font-medium">Livello di Attività</Label>
+                        <div className="grid grid-cols-1 gap-2 mt-2">
+                            {[
+                                { value: 'sedentary', label: '🪑 Sedentario', desc: 'Lavoro da ufficio, poca attività' },
+                                { value: 'light', label: '🚶‍♂️ Leggero', desc: 'Esercizio leggero 1-2 volte/settimana' },
+                                { value: 'moderate', label: '🏃‍♂️ Moderato', desc: 'Esercizio moderato 3-5 volte/settimana' },
+                                { value: 'active', label: '💪 Attivo', desc: 'Esercizio intenso 6-7 volte/settimana' },
+                                { value: 'very_active', label: '🔥 Molto Attivo', desc: 'Lavoro fisico + allenamento quotidiano' }
+                            ].map((option) => (
+                                <Button
+                                    key={option.value}
+                                    type="button"
+                                    variant={profile.activity_level === option.value ? 'default' : 'outline'}
+                                    className="h-auto p-3 justify-start text-left"
+                                    onClick={() => setProfile(prev => ({ ...prev, activity_level: option.value as any }))}
+                                >
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-medium text-sm">{option.label}</span>
+                                        <span className="text-xs text-muted-foreground mt-1">{option.desc}</span>
+                                    </div>
+                                </Button>
+                            ))}
+                        </div>
                     </div>
-                     <div className="flex items-center space-x-2">
-                        <Switch id="lactose_intolerant" checked={profile.lactose_intolerant || false} onCheckedChange={(c) => handleCheckedChange('lactose_intolerant', c)} />
-                        <Label htmlFor="lactose_intolerant">Sono Intollerante al Lattosio</Label>
+                </div>
+
+                {/* Sezione Preferenze */}
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
+                        ⚙️ Preferenze Alimentari
+                    </h3>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div>
+                                <Label htmlFor="intermittent_fasting" className="font-medium">🕐 Digiuno Intermittente (16/8)</Label>
+                                <p className="text-sm text-muted-foreground">Finestra alimentare di 8 ore</p>
+                            </div>
+                            <Switch 
+                                id="intermittent_fasting" 
+                                checked={profile.intermittent_fasting || false} 
+                                onCheckedChange={(c) => handleCheckedChange('intermittent_fasting', c)} 
+                            />
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div>
+                                <Label htmlFor="lactose_intolerant" className="font-medium">🥛 Intolleranza al Lattosio</Label>
+                                <p className="text-sm text-muted-foreground">Evita prodotti lattiero-caseari</p>
+                            </div>
+                            <Switch 
+                                id="lactose_intolerant" 
+                                checked={profile.lactose_intolerant || false} 
+                                onCheckedChange={(c) => handleCheckedChange('lactose_intolerant', c)} 
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
