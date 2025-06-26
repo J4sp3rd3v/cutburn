@@ -29,23 +29,23 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <Routes>
+      <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            {installPrompt && (
-              <div className="fixed bottom-4 right-4 z-50">
-                <Button onClick={triggerInstall} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg animate-bounce">
-                  <Download className="mr-2 h-4 w-4" />
-                  Installa App
-                </Button>
-              </div>
-            )}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {installPrompt && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Button onClick={triggerInstall} className="bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg animate-bounce">
+            <Download className="mr-2 h-4 w-4" />
+            Installa App
+          </Button>
+        </div>
+      )}
           </TooltipProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
+      </BrowserRouter>
+    </QueryClientProvider>
+  </ErrorBoundary>
+);
 };
 
 export default App;

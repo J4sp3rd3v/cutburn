@@ -14,10 +14,10 @@ export interface UserProfile {
   height: number | null;
   start_weight: number | null;
   target_weight: number | null;
-  activity_level: string | null;
+  activity_level: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active' | null;
   intermittent_fasting: boolean | null;
   lactose_intolerant: boolean | null;
-  goal: string | null;
+  goal: 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss' | null;
   workoutDays: number | null;
   experience: string | null;
   target_calories?: number;
@@ -25,7 +25,8 @@ export interface UserProfile {
   target_carbs?: number;
   target_fats?: number;
   target_water?: number;
-  // Aggiungere qui altri campi del profilo utente se necessario
+  body_fat_percentage?: number | null;
+  // Nuovi campi per algoritmi avanzati
 }
 
 export interface DailyProgress {
@@ -56,7 +57,7 @@ export function useProgressTracking() {
       activity_level: 'moderate',
       intermittent_fasting: false,
       lactose_intolerant: false,
-      goal: 'fat-loss',
+      goal: 'weight_loss',
       workoutDays: 3,
       experience: 'beginner',
       target_calories: 2000,

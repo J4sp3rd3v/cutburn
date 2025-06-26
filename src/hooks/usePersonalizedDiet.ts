@@ -2,6 +2,18 @@ import { useState, useEffect } from 'react';
 import { useProgressTracking } from './useProgressTracking';
 
 // Interfacce per la struttura dei dati
+interface UserProfile {
+  name: string;
+  age: number;
+  height: number;
+  current_weight: number;
+  target_weight: number;
+  gender: 'male' | 'female';
+  activity_level: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  goal: 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss';
+  body_fat_percentage?: number;
+}
+
 interface Meal {
   name: string;
   calories: number;
@@ -9,14 +21,17 @@ interface Meal {
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
   };
   ingredients: { item: string; amount: string; notes?: string }[];
   preparation: {
     traditional: string[];
-    thermomix?: string[];
+    thermomix: string[];
   };
   rationale: string;
   season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+  antiInflammatory: boolean;
+  metabolicBoost: boolean;
 }
 
 interface DailyPlan {
@@ -32,7 +47,10 @@ interface DailyPlan {
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
   };
+  waterIntake: number; // Litri di acqua raccomandati
+  supplementTiming: string[];
 }
 
 interface PersonalizedDiet {
@@ -42,120 +60,274 @@ interface PersonalizedDiet {
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
   };
+  dailyWaterIntake: number;
+  metabolicProfile: {
+    bmr: number;
+    tdee: number;
+    deficitCalories: number;
+    expectedWeightLossPerWeek: number;
+  };
+  scientificRationale: string;
 }
 
-// --- DATABASE DELLE RICETTE ---
-// Un database di pasti scientificamente formulati, stagionali e con alternative.
+// --- DATABASE DELLE RICETTE SCIENTIFICAMENTE OTTIMIZZATE ---
 const mealDatabase: Meal[] = [
-  // --- COLAZIONI ---
+  // --- COLAZIONI ANTI-INFIAMMATORIE ---
   {
-    name: "Skyr Proteico e Frutti Rossi",
-    calories: 350,
-    macros: { protein: 30, carbs: 35, fat: 10 },
+    name: "Skyr Proteico con Frutti Rossi e Omega-3",
+    calories: 380,
+    macros: { protein: 35, carbs: 32, fat: 12, fiber: 8 },
     ingredients: [
       { item: "Skyr o Yogurt Greco 0%", amount: "200g" },
-      { item: "Frutti di bosco misti", amount: "100g", notes: "freschi o surgelati" },
-      { item: "Fiocchi d'avena", amount: "30g" },
-      { item: "Semi di chia", amount: "10g" },
-      { item: "Miele (opzionale)", amount: "5g" }
+      { item: "Frutti di bosco misti", amount: "120g", notes: "ricchi di antocianine" },
+      { item: "Fiocchi d'avena integrali", amount: "35g" },
+      { item: "Semi di chia", amount: "12g", notes: "fonte di Omega-3" },
+      { item: "Cannella", amount: "1 cucchiaino", notes: "controllo glicemico" },
+      { item: "Stevia", amount: "q.b." }
     ],
     preparation: {
-      traditional: ["Unire tutti gli ingredienti in una ciotola e mescolare bene."],
-      thermomix: ["Inserire tutti gli ingredienti nel boccale: 15 sec / vel 4 antiorario."]
+      traditional: [
+        "Mescolare lo skyr con la cannella e la stevia",
+        "Aggiungere i fiocchi d'avena e i semi di chia",
+        "Lasciare riposare 5 minuti per l'idratazione dei semi",
+        "Completare con i frutti di bosco"
+      ],
+      thermomix: [
+        "Inserire skyr, cannella e stevia nel boccale: 10 sec / vel 3",
+        "Aggiungere avena e semi di chia: 5 sec / vel 2",
+        "Versare in una ciotola e aggiungere i frutti di bosco"
+      ]
     },
-    rationale: "Alto contenuto proteico per la sazietà e la sintesi proteica. Fibre e antiossidanti per la salute intestinale e la riduzione dello stress ossidativo.",
-    season: ['spring', 'summer', 'autumn', 'winter']
+    rationale: "Formula scientifica per massimizzare la sintesi proteica mattutina e ridurre l'infiammazione sistemica. Le antocianine dei frutti rossi attivano la lipolisi mentre gli Omega-3 dei semi di chia contrastano l'infiammazione del tessuto adiposo.",
+    season: ['spring', 'summer', 'autumn', 'winter'],
+    antiInflammatory: true,
+    metabolicBoost: true
   },
   {
-    name: "Uova Strapazzate e Avocado Toast",
-    calories: 400,
-    macros: { protein: 25, carbs: 25, fat: 20 },
+    name: "Omelette Proteica con Spinaci e Avocado",
+    calories: 420,
+    macros: { protein: 28, carbs: 18, fat: 25, fiber: 12 },
     ingredients: [
-      { item: "Uova intere", amount: "3" },
-      { item: "Pane integrale", amount: "1 fetta (circa 50g)" },
-      { item: "Avocado", amount: "1/2" },
-      { item: "Olio EVO", amount: "5g" },
-      { item: "Sale e pepe", amount: "q.b." }
+      { item: "Uova intere", amount: "2" },
+      { item: "Albumi", amount: "2" },
+      { item: "Spinaci freschi", amount: "100g", notes: "ricchi di nitrati" },
+      { item: "Avocado", amount: "80g", notes: "grassi monoinsaturi" },
+      { item: "Olio EVO", amount: "8g" },
+      { item: "Curcuma", amount: "1/2 cucchiaino", notes: "anti-infiammatoria" },
+      { item: "Pepe nero", amount: "pizzico", notes: "aumenta biodisponibilità curcuma" }
     ],
     preparation: {
-      traditional: ["Tostare il pane. Schiacciare l'avocado sulla fetta. Cuocere le uova in una padella con l'olio. Adagiare le uova sul toast."]
+      traditional: [
+        "Sbattere uova e albumi con curcuma e pepe",
+        "Cuocere gli spinaci in padella antiaderente",
+        "Versare le uova sugli spinaci e cuocere l'omelette",
+        "Servire con fette di avocado condite con olio EVO"
+      ],
+      thermomix: [
+        "Sbattere uova, albumi, curcuma e pepe: 20 sec / vel 4",
+        "Cuocere gli spinaci in padella tradizionale",
+        "Procedere con la cottura dell'omelette",
+        "Completare con avocado e olio"
+      ]
     },
-    rationale: "Fonte completa di proteine e grassi monoinsaturi sani, fondamentali per la produzione ormonale (incluso il testosterone) e il controllo della glicemia.",
-    season: ['spring', 'summer', 'autumn', 'winter']
+    rationale: "Combinazione ottimale per la produzione di testosterone e controllo del cortisolo. I nitrati degli spinaci migliorano il flusso sanguigno, mentre curcuma e avocado riducono l'infiammazione del tessuto adiposo viscerale.",
+    season: ['spring', 'summer', 'autumn', 'winter'],
+    antiInflammatory: true,
+    metabolicBoost: true
   },
-  // --- PRANZI ---
+
+  // --- PRANZI METABOLICAMENTE ATTIVI ---
   {
-    name: "Insalatona di Pollo e Quinoa",
-    calories: 500,
-    macros: { protein: 40, carbs: 40, fat: 20 },
+    name: "Salmone Selvaggio con Quinoa e Broccoli",
+    calories: 520,
+    macros: { protein: 42, carbs: 35, fat: 22, fiber: 8 },
     ingredients: [
-      { item: "Petto di pollo alla griglia", amount: "150g" },
-      { item: "Quinoa tricolore cotta", amount: "80g" },
-      { item: "Verdure miste di stagione", amount: "200g", notes: "es. lattuga, pomodorini, cetrioli" },
-      { item: "Olio EVO", amount: "15g" },
-      { item: "Succo di limone", amount: "1 cucchiaio" }
+      { item: "Salmone selvaggio", amount: "180g", notes: "ricco di Omega-3 EPA/DHA" },
+      { item: "Quinoa tricolore", amount: "60g peso secco" },
+      { item: "Broccoli", amount: "200g", notes: "fonte di sulforafano" },
+      { item: "Olio EVO", amount: "12g" },
+      { item: "Limone", amount: "1/2", notes: "vitamina C per assorbimento ferro" },
+      { item: "Zenzero fresco", amount: "5g", notes: "termogenico naturale" },
+      { item: "Aglio", amount: "2 spicchi", notes: "supporto cardiovascolare" }
     ],
     preparation: {
-      traditional: ["Tagliare il pollo a cubetti. Unire tutti gli ingredienti in una ciotola capiente e condire a piacere."]
+      traditional: [
+        "Cuocere la quinoa in brodo vegetale per 15 minuti",
+        "Cuocere i broccoli al vapore per 8 minuti",
+        "Marinare il salmone con limone, zenzero e aglio per 10 minuti",
+        "Cuocere il salmone in padella per 4 minuti per lato",
+        "Comporre il piatto e condire con olio EVO"
+      ],
+      thermomix: [
+        "Tritare aglio e zenzero: 3 sec / vel 7",
+        "Cuocere quinoa nel Varoma: 15 min / 100°C / vel soft",
+        "Cuocere broccoli nel cestello Varoma: 8 min / Varoma / vel 1",
+        "Marinare e cuocere il salmone in padella tradizionale",
+        "Assemblare e condire"
+      ]
     },
-    rationale: "Pasto bilanciato con proteine magre per la massa muscolare, carboidrati complessi per energia sostenuta e fibre per la sazietà e la salute digestiva.",
-    season: ['spring', 'summer']
+    rationale: "Pasto progettato per massimizzare l'ossidazione dei grassi e ridurre l'infiammazione sistemica. Gli Omega-3 del salmone attivano i geni della lipolisi, mentre il sulforafano dei broccoli supporta la detossificazione epatica.",
+    season: ['spring', 'summer', 'autumn', 'winter'],
+    antiInflammatory: true,
+    metabolicBoost: true
   },
+
+  // --- CENE ANTI-CATABOLICHE ---
   {
-    name: "Salmone al Forno con Asparagi",
-    calories: 450,
-    macros: { protein: 35, carbs: 10, fat: 30 },
+    name: "Zuppa Proteica di Lenticchie Rosse e Verdure",
+    calories: 380,
+    macros: { protein: 24, carbs: 45, fat: 8, fiber: 15 },
     ingredients: [
-      { item: "Filetto di salmone", amount: "180g" },
-      { item: "Asparagi", amount: "250g" },
-      { item: "Olio EVO", amount: "10g" },
-      { item: "Aglio e prezzemolo", amount: "q.b." }
+      { item: "Lenticchie rosse", amount: "80g peso secco" },
+      { item: "Sedano", amount: "100g" },
+      { item: "Carote", amount: "100g" },
+      { item: "Cipolla rossa", amount: "80g", notes: "ricca di quercetina" },
+      { item: "Passata di pomodoro", amount: "200g" },
+      { item: "Brodo vegetale", amount: "500ml" },
+      { item: "Curcuma", amount: "1 cucchiaino" },
+      { item: "Pepe nero", amount: "pizzico" },
+      { item: "Olio EVO", amount: "10g" }
     ],
     preparation: {
-      traditional: ["Disporre salmone e asparagi su una teglia. Condire con olio, aglio e prezzemolo. Cuocere in forno a 180°C per 20 minuti."]
+      traditional: [
+        "Soffriggere cipolla, sedano e carote con olio EVO",
+        "Aggiungere le lenticchie e tostare per 2 minuti",
+        "Versare passata di pomodoro e brodo",
+        "Aggiungere curcuma e pepe nero",
+        "Cuocere per 25 minuti a fuoco medio",
+        "Frullare parzialmente per ottenere consistenza cremosa"
+      ],
+      thermomix: [
+        "Tritare cipolla, sedano, carote: 5 sec / vel 4",
+        "Soffriggere con olio: 3 min / 120°C / vel 1",
+        "Aggiungere lenticchie, passata, brodo, spezie",
+        "Cuocere: 25 min / 100°C / vel soft antiorario",
+        "Frullare parzialmente: 10 sec / vel 4"
+      ]
     },
-    rationale: "Ricco di Omega-3, acidi grassi essenziali con potenti proprietà anti-infiammatorie, utili per contrastare l'infiammazione cronica associata all'accumulo di grasso viscerale.",
-    season: ['spring']
-  },
-  // --- CENE ---
-  {
-    name: "Zuppa di Lenticchie e Verdure",
-    calories: 400,
-    macros: { protein: 20, carbs: 60, fat: 8 },
-    ingredients: [
-        { item: "Lenticchie secche", amount: "80g" },
-        { item: "Misto per soffritto", amount: "100g", notes: "sedano, carote, cipolla" },
-        { item: "Passata di pomodoro", amount: "200g" },
-        { item: "Brodo vegetale", amount: "400ml" },
-        { item: "Alloro", amount: "1 foglia" }
-    ],
-    preparation: {
-        traditional: ["Soffriggere le verdure. Aggiungere le lenticchie, la passata e il brodo. Cuocere per 40 minuti."],
-        thermomix: ["Soffritto: 3 min / 120°C / vel 1. Aggiungere il resto e cuocere: 40 min / 100°C / vel soft antiorario."]
-    },
-    rationale: "Fonte eccellente di fibre vegetali e proteine. Le fibre aiutano a regolare i livelli di zucchero nel sangue e a promuovere un sano equilibrio ormonale.",
-    season: ['autumn', 'winter']
-  },
-  // Aggiungere qui molte altre ricette per coprire tutte le stagioni e i pasti...
+    rationale: "Ricetta formulata per fornire proteine vegetali complete e fibre prebiotiche che supportano il microbiota intestinale. La curcuma e la quercetina della cipolla rossa riducono l'infiammazione cronica associata all'accumulo di grasso viscerale.",
+    season: ['autumn', 'winter'],
+    antiInflammatory: true,
+    metabolicBoost: false
+  }
 ];
 
-// Formula di Mifflin-St Jeor per il BMR
-const calculateBMR = (weight: number, height: number, age: number, gender: 'male' | 'female'): number => {
-  if (gender === 'male') {
-    return 10 * weight + 6.25 * height - 5 * age + 5;
+// --- ALGORITMI SCIENTIFICI AVANZATI ---
+
+// Formula di Mifflin-St Jeor ottimizzata con correzioni per composizione corporea
+const calculateAdvancedBMR = (weight: number, height: number, age: number, gender: 'male' | 'female', bodyFat?: number): number => {
+  let bmr = 0;
+  
+  if (bodyFat && bodyFat > 0) {
+    // Calcolo più preciso usando la massa magra (Katch-McArdle)
+    const leanMass = weight * (1 - bodyFat / 100);
+    bmr = 370 + (21.6 * leanMass);
   } else {
-    return 10 * weight + 6.25 * height - 5 * age - 161;
+    // Formula standard Mifflin-St Jeor
+    if (gender === 'male') {
+      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
+  }
+  
+  return bmr;
+};
+
+// Calcolo dell'idratazione ottimale basato su peso, attività e clima
+const calculateDailyWaterIntake = (weight: number, activityLevel: string, season: string): number => {
+  let baseWater = weight * 0.035; // 35ml per kg di peso corporeo
+  
+  // Correzioni per attività fisica
+  const activityMultipliers = {
+    sedentary: 1.0,
+    light: 1.2,
+    moderate: 1.4,
+    active: 1.6,
+    very_active: 1.8
+  };
+  
+  baseWater *= activityMultipliers[activityLevel] || 1.2;
+  
+  // Correzioni stagionali
+  if (season === 'summer') baseWater *= 1.2;
+  if (season === 'winter') baseWater *= 0.9;
+  
+  return Math.round(baseWater * 10) / 10; // Arrotonda a 1 decimale
+};
+
+// Algoritmo per deficit calorico ottimale basato su obiettivi specifici
+const calculateOptimalDeficit = (goal: string, currentWeight: number, targetWeight: number, bodyFat?: number): number => {
+  switch (goal) {
+    case 'targeted_fat_loss':
+      // Deficit moderato per preservare massa muscolare
+      return 0.15; // 15%
+    case 'weight_loss':
+      // Deficit standard
+      return 0.20; // 20%
+    case 'muscle_gain':
+      // Surplus calorico
+      return -0.10; // +10%
+    case 'maintenance':
+      return 0; // 0%
+    default:
+      return 0.20;
   }
 };
 
-// Fattori di attività per il calcolo del TDEE
-const activityFactors = {
-  sedentary: 1.2,       // Sedentario (poco o nessun esercizio)
-  light: 1.375,         // Esercizio leggero (1-3 giorni/settimana)
-  moderate: 1.55,       // Esercizio moderato (3-5 giorni/settimana)
-  active: 1.725,        // Esercizio pesante (6-7 giorni/settimana)
-  very_active: 1.9,     // Esercizio molto pesante (lavoro fisico + allenamento)
+// Distribuzione macronutrienti ottimizzata per obiettivo
+const calculateOptimalMacros = (goal: string, totalCalories: number, weight: number): { protein: number; carbs: number; fat: number; fiber: number } => {
+  let proteinRatio, carbRatio, fatRatio;
+  
+  switch (goal) {
+    case 'targeted_fat_loss':
+      proteinRatio = 0.45; // 45% proteine per preservare massa muscolare
+      carbRatio = 0.25;    // 25% carboidrati per controllo insulinico
+      fatRatio = 0.30;     // 30% grassi per produzione ormonale
+      break;
+    case 'muscle_gain':
+      proteinRatio = 0.35; // 35% proteine
+      carbRatio = 0.40;    // 40% carboidrati per energia
+      fatRatio = 0.25;     // 25% grassi
+      break;
+    case 'weight_loss':
+      proteinRatio = 0.40; // 40% proteine
+      carbRatio = 0.30;    // 30% carboidrati
+      fatRatio = 0.30;     // 30% grassi
+      break;
+    default:
+      proteinRatio = 0.35;
+      carbRatio = 0.35;
+      fatRatio = 0.30;
+  }
+  
+  return {
+    protein: Math.round((totalCalories * proteinRatio) / 4),
+    carbs: Math.round((totalCalories * carbRatio) / 4),
+    fat: Math.round((totalCalories * fatRatio) / 9),
+    fiber: Math.round(weight * 0.5) // 0.5g per kg di peso corporeo
+  };
+};
+
+// Fattori di attività avanzati con correzioni metaboliche
+const advancedActivityFactors = {
+  sedentary: 1.15,      // Ridotto per stile di vita moderno
+  light: 1.35,          // Esercizio leggero
+  moderate: 1.50,       // Esercizio moderato
+  active: 1.70,         // Esercizio intenso
+  very_active: 1.85,    // Atleti
+};
+
+// Funzione per ottenere la stagione corrente
+type Season = 'spring' | 'summer' | 'autumn' | 'winter';
+const getCurrentSeason = (date: Date): Season => {
+  const month = date.getMonth();
+  if (month >= 2 && month <= 4) return 'spring';
+  if (month >= 5 && month <= 7) return 'summer';
+  if (month >= 8 && month <= 10) return 'autumn';
+  return 'winter';
 };
 
 export const usePersonalizedDiet = () => {
@@ -169,50 +341,144 @@ export const usePersonalizedDiet = () => {
       return;
     }
 
-    const generatePlan = () => {
+    const generateAdvancedPlan = () => {
       setLoading(true);
+
+      // --- 1. VALIDAZIONE DATI UTENTE ---
+      const { current_weight, height, age, gender, activity_level, goal, body_fat_percentage } = userProfile;
+      if (!current_weight || !height || !age || !gender || !activity_level) {
+        setDietPlan(null); 
+        setLoading(false);
+        return;
+      }
       
-      // 1. Calcolo del TDEE
-      const bmr = calculateBMR(
-        userProfile.current_weight, 
-        userProfile.height, 
-        userProfile.age, 
-        userProfile.gender || 'male'
-      );
-      const tdee = bmr * (activityFactors[userProfile.activity_level] || 1.55);
+      // --- 2. CALCOLI METABOLICI AVANZATI ---
+      const bmr = calculateAdvancedBMR(current_weight, height, age, gender, body_fat_percentage);
+      const tdee = bmr * (advancedActivityFactors[activity_level] || 1.50);
+      
+      // --- 3. DEFICIT/SURPLUS PERSONALIZZATO ---
+      const deficitRatio = calculateOptimalDeficit(goal || 'weight_loss', current_weight, userProfile.target_weight, body_fat_percentage);
+      const targetCalories = tdee + (tdee * deficitRatio);
+      
+      // --- 4. MACRONUTRIENTI OTTIMIZZATI ---
+      const targetMacros = calculateOptimalMacros(goal || 'weight_loss', targetCalories, current_weight);
+      
+      // --- 5. IDRATAZIONE PERSONALIZZATA ---
+      const currentSeason = getCurrentSeason(new Date());
+      const dailyWater = calculateDailyWaterIntake(current_weight, activity_level, currentSeason);
+      
+      // --- 6. SELEZIONE RICETTE STAGIONALI E FUNZIONALI ---
+      const seasonalMeals = mealDatabase.filter(meal => meal.season.includes(currentSeason));
+      
+      // Filtri specifici per obiettivo
+      let functionalMeals = seasonalMeals;
+      if (goal === 'targeted_fat_loss') {
+        functionalMeals = seasonalMeals.filter(meal => meal.antiInflammatory && meal.metabolicBoost);
+      }
+      
+      const breakfasts = functionalMeals.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
+      const lunches = functionalMeals.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
+      const dinners = functionalMeals.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
+      
+      // --- 7. CONTROLLO DISPONIBILITÀ RICETTE ---
+      if (breakfasts.length === 0 || lunches.length === 0 || dinners.length === 0) {
+        // Fallback con ricette base
+        const allBreakfasts = mealDatabase.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
+        const allLunches = mealDatabase.filter(m => m.name.toLowerCase().includes('salmone'));
+        const allDinners = mealDatabase.filter(m => m.name.toLowerCase().includes('zuppa'));
+        
+        if (allBreakfasts.length === 0 || allLunches.length === 0 || allDinners.length === 0) {
+          setDietPlan({
+            weeklyPlan: [],
+            targetCalories: Math.round(targetCalories),
+            targetMacros,
+            dailyWaterIntake: dailyWater,
+            metabolicProfile: {
+              bmr: Math.round(bmr),
+              tdee: Math.round(tdee),
+              deficitCalories: Math.round(tdee - targetCalories),
+              expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
+            },
+            scientificRationale: `Piano basato su algoritmi scientifici per ${goal || 'perdita peso'} con deficit del ${Math.round(deficitRatio * 100)}%`
+          });
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // --- 8. GENERAZIONE PIANO SETTIMANALE ---
+      const weeklyPlan: DailyPlan[] = [];
+      
+      for (let i = 1; i <= 7; i++) {
+        const breakfast = breakfasts[Math.floor(Math.random() * breakfasts.length)];
+        const lunch = lunches[Math.floor(Math.random() * lunches.length)];
+        const dinner = dinners[Math.floor(Math.random() * dinners.length)];
+        
+        // Spuntino ottimizzato per obiettivo
+        const snack: Meal = {
+          name: "Mix Proteico Anti-Infiammatorio",
+          calories: 280,
+          macros: { protein: 12, carbs: 18, fat: 16, fiber: 6 },
+          ingredients: [
+            {item: "Mandorle non salate", amount: "25g", notes: "ricche di vitamina E"},
+            {item: "Mirtilli freschi", amount: "80g", notes: "antocianine antiossidanti"},
+            {item: "Tè verde", amount: "1 tazza", notes: "EGCG termogenico"}
+          ],
+          preparation: {
+            traditional: ["Consumare mandorle e mirtilli insieme", "Accompagnare con tè verde caldo"],
+            thermomix: ["Non necessaria preparazione speciale"]
+          },
+          rationale: "Spuntino formulato per sostenere il metabolismo dei grassi e ridurre l'infiammazione sistemica tra i pasti principali.",
+          season: ['spring', 'summer', 'autumn', 'winter'],
+          antiInflammatory: true,
+          metabolicBoost: true
+        };
 
-      // 2. Impostazione del deficit calorico (es. 20% in meno per perdita di peso)
-      const targetCalories = tdee - (tdee * 0.20);
+        const dailyMeals = { breakfast, lunch, snack, dinner };
+        const dailyTotals = Object.values(dailyMeals).reduce((acc, meal) => {
+          acc.calories += meal.calories;
+          acc.protein += meal.macros.protein;
+          acc.carbs += meal.macros.carbs;
+          acc.fat += meal.macros.fat;
+          acc.fiber += meal.macros.fiber;
+          return acc;
+        }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
 
-      // 3. Definizione dei Macronutrienti (es. 40% P, 30% C, 30% F)
-      const targetProtein = (targetCalories * 0.40) / 4; // 4 kcal per grammo di proteine
-      const targetCarbs = (targetCalories * 0.30) / 4;   // 4 kcal per grammo di carboidrati
-      const targetFat = (targetCalories * 0.30) / 9;     // 9 kcal per grammo di grassi
+        weeklyPlan.push({
+          day: i,
+          meals: dailyMeals,
+          totals: dailyTotals,
+          waterIntake: dailyWater,
+          supplementTiming: [
+            "Omega-3: con pranzo",
+            "Vitamina D3: con colazione",
+            "Magnesio: prima di dormire"
+          ]
+        });
+      }
 
-      // --- LOGICA DI COMPOSIZIONE DEL PIANO ---
-      // Qui verrà implementata la logica per:
-      // - Scegliere la stagione corrente
-      // - Filtrare il database di ricette per la stagione
-      // - Comporre 7 giorni di pasti che si avvicinino il più possibile
-      //   ai target calorici e di macronutrienti calcolati.
-      //
-      // Per ora, useremo dati placeholder.
-
-      const placeholderPlan: PersonalizedDiet = {
-        weeklyPlan: [], // Verrà popolato dinamicamente
+      // --- 9. PIANO FINALE CON PROFILO METABOLICO ---
+      const finalPlan: PersonalizedDiet = {
+        weeklyPlan,
         targetCalories: Math.round(targetCalories),
-        targetMacros: {
-          protein: Math.round(targetProtein),
-          carbs: Math.round(targetCarbs),
-          fat: Math.round(targetFat),
+        targetMacros,
+        dailyWaterIntake: dailyWater,
+        metabolicProfile: {
+          bmr: Math.round(bmr),
+          tdee: Math.round(tdee),
+          deficitCalories: Math.round(tdee - targetCalories),
+          expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
         },
+        scientificRationale: goal === 'targeted_fat_loss' 
+          ? "Piano ottimizzato per la riduzione del grasso localizzato attraverso alimenti anti-infiammatori e modulatori metabolici"
+          : `Piano scientificamente calibrato per ${goal || 'perdita peso'} con approccio metabolico personalizzato`
       };
       
-      setDietPlan(placeholderPlan);
+      setDietPlan(finalPlan);
       setLoading(false);
     };
 
-    generatePlan();
+    generateAdvancedPlan();
 
   }, [userProfile]);
 

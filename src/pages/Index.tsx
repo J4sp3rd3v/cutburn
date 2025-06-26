@@ -28,6 +28,8 @@ import RecipeSection from '@/components/RecipeSection';
 import PersonalizedDietPlan from '@/components/PersonalizedDietPlan';
 import WeightHistory from '@/components/WeightHistory';
 import BodyFatHistory from '@/components/BodyFatHistory';
+import ScientificDashboard from '@/components/ScientificDashboard';
+import WeeklyShoppingList from '@/components/WeeklyShoppingList';
 
 const LoadingScreen = () => (
   <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -91,62 +93,18 @@ const Index = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="px-4 pt-4">
             <TabsList className="w-full bg-white/70 backdrop-blur-sm text-xs flex overflow-x-auto whitespace-nowrap p-1 h-auto">
-              <TabsTrigger value="dashboard" className="flex-shrink-0"><span><Target className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="recipes" className="flex-shrink-0"><span><ChefHat className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="diet-plan" className="flex-shrink-0"><span><Calendar className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="tracker" className="flex-shrink-0"><span><ClipboardList className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="supplements" className="flex-shrink-0"><span><Zap className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="workout" className="flex-shrink-0"><span><Dumbbell className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="shopping" className="flex-shrink-0"><span><ShoppingCart className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="weight-history" className="flex-shrink-0"><span><LineChartIcon className="w-4 h-4" /></span></TabsTrigger>
-              <TabsTrigger value="bodyfat-history" className="flex-shrink-0"><span><TrendingDown className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="dashboard" className="flex-shrink-0" title="Dashboard Scientifica"><span><Target className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="recipes" className="flex-shrink-0" title="Ricette"><span><ChefHat className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="diet-plan" className="flex-shrink-0" title="Dieta Giornaliera"><span><Calendar className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="supplements" className="flex-shrink-0" title="Supplementi"><span><Zap className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="workout" className="flex-shrink-0" title="Allenamento"><span><Dumbbell className="w-4 h-4" /></span></TabsTrigger>
+              <TabsTrigger value="shopping" className="flex-shrink-0" title="Lista Spesa"><span><ShoppingCart className="w-4 h-4" /></span></TabsTrigger>
             </TabsList>
           </div>
 
           <div className="px-4 pb-4 mt-4 space-y-4">
             <TabsContent value="dashboard">
-               <div className="text-center py-4">
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                  Ciao {userProfile.name}! 🔥
-                </h2>
-                <p className="text-slate-600">
-                  Giorno {daysSinceStart} - Benvenuto nel tuo percorso!
-                </p>
-              </div>
-
-              <Card className="p-4 bg-gradient-to-r from-red-500 to-orange-500 text-white">
-                 <div className="flex items-center justify-between mb-3">
-                   <h3 className="font-semibold">Deficit Calorico</h3>
-                   <Badge variant="secondary" className="bg-white/20 text-white">
-                     -{nutritionData.aggressiveDeficit} kcal/giorno
-                   </Badge>
-                 </div>
-                 <div className="space-y-2">
-                   <div className="flex justify-between items-center text-sm">
-                     <span>Calorie rimanenti oggi</span>
-                     <span className="font-bold">{dailyTotals.remainingCalories} kcal</span>
-                   </div>
-                   <Progress 
-                     value={Math.max(0, (dailyTotals.calories / nutritionData.targetCalories) * 100)} 
-                     className="bg-white/20 h-2"
-                   />
-                 </div>
-              </Card>
-
-              <div className="grid grid-cols-2 gap-4">
-                  <DashboardCard
-                      icon={ChefHat}
-                      title="Calorie Consumate"
-                      value={`${dailyTotals.calories} / ${nutritionData.targetCalories}`}
-                      unit="kcal"
-                  />
-                  <DashboardCard
-                      icon={TrendingDown}
-                      title="Peso Attuale"
-                      value={String(userProfile.current_weight)}
-                      unit="kg"
-                  />
-              </div>
+              <ScientificDashboard />
             </TabsContent>
             
             <TabsContent value="profile"><UserProfile /></TabsContent>
@@ -154,14 +112,10 @@ const Index = () => {
             <TabsContent value="recipes"><RecipeSection /></TabsContent>
             
             <TabsContent value="diet-plan"><PersonalizedDietPlan /></TabsContent>
-
-            <TabsContent value="tracker"><AdvancedMealTracker meals={todayMeals} onMarkMealAsEaten={markMealAsEaten} nutritionData={nutritionData} dailyTotals={dailyTotals} /></TabsContent>
             
             <TabsContent value="supplements"><SupplementSection /></TabsContent>
             <TabsContent value="workout"><WorkoutSection workoutCompleted={dailyProgress.workout_completed} onWorkoutToggle={() => addOrUpdateDailyProgress({ workout_completed: !dailyProgress.workout_completed })} /></TabsContent>
-            <TabsContent value="shopping"><ShoppingList /></TabsContent>
-            <TabsContent value="weight-history"><WeightHistory /></TabsContent>
-            <TabsContent value="bodyfat-history"><BodyFatHistory /></TabsContent>
+            <TabsContent value="shopping"><WeeklyShoppingList /></TabsContent>
           </div>
         </Tabs>
       </main>
