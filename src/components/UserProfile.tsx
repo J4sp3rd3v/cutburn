@@ -53,8 +53,29 @@ const UserProfile = () => {
   };
 
   const handleSelectChange = (name: keyof UserProfileType, value: string) => {
-    console.log(`🔄 Debug - Select cambiato: ${name} = ${value}`);
-    setProfile(prev => ({ ...prev, [name]: value }));
+    try {
+      console.log(`🔄 Debug - Select cambiato: ${name} = ${value}`);
+      
+      // Gestione specifica per ogni tipo di campo
+      if (name === 'gender') {
+        setProfile(prev => ({ ...prev, gender: value as 'male' | 'female' }));
+      } else if (name === 'activity_level') {
+        setProfile(prev => ({ ...prev, activity_level: value as 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active' }));
+      } else if (name === 'goal') {
+        setProfile(prev => ({ ...prev, goal: value as 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss' }));
+      } else {
+        setProfile(prev => ({ ...prev, [name]: value }));
+      }
+      
+      console.log(`✅ Debug - Select aggiornato con successo: ${name}`);
+    } catch (error) {
+      console.error(`❌ Errore nell'aggiornamento del Select ${name}:`, error);
+      toast({ 
+        title: 'Errore', 
+        description: `Errore nell'aggiornamento del campo ${name}`, 
+        variant: 'destructive' 
+      });
+    }
   };
 
   const handleCheckedChange = (name: keyof UserProfileType, checked: boolean) => {
