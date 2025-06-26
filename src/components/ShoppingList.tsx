@@ -4,23 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, Leaf, Euro, Calculator, Clock } from 'lucide-react';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
-interface UserProfile {
-  currentWeight: number;
-  targetWeight: number;
-  height: number;
-  age: number;
-  activityLevel: string;
-  goal: string;
-  lactoseIntolerant?: boolean;
-}
-
-interface ShoppingListProps {
-  userProfile: UserProfile;
-}
-
-const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
+const ShoppingList: React.FC = () => {
+  const { userProfile } = useProgressTracking();
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
+
+  if (!userProfile) {
+    return <div>Caricamento...</div>;
+  }
 
   const toggleItem = (itemName: string) => {
     setCheckedItems(prev => ({
@@ -31,7 +23,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
 
   // *** CALCOLI SCIENTIFICI PER 14 GIORNI COMPLETI ***
   const getShoppingNeeds = () => {
-    const weight = userProfile.currentWeight || 70;
+    const weight = userProfile.current_weight || 70;
     const height = userProfile.height || 175;
     const age = userProfile.age || 30;
     
@@ -39,7 +31,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
     const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
     const activityMultiplier = {
       sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9
-    }[userProfile.activityLevel] || 1.55;
+    }[userProfile.activity_level] || 1.55;
     const tdee = bmr * activityMultiplier;
     
     // Deficit personalizzato
@@ -77,7 +69,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ userProfile }) => {
   };
 
   const needs = getShoppingNeeds();
-  const isLactoseIntolerant = userProfile.lactoseIntolerant || false;
+  const isLactoseIntolerant = userProfile.lactose_intolerant || false;
 
   // *** LISTA SPESA SCIENTIFICA 14 GIORNI ***
   const groceryList = [

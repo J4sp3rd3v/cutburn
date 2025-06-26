@@ -4,38 +4,28 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Target, Dumbbell, Play, Check, Timer, Flame, Zap } from 'lucide-react';
 import ExerciseTimer from '@/components/ExerciseTimer';
-
-interface UserProfile {
-  id: string;
-  name: string;
-  age: number;
-  height: number;
-  currentWeight: number;
-  startWeight: number;
-  targetWeight: number;
-  activityLevel: string;
-  goal: string;
-  intermittentFasting: boolean;
-  lactoseIntolerant: boolean;
-  targetCalories: number;
-  targetWater: number;
-  created_at: string;
-}
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
 interface WorkoutSectionProps {
-  userProfile: UserProfile;
+  workoutCompleted: boolean;
+  onWorkoutToggle: () => void;
 }
 
-const WorkoutSection: React.FC<WorkoutSectionProps> = ({ userProfile }) => {
+const WorkoutSection: React.FC<WorkoutSectionProps> = ({ workoutCompleted, onWorkoutToggle }) => {
+  const { userProfile } = useProgressTracking();
   const [completedExercises, setCompletedExercises] = useState<string[]>([]);
   const [currentWorkout, setCurrentWorkout] = useState('petto');
   const [showTimer, setShowTimer] = useState<string | null>(null);
 
+  if (!userProfile) {
+    return <div>Caricamento profilo...</div>;
+  }
+
   // Calcolo personalizzazione basata su profilo utente
   const getPersonalizedWeights = () => {
-    const weightFactor = userProfile.currentWeight / 70; // Base 70kg
-    const experienceMultiplier = userProfile.activityLevel === 'sedentary' ? 0.7 : 
-                                userProfile.activityLevel === 'moderate' ? 1.0 : 1.3;
+    const weightFactor = userProfile.current_weight / 70; // Base 70kg
+    const experienceMultiplier = userProfile.activity_level === 'sedentary' ? 0.7 : 
+                                userProfile.activity_level === 'moderate' ? 1.0 : 1.3;
     
     return {
       light: Math.round(8 * weightFactor * experienceMultiplier),
@@ -276,6 +266,8 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({ userProfile }) => {
   const completedCount = completedExercises.length;
   const totalCount = workout.exercises.length;
 
+  const allExercisesCompleted = workouts[currentWorkout as keyof typeof workouts].exercises.length === completedExercises.length;
+
   return (
     <div className="space-y-4">
       <div className="text-center py-4">
@@ -428,6 +420,16 @@ const WorkoutSection: React.FC<WorkoutSectionProps> = ({ userProfile }) => {
           </div>
         </div>
       </Card>
+
+      {/* Pulsante completamento workout */}
+      <Button 
+        onClick={onWorkoutToggle} 
+        size="lg" 
+        className="w-full"
+        variant={workoutCompleted ? "default" : "outline"}
+      >
+        {workoutCompleted ? "✓ Allenamento Completato" : "Segna Allenamento come Completato"}
+      </Button>
     </div>
   );
 };

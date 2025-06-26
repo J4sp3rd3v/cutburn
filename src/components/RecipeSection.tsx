@@ -3,29 +3,17 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Users, ChefHat, Zap, Droplets, Flame, Dna, Calendar } from 'lucide-react';
+import { useProgressTracking } from '@/hooks/useProgressTracking';
 
-interface UserProfile {
-  lactoseIntolerant?: boolean;
-  currentWeight: number;
-  targetWeight: number;
-  height: number;
-  age: number;
-  activityLevel: string;
-  goal: string;
-}
+const RecipeSection: React.FC = () => {
+  const { userProfile } = useProgressTracking();
 
-interface RecipeSectionProps {
-  userProfile: UserProfile;
-}
-
-const RecipeSection: React.FC<RecipeSectionProps> = ({ userProfile }) => {
   const [selectedCategory, setSelectedCategory] = useState("bowls");
   const [selectedDay, setSelectedDay] = useState(0);
   const [recipeFilter, setRecipeFilter] = useState("all"); // "all", "dolci", "salate"
-  // Rimossa modalità home cooking - sempre attiva per tutti
   
   // Controllo intolleranza lattosio
-  const isLactoseIntolerant = userProfile?.lactoseIntolerant || false;
+  const isLactoseIntolerant = userProfile?.lactose_intolerant || false;
   
   // Funzione per sostituire ingredienti con lattosio
   const replaceLactoseIngredients = (ingredients: string[]): string[] => {
