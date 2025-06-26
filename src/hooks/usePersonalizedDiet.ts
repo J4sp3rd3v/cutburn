@@ -211,6 +211,78 @@ const mealDatabase: Meal[] = [
     season: ['autumn', 'winter'],
     antiInflammatory: true,
     metabolicBoost: false
+  },
+
+  // --- PRANZI AGGIUNTIVI ---
+  {
+    name: "Pollo alla Griglia con Verdure Miste",
+    calories: 480,
+    macros: { protein: 38, carbs: 25, fat: 18, fiber: 8 },
+    ingredients: [
+      { item: "Petto di pollo", amount: "180g" },
+      { item: "Zucchine", amount: "150g" },
+      { item: "Peperoni", amount: "100g" },
+      { item: "Pomodorini", amount: "100g" },
+      { item: "Olio EVO", amount: "15g" },
+      { item: "Rosmarino", amount: "1 rametto" },
+      { item: "Aglio", amount: "2 spicchi" }
+    ],
+    preparation: {
+      traditional: [
+        "Marinare il pollo con olio, aglio e rosmarino per 30 minuti",
+        "Grigliare il pollo per 6-8 minuti per lato",
+        "Grigliare le verdure tagliate a fette spesse",
+        "Servire insieme con un filo d'olio a crudo"
+      ],
+      thermomix: [
+        "Tritare aglio e rosmarino: 3 sec / vel 6",
+        "Mescolare con olio per marinata: 10 sec / vel 2",
+        "Marinare il pollo e grigliare in padella tradizionale",
+        "Grigliare le verdure separatamente"
+      ]
+    },
+    rationale: "Fonte di proteine complete ad alto valore biologico. Le verdure grigliate mantengono nutrienti e antiossidanti essenziali per il supporto metabolico.",
+    season: ['spring', 'summer', 'autumn', 'winter'],
+    antiInflammatory: true,
+    metabolicBoost: true
+  },
+
+  // --- CENE AGGIUNTIVE ---
+  {
+    name: "Zuppa di Verdure e Legumi Misti",
+    calories: 350,
+    macros: { protein: 18, carbs: 48, fat: 6, fiber: 16 },
+    ingredients: [
+      { item: "Fagioli cannellini", amount: "60g peso secco" },
+      { item: "Ceci", amount: "40g peso secco" },
+      { item: "Spinaci", amount: "150g" },
+      { item: "Pomodori pelati", amount: "200g" },
+      { item: "Brodo vegetale", amount: "600ml" },
+      { item: "Aglio", amount: "2 spicchi" },
+      { item: "Salvia", amount: "6 foglie" },
+      { item: "Olio EVO", amount: "8g" }
+    ],
+    preparation: {
+      traditional: [
+        "Ammollare legumi la sera prima",
+        "Cuocere legumi separatamente fino a tenerezza",
+        "Soffriggere aglio e salvia con olio",
+        "Aggiungere pomodori e legumi cotti",
+        "Versare brodo e cuocere 15 minuti",
+        "Aggiungere spinaci negli ultimi 3 minuti"
+      ],
+      thermomix: [
+        "Cuocere legumi ammollati: 45 min / 100°C / vel soft",
+        "Tritare aglio e salvia: 3 sec / vel 6",
+        "Soffriggere: 2 min / 120°C / vel 1",
+        "Aggiungere resto ingredienti: 15 min / 100°C / vel soft",
+        "Aggiungere spinaci: 3 min / 100°C / vel 1"
+      ]
+    },
+    rationale: "Combinazione di legumi per proteine complete vegetali. Ricca di fibre solubili che favoriscono la sazietà e il controllo glicemico.",
+    season: ['autumn', 'winter', 'spring'],
+    antiInflammatory: true,
+    metabolicBoost: false
   }
 ];
 
@@ -370,40 +442,50 @@ export const usePersonalizedDiet = () => {
       // --- 6. SELEZIONE RICETTE STAGIONALI E FUNZIONALI ---
       const seasonalMeals = mealDatabase.filter(meal => meal.season.includes(currentSeason));
       
-      // Filtri specifici per obiettivo
+      // Filtri specifici per obiettivo (più permissivo)
       let functionalMeals = seasonalMeals;
       if (goal === 'targeted_fat_loss') {
-        functionalMeals = seasonalMeals.filter(meal => meal.antiInflammatory && meal.metabolicBoost);
+        // Usa ricette anti-infiammatorie O metabolicamente attive (non entrambe)
+        functionalMeals = seasonalMeals.filter(meal => meal.antiInflammatory || meal.metabolicBoost);
       }
       
-      const breakfasts = functionalMeals.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
-      const lunches = functionalMeals.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
-      const dinners = functionalMeals.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
+      // Se non ci sono abbastanza ricette stagionali, usa tutte le ricette
+      if (functionalMeals.length < 3) {
+        functionalMeals = mealDatabase;
+      }
       
-      // --- 7. CONTROLLO DISPONIBILITÀ RICETTE ---
+      let breakfasts = functionalMeals.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
+      let lunches = functionalMeals.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
+      let dinners = functionalMeals.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
+      
+      // --- 7. CONTROLLO DISPONIBILITÀ RICETTE CON FALLBACK ROBUSTO ---
+      if (breakfasts.length === 0) {
+        breakfasts = mealDatabase.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
+      }
+      if (lunches.length === 0) {
+        lunches = mealDatabase.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
+      }
+      if (dinners.length === 0) {
+        dinners = mealDatabase.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
+      }
+      
+      // Se ancora non ci sono ricette, crea un piano vuoto con solo i target
       if (breakfasts.length === 0 || lunches.length === 0 || dinners.length === 0) {
-        // Fallback con ricette base
-        const allBreakfasts = mealDatabase.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
-        const allLunches = mealDatabase.filter(m => m.name.toLowerCase().includes('salmone'));
-        const allDinners = mealDatabase.filter(m => m.name.toLowerCase().includes('zuppa'));
-        
-        if (allBreakfasts.length === 0 || allLunches.length === 0 || allDinners.length === 0) {
-          setDietPlan({
-            weeklyPlan: [],
-            targetCalories: Math.round(targetCalories),
-            targetMacros,
-            dailyWaterIntake: dailyWater,
-            metabolicProfile: {
-              bmr: Math.round(bmr),
-              tdee: Math.round(tdee),
-              deficitCalories: Math.round(tdee - targetCalories),
-              expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
-            },
-            scientificRationale: `Piano basato su algoritmi scientifici per ${goal || 'perdita peso'} con deficit del ${Math.round(deficitRatio * 100)}%`
-          });
-          setLoading(false);
-          return;
-        }
+        setDietPlan({
+          weeklyPlan: [],
+          targetCalories: Math.round(targetCalories),
+          targetMacros,
+          dailyWaterIntake: dailyWater,
+          metabolicProfile: {
+            bmr: Math.round(bmr),
+            tdee: Math.round(tdee),
+            deficitCalories: Math.round(tdee - targetCalories),
+            expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
+          },
+          scientificRationale: `Piano basato su algoritmi scientifici per ${goal || 'perdita peso'} con deficit del ${Math.round(deficitRatio * 100)}%`
+        });
+        setLoading(false);
+        return;
       }
       
       // --- 8. GENERAZIONE PIANO SETTIMANALE ---
