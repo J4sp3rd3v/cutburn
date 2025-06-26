@@ -55,7 +55,7 @@ const Index = () => {
      return <LoadingScreen />;
   }
 
-  const daysSinceStart = 1; // Valore statico ora
+  const daysSinceStart = 1;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -97,7 +97,7 @@ const Index = () => {
 
           <div className="px-4 pb-4 mt-4 space-y-4">
             <TabsContent value="dashboard">
-              <div className="text-center py-4">
+               <div className="text-center py-4">
                 <h2 className="text-2xl font-bold text-slate-800 mb-2">
                   Ciao {userProfile.name}! 🔥
                 </h2>
@@ -142,9 +142,14 @@ const Index = () => {
             </TabsContent>
             
             <TabsContent value="profile"><UserProfile /></TabsContent>
-            <TabsContent value="meals"><AdvancedMealTracker meals={todayMeals} onMarkMealAsEaten={markMealAsEaten} nutritionData={nutritionData} dailyTotals={dailyTotals} /></TabsContent>
-            <TabsContent value="diet"><RecipeSection userProfile={userProfile} /></TabsContent>
-            <TabsContent value="supplements"><SupplementSection onSupplementsTaken={(count) => saveProgress({ supplements_taken: count })} supplementsTaken={dailyProgress.supplements_taken} /></TabsContent>
+            
+            {/* Sezione Pasti (ora contiene le ricette del piano di 14 giorni) */}
+            <TabsContent value="meals"><RecipeSection /></TabsContent>
+            
+            {/* Sezione Dieta (ora contiene il tracker dei pasti giornalieri) */}
+            <TabsContent value="diet"><AdvancedMealTracker meals={todayMeals} onMarkMealAsEaten={markMealAsEaten} nutritionData={nutritionData} dailyTotals={dailyTotals} /></TabsContent>
+            
+            <TabsContent value="supplements"><SupplementSection /></TabsContent>
             <TabsContent value="workout"><WorkoutSection workoutCompleted={dailyProgress.workout_completed} onWorkoutToggle={() => saveProgress({ workout_completed: !dailyProgress.workout_completed })} /></TabsContent>
             <TabsContent value="shopping"><ShoppingList /></TabsContent>
           </div>
