@@ -13,6 +13,23 @@ interface UserProfile {
   goal: 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss';
   targeted_fat_area?: 'abdominal' | 'gynecomastia' | 'love_handles' | 'thighs' | 'back_fat' | 'overall';
   body_fat_percentage?: number;
+  // Nuovi campi per personalizzazione avanzata
+  body_type?: 'ectomorph' | 'mesomorph' | 'endomorph';
+  metabolic_rate?: 'slow' | 'normal' | 'fast';
+  insulin_sensitivity?: 'low' | 'normal' | 'high';
+  stress_level?: 'low' | 'moderate' | 'high';
+  sleep_quality?: 'poor' | 'fair' | 'good' | 'excellent';
+  dietary_preferences?: {
+    vegan?: boolean;
+    vegetarian?: boolean;
+    keto?: boolean;
+    mediterranean?: boolean;
+  };
+  food_intolerances?: string[];
+  hormonal_issues?: string[];
+  health_conditions?: string[];
+  supplement_stack?: string[];
+  training_style?: 'hiit' | 'liss' | 'strength' | 'mixed';
 }
 
 interface Meal {
@@ -106,184 +123,107 @@ const mealDatabase: Meal[] = [
     antiInflammatory: true,
     metabolicBoost: true
   },
-  {
-    name: "Omelette Proteica con Spinaci e Avocado",
-    calories: 420,
-    macros: { protein: 28, carbs: 18, fat: 25, fiber: 12 },
-    ingredients: [
-      { item: "Uova intere", amount: "2" },
-      { item: "Albumi", amount: "2" },
-      { item: "Spinaci freschi", amount: "100g", notes: "ricchi di nitrati" },
-      { item: "Avocado", amount: "80g", notes: "grassi monoinsaturi" },
-      { item: "Olio EVO", amount: "8g" },
-      { item: "Curcuma", amount: "1/2 cucchiaino", notes: "anti-infiammatoria" },
-      { item: "Pepe nero", amount: "pizzico", notes: "aumenta biodisponibilità curcuma" }
-    ],
-    preparation: {
-      traditional: [
-        "Sbattere uova e albumi con curcuma e pepe",
-        "Cuocere gli spinaci in padella antiaderente",
-        "Versare le uova sugli spinaci e cuocere l'omelette",
-        "Servire con fette di avocado condite con olio EVO"
-      ],
-      thermomix: [
-        "Sbattere uova, albumi, curcuma e pepe: 20 sec / vel 4",
-        "Cuocere gli spinaci in padella tradizionale",
-        "Procedere con la cottura dell'omelette",
-        "Completare con avocado e olio"
-      ]
-    },
-    rationale: "Combinazione ottimale per la produzione di testosterone e controllo del cortisolo. I nitrati degli spinaci migliorano il flusso sanguigno, mentre curcuma e avocado riducono l'infiammazione del tessuto adiposo viscerale.",
-    season: ['spring', 'summer', 'autumn', 'winter'],
-    antiInflammatory: true,
-    metabolicBoost: true
-  },
 
-  // --- PRANZI METABOLICAMENTE ATTIVI ---
+  // --- PASTI ANTI-GINECOMASTIA ---
   {
-    name: "Salmone Selvaggio con Quinoa e Broccoli",
-    calories: 520,
-    macros: { protein: 42, carbs: 35, fat: 22, fiber: 8 },
+    name: "Bowl Anti-Aromatasi con Crucifere e DIM",
+    calories: 450,
+    macros: { protein: 40, carbs: 35, fat: 15, fiber: 12 },
     ingredients: [
-      { item: "Salmone selvaggio", amount: "180g", notes: "ricco di Omega-3 EPA/DHA" },
-      { item: "Quinoa tricolore", amount: "60g peso secco" },
-      { item: "Broccoli", amount: "200g", notes: "fonte di sulforafano" },
-      { item: "Olio EVO", amount: "12g" },
-      { item: "Limone", amount: "1/2", notes: "vitamina C per assorbimento ferro" },
-      { item: "Zenzero fresco", amount: "5g", notes: "termogenico naturale" },
-      { item: "Aglio", amount: "2 spicchi", notes: "supporto cardiovascolare" }
+      { item: "Broccoli al vapore", amount: "200g", notes: "ricchi di DIM" },
+      { item: "Petto di pollo grigliato", amount: "150g" },
+      { item: "Cavolo riccio", amount: "100g", notes: "anti-estrogeni" },
+      { item: "Semi di lino macinati", amount: "15g", notes: "lignani" },
+      { item: "Tè verde matcha", amount: "1 cucchiaino", notes: "EGCG" },
+      { item: "Olio EVO", amount: "10g" },
+      { item: "Zenzero fresco", amount: "5g", notes: "termogenico" }
     ],
     preparation: {
       traditional: [
-        "Cuocere la quinoa in brodo vegetale per 15 minuti",
         "Cuocere i broccoli al vapore per 8 minuti",
-        "Marinare il salmone con limone, zenzero e aglio per 10 minuti",
-        "Cuocere il salmone in padella per 4 minuti per lato",
-        "Comporre il piatto e condire con olio EVO"
+        "Grigliare il petto di pollo con zenzero",
+        "Preparare il tè matcha",
+        "Assemblare la bowl con tutti gli ingredienti",
+        "Condire con olio EVO"
       ],
       thermomix: [
-        "Tritare aglio e zenzero: 3 sec / vel 7",
-        "Cuocere quinoa nel Varoma: 15 min / 100°C / vel soft",
-        "Cuocere broccoli nel cestello Varoma: 8 min / Varoma / vel 1",
-        "Marinare e cuocere il salmone in padella tradizionale",
-        "Assemblare e condire"
+        "Cuocere broccoli nel Varoma: 8 min / Varoma / vel 1",
+        "Grigliare il pollo in padella tradizionale",
+        "Assemblare la bowl"
       ]
     },
-    rationale: "Pasto progettato per massimizzare l'ossidazione dei grassi e ridurre l'infiammazione sistemica. Gli Omega-3 del salmone attivano i geni della lipolisi, mentre il sulforafano dei broccoli supporta la detossificazione epatica.",
+    rationale: "Pasto formulato per ridurre l'aromatizzazione del testosterone in estrogeni attraverso l'azione del DIM (Diindolilmetano) presente nelle crucifere. Il tè verde e lo zenzero aumentano il metabolismo e la termogenesi.",
     season: ['spring', 'summer', 'autumn', 'winter'],
     antiInflammatory: true,
     metabolicBoost: true
   },
 
-  // --- CENE ANTI-CATABOLICHE ---
+  // --- PASTI ANTI-GRASSO ADDOMINALE ---
   {
-    name: "Zuppa Proteica di Lenticchie Rosse e Verdure",
-    calories: 380,
-    macros: { protein: 24, carbs: 45, fat: 8, fiber: 15 },
+    name: "Zuppa Anti-Cortisolo con Curcuma e Zenzero",
+    calories: 320,
+    macros: { protein: 25, carbs: 30, fat: 12, fiber: 10 },
     ingredients: [
-      { item: "Lenticchie rosse", amount: "80g peso secco" },
-      { item: "Sedano", amount: "100g" },
-      { item: "Carote", amount: "100g" },
-      { item: "Cipolla rossa", amount: "80g", notes: "ricca di quercetina" },
-      { item: "Passata di pomodoro", amount: "200g" },
+      { item: "Lenticchie rosse", amount: "70g", notes: "proteine vegetali" },
+      { item: "Curcuma fresca", amount: "15g", notes: "anti-infiammatoria" },
+      { item: "Zenzero fresco", amount: "10g", notes: "riduce cortisolo" },
+      { item: "Pepe nero", amount: "q.b.", notes: "aumenta biodisponibilità" },
+      { item: "Spinaci freschi", amount: "150g", notes: "magnesio" },
       { item: "Brodo vegetale", amount: "500ml" },
-      { item: "Curcuma", amount: "1 cucchiaino" },
-      { item: "Pepe nero", amount: "pizzico" },
+      { item: "Olio di cocco", amount: "10g", notes: "MCT" }
+    ],
+    preparation: {
+      traditional: [
+        "Soffriggere zenzero e curcuma in olio di cocco",
+        "Aggiungere lenticchie e brodo",
+        "Cuocere per 20 minuti",
+        "Aggiungere spinaci negli ultimi 2 minuti"
+      ],
+      thermomix: [
+        "Tritare zenzero e curcuma: 10 sec / vel 7",
+        "Aggiungere olio: 3 min / 100°C / vel 1",
+        "Aggiungere lenticchie e brodo: 20 min / 100°C / vel soft",
+        "Aggiungere spinaci: 2 min / 100°C / vel soft"
+      ]
+    },
+    rationale: "Pasto studiato per ridurre i livelli di cortisolo e l'infiammazione addominale. La combinazione di curcuma e pepe nero massimizza l'effetto anti-infiammatorio, mentre lo zenzero aiuta a gestire lo stress ossidativo.",
+    season: ['autumn', 'winter'],
+    antiInflammatory: true,
+    metabolicBoost: true
+  },
+
+  // --- PASTI ANTI-GRASSO FIANCHI ---
+  {
+    name: "Insalata Drenante con Salmone e Finocchi",
+    calories: 380,
+    macros: { protein: 32, carbs: 25, fat: 18, fiber: 8 },
+    ingredients: [
+      { item: "Salmone selvaggio", amount: "150g", notes: "Omega-3" },
+      { item: "Finocchi", amount: "200g", notes: "drenante" },
+      { item: "Avocado", amount: "50g", notes: "grassi sani" },
+      { item: "Rucola", amount: "80g", notes: "anti-estrogeni" },
+      { item: "Semi di pompelmo", amount: "5g", notes: "brucia grassi" },
+      { item: "Limone", amount: "1", notes: "detox" },
       { item: "Olio EVO", amount: "10g" }
     ],
     preparation: {
       traditional: [
-        "Soffriggere cipolla, sedano e carote con olio EVO",
-        "Aggiungere le lenticchie e tostare per 2 minuti",
-        "Versare passata di pomodoro e brodo",
-        "Aggiungere curcuma e pepe nero",
-        "Cuocere per 25 minuti a fuoco medio",
-        "Frullare parzialmente per ottenere consistenza cremosa"
+        "Grigliare il salmone con limone",
+        "Affettare finemente i finocchi",
+        "Tagliare l'avocado a cubetti",
+        "Assemblare l'insalata",
+        "Condire con olio e limone"
       ],
       thermomix: [
-        "Tritare cipolla, sedano, carote: 5 sec / vel 4",
-        "Soffriggere con olio: 3 min / 120°C / vel 1",
-        "Aggiungere lenticchie, passata, brodo, spezie",
-        "Cuocere: 25 min / 100°C / vel soft antiorario",
-        "Frullare parzialmente: 10 sec / vel 4"
+        "Affettare i finocchi: 3 sec / vel 5",
+        "Grigliare il salmone in padella tradizionale",
+        "Assemblare l'insalata"
       ]
     },
-    rationale: "Ricetta formulata per fornire proteine vegetali complete e fibre prebiotiche che supportano il microbiota intestinale. La curcuma e la quercetina della cipolla rossa riducono l'infiammazione cronica associata all'accumulo di grasso viscerale.",
-    season: ['autumn', 'winter'],
-    antiInflammatory: true,
-    metabolicBoost: false
-  },
-
-  // --- PRANZI AGGIUNTIVI ---
-  {
-    name: "Pollo alla Griglia con Verdure Miste",
-    calories: 480,
-    macros: { protein: 38, carbs: 25, fat: 18, fiber: 8 },
-    ingredients: [
-      { item: "Petto di pollo", amount: "180g" },
-      { item: "Zucchine", amount: "150g" },
-      { item: "Peperoni", amount: "100g" },
-      { item: "Pomodorini", amount: "100g" },
-      { item: "Olio EVO", amount: "15g" },
-      { item: "Rosmarino", amount: "1 rametto" },
-      { item: "Aglio", amount: "2 spicchi" }
-    ],
-    preparation: {
-      traditional: [
-        "Marinare il pollo con olio, aglio e rosmarino per 30 minuti",
-        "Grigliare il pollo per 6-8 minuti per lato",
-        "Grigliare le verdure tagliate a fette spesse",
-        "Servire insieme con un filo d'olio a crudo"
-      ],
-      thermomix: [
-        "Tritare aglio e rosmarino: 3 sec / vel 6",
-        "Mescolare con olio per marinata: 10 sec / vel 2",
-        "Marinare il pollo e grigliare in padella tradizionale",
-        "Grigliare le verdure separatamente"
-      ]
-    },
-    rationale: "Fonte di proteine complete ad alto valore biologico. Le verdure grigliate mantengono nutrienti e antiossidanti essenziali per il supporto metabolico.",
-    season: ['spring', 'summer', 'autumn', 'winter'],
+    rationale: "Pasto formulato per attivare il drenaggio linfatico e ridurre la ritenzione idrica nei fianchi. I finocchi e il pompelmo hanno proprietà drenanti, mentre gli Omega-3 del salmone riducono l'infiammazione localizzata.",
+    season: ['spring', 'summer'],
     antiInflammatory: true,
     metabolicBoost: true
-  },
-
-  // --- CENE AGGIUNTIVE ---
-  {
-    name: "Zuppa di Verdure e Legumi Misti",
-    calories: 350,
-    macros: { protein: 18, carbs: 48, fat: 6, fiber: 16 },
-    ingredients: [
-      { item: "Fagioli cannellini", amount: "60g peso secco" },
-      { item: "Ceci", amount: "40g peso secco" },
-      { item: "Spinaci", amount: "150g" },
-      { item: "Pomodori pelati", amount: "200g" },
-      { item: "Brodo vegetale", amount: "600ml" },
-      { item: "Aglio", amount: "2 spicchi" },
-      { item: "Salvia", amount: "6 foglie" },
-      { item: "Olio EVO", amount: "8g" }
-    ],
-    preparation: {
-      traditional: [
-        "Ammollare legumi la sera prima",
-        "Cuocere legumi separatamente fino a tenerezza",
-        "Soffriggere aglio e salvia con olio",
-        "Aggiungere pomodori e legumi cotti",
-        "Versare brodo e cuocere 15 minuti",
-        "Aggiungere spinaci negli ultimi 3 minuti"
-      ],
-      thermomix: [
-        "Cuocere legumi ammollati: 45 min / 100°C / vel soft",
-        "Tritare aglio e salvia: 3 sec / vel 6",
-        "Soffriggere: 2 min / 120°C / vel 1",
-        "Aggiungere resto ingredienti: 15 min / 100°C / vel soft",
-        "Aggiungere spinaci: 3 min / 100°C / vel 1"
-      ]
-    },
-    rationale: "Combinazione di legumi per proteine complete vegetali. Ricca di fibre solubili che favoriscono la sazietà e il controllo glicemico.",
-    season: ['autumn', 'winter', 'spring'],
-    antiInflammatory: true,
-    metabolicBoost: false
   }
 ];
 
@@ -452,181 +392,1259 @@ const getCurrentSeason = (date: Date): Season => {
   return 'winter';
 };
 
+const generateDietPlan = (profile: UserProfile): PersonalizedDiet => {
+  const bmr = calculateBMR(profile);
+  const tdee = calculateTDEE(bmr, profile.activity_level);
+  const targetCalories = getTargetCalories(tdee, profile.goal, profile.body_type);
+
+  const targetMacros = {
+    protein: (targetCalories * 0.3) / 4, // 30% delle calorie
+    carbs: (targetCalories * 0.4) / 4,   // 40% delle calorie
+    fat: (targetCalories * 0.3) / 9,     // 30% delle calorie
+    fiber: 30, // Valore standard
+  };
+
+  const weeklyPlan: DailyPlan[] = [];
+
+  for (let i = 1; i <= 7; i++) {
+    const dayMeals: { breakfast: Meal; lunch: Meal; snack: Meal; dinner: Meal; } = {} as any;
+    let dailyCalories = 0;
+    const selectedMeals: Meal[] = [];
+
+    const mealSlots: ('breakfast' | 'lunch' | 'snack' | 'dinner')[] = ['breakfast', 'lunch', 'snack', 'dinner'];
+
+    mealSlots.forEach(slot => {
+      const meal = selectMealForSlot(slot, targetCalories, profile, selectedMeals);
+      dayMeals[slot] = meal;
+      selectedMeals.push(meal);
+      dailyCalories += meal.calories;
+    });
+
+    const totals = selectedMeals.reduce((acc, meal) => ({
+      calories: acc.calories + meal.calories,
+      protein: acc.protein + meal.macros.protein,
+      carbs: acc.carbs + meal.macros.carbs,
+      fat: acc.fat + meal.macros.fat,
+      fiber: acc.fiber + meal.macros.fiber,
+    }), { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+
+    weeklyPlan.push({
+      day: i,
+      meals: dayMeals,
+      totals,
+      waterIntake: profile.gender === 'male' ? 3.7 : 2.7, // Raccomandazione generale
+      supplementTiming: [], // Da implementare
+    });
+  }
+
+  return {
+    weeklyPlan,
+    targetCalories,
+    targetMacros,
+    dailyWaterIntake: profile.gender === 'male' ? 3.7 : 2.7,
+    metabolicProfile: {
+      bmr,
+      tdee,
+      deficitCalories: tdee - targetCalories,
+      expectedWeightLossPerWeek: (tdee - targetCalories) * 7 / 7700, // 7700 kcal per kg di grasso
+    },
+    scientificRationale: 'Piano generato dinamicamente basato su BMR, TDEE, obiettivi e profilo utente.',
+  };
+};
+
 export const usePersonalizedDiet = () => {
   const { userProfile } = useProgressTracking();
   const [dietPlan, setDietPlan] = useState<PersonalizedDiet | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userProfile) {
+    if (userProfile) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastGeneratedDate = localStorage.getItem('dietLastGeneratedDate');
+
+      if (lastGeneratedDate !== today || !localStorage.getItem('dietPlan')) {
+        console.log('Generating new diet plan for today...');
+        const newPlan = generateDietPlan(userProfile);
+        setDietPlan(newPlan);
+        localStorage.setItem('dietPlan', JSON.stringify(newPlan));
+        localStorage.setItem('dietLastGeneratedDate', today);
+      } else {
+        console.log('Loading diet plan from cache...');
+        const cachedPlan = localStorage.getItem('dietPlan');
+        if (cachedPlan) {
+          setDietPlan(JSON.parse(cachedPlan));
+        }
+      }
       setLoading(false);
-      return;
     }
-
-    const generateAdvancedPlan = () => {
-      setLoading(true);
-
-      // --- 1. VALIDAZIONE DATI UTENTE ---
-      const { current_weight, height, age, gender, activity_level, goal, body_fat_percentage } = userProfile;
-      
-      if (!current_weight || !height || !age || !gender || !activity_level) {
-        setDietPlan(null); 
-        setLoading(false);
-        return;
-      }
-      
-      // --- 2. CALCOLI METABOLICI AVANZATI ---
-      const bmr = calculateAdvancedBMR(current_weight, height, age, gender, body_fat_percentage);
-      const tdee = bmr * (advancedActivityFactors[activity_level] || 1.50);
-      
-      // --- 3. DEFICIT/SURPLUS PERSONALIZZATO ---
-      const deficitRatio = calculateOptimalDeficit(goal || 'weight_loss', userProfile.targeted_fat_area, current_weight, userProfile.target_weight, body_fat_percentage);
-      const targetCalories = tdee + (tdee * deficitRatio);
-      
-      // --- 4. MACRONUTRIENTI OTTIMIZZATI ---
-      const targetMacros = calculateOptimalMacros(goal || 'weight_loss', userProfile.targeted_fat_area, targetCalories, current_weight);
-      
-      // --- 5. IDRATAZIONE PERSONALIZZATA ---
-      const currentSeason = getCurrentSeason(new Date());
-      const dailyWater = calculateDailyWaterIntake(current_weight, activity_level, currentSeason);
-      
-      // --- 6. SELEZIONE RICETTE STAGIONALI E FUNZIONALI ---
-      const seasonalMeals = mealDatabase.filter(meal => meal.season.includes(currentSeason));
-      
-      // Filtri specifici per obiettivo (più permissivo)
-      let functionalMeals = seasonalMeals;
-      if (goal === 'targeted_fat_loss') {
-        // Usa ricette anti-infiammatorie O metabolicamente attive (non entrambe)
-        functionalMeals = seasonalMeals.filter(meal => meal.antiInflammatory || meal.metabolicBoost);
-      }
-      
-      // Se non ci sono abbastanza ricette stagionali, usa tutte le ricette
-      if (functionalMeals.length < 3) {
-        functionalMeals = mealDatabase;
-      }
-      
-      let breakfasts = functionalMeals.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
-      let lunches = functionalMeals.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
-      let dinners = functionalMeals.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
-      
-
-      
-      // --- 7. CONTROLLO DISPONIBILITÀ RICETTE CON FALLBACK ROBUSTO ---
-      if (breakfasts.length === 0) {
-        breakfasts = mealDatabase.filter(m => m.name.toLowerCase().includes('skyr') || m.name.toLowerCase().includes('omelette'));
-      }
-      if (lunches.length === 0) {
-        lunches = mealDatabase.filter(m => m.name.toLowerCase().includes('salmone') || m.name.toLowerCase().includes('pollo'));
-      }
-      if (dinners.length === 0) {
-        dinners = mealDatabase.filter(m => m.name.toLowerCase().includes('zuppa') || m.name.toLowerCase().includes('lenticchie'));
-      }
-      
-      // Se ancora non ci sono ricette, crea un piano vuoto con solo i target
-      if (breakfasts.length === 0 || lunches.length === 0 || dinners.length === 0) {
-        setDietPlan({
-          weeklyPlan: [],
-          targetCalories: Math.round(targetCalories),
-          targetMacros,
-          dailyWaterIntake: dailyWater,
-          metabolicProfile: {
-            bmr: Math.round(bmr),
-            tdee: Math.round(tdee),
-            deficitCalories: Math.round(tdee - targetCalories),
-            expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
-          },
-          scientificRationale: `Piano basato su algoritmi scientifici per ${goal || 'perdita peso'} con deficit del ${Math.round(deficitRatio * 100)}%`
-        });
-        setLoading(false);
-        return;
-      }
-      
-      // --- 8. GENERAZIONE PIANO SETTIMANALE ---
-      const weeklyPlan: DailyPlan[] = [];
-      
-      for (let i = 1; i <= 7; i++) {
-        const breakfast = breakfasts[Math.floor(Math.random() * breakfasts.length)];
-        const lunch = lunches[Math.floor(Math.random() * lunches.length)];
-        const dinner = dinners[Math.floor(Math.random() * dinners.length)];
-        
-        // Spuntino ottimizzato per obiettivo
-        const snack: Meal = {
-          name: "Mix Proteico Anti-Infiammatorio",
-          calories: 280,
-          macros: { protein: 12, carbs: 18, fat: 16, fiber: 6 },
-          ingredients: [
-            {item: "Mandorle non salate", amount: "25g", notes: "ricche di vitamina E"},
-            {item: "Mirtilli freschi", amount: "80g", notes: "antocianine antiossidanti"},
-            {item: "Tè verde", amount: "1 tazza", notes: "EGCG termogenico"}
-          ],
-          preparation: {
-            traditional: ["Consumare mandorle e mirtilli insieme", "Accompagnare con tè verde caldo"],
-            thermomix: ["Non necessaria preparazione speciale"]
-          },
-          rationale: "Spuntino formulato per sostenere il metabolismo dei grassi e ridurre l'infiammazione sistemica tra i pasti principali.",
-          season: ['spring', 'summer', 'autumn', 'winter'],
-          antiInflammatory: true,
-          metabolicBoost: true
-        };
-
-        const dailyMeals = { breakfast, lunch, snack, dinner };
-        const dailyTotals = Object.values(dailyMeals).reduce((acc, meal) => {
-          acc.calories += meal.calories;
-          acc.protein += meal.macros.protein;
-          acc.carbs += meal.macros.carbs;
-          acc.fat += meal.macros.fat;
-          acc.fiber += meal.macros.fiber;
-          return acc;
-        }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
-
-        weeklyPlan.push({
-          day: i,
-          meals: dailyMeals,
-          totals: dailyTotals,
-          waterIntake: dailyWater,
-          supplementTiming: [
-            "Omega-3: con pranzo",
-            "Vitamina D3: con colazione",
-            "Magnesio: prima di dormire"
-          ]
-        });
-      }
-
-      // --- 9. PIANO FINALE CON PROFILO METABOLICO ---
-      const finalPlan: PersonalizedDiet = {
-        weeklyPlan,
-        targetCalories: Math.round(targetCalories),
-        targetMacros,
-        dailyWaterIntake: dailyWater,
-        metabolicProfile: {
-          bmr: Math.round(bmr),
-          tdee: Math.round(tdee),
-          deficitCalories: Math.round(tdee - targetCalories),
-          expectedWeightLossPerWeek: Math.round((tdee - targetCalories) * 7 / 7700 * 10) / 10
-        },
-        scientificRationale: goal === 'targeted_fat_loss' 
-          ? (() => {
-              const fatAreaDescriptions = {
-                'abdominal': 'Piano specifico per grasso addominale con focus su riduzione insulino-resistenza, controllo cortisolo e alimenti anti-infiammatori per combattere il grasso viscerale',
-                'gynecomastia': 'Strategia anti-aromatasi con inibitori naturali di estrogeni (DIM, crucifere), modulatori ormonali e deficit calibrato per ridurre il tessuto mammario maschile',
-                'love_handles': 'Approccio mirato per grasso ostinato dei fianchi con protocollo anti-infiammatorio, allenamento rotazionale e nutrizione per mobilizzare i depositi laterali',
-                'thighs': 'Piano femminile-specifico per grasso femorale con focus su circolazione, drenaggio linfatico, alimenti anti-cellulite e modulazione ormonale estrogeni-progesterone',
-                'back_fat': 'Strategia per grasso inter-scapolare con combinazione di allenamento dorsale, correzione posturale e nutrizione anti-infiammatoria per ridurre depositi posteriori',
-                'overall': 'Approccio sistemico multi-area che combina strategie anti-infiammatorie, modulazione ormonale e protocolli specifici per riduzione generale del grasso localizzato'
-              };
-              return fatAreaDescriptions[userProfile.targeted_fat_area as keyof typeof fatAreaDescriptions] || 
-                     'Piano ottimizzato per la riduzione del grasso localizzato attraverso alimenti anti-infiammatori e modulatori metabolici';
-            })()
-          : `Piano scientificamente calibrato per ${goal || 'perdita peso'} con approccio metabolico personalizzato`
-      };
-      
-      setDietPlan(finalPlan);
-      setLoading(false);
-    };
-
-    generateAdvancedPlan();
-
   }, [userProfile]);
 
   return { dietPlan, loading };
-}; 
+};
+
+// --- LOGICA DI CALCOLO E GENERAZIONE --- 
+
+const calculateBMR = (profile: UserProfile): number => {
+  const { current_weight, height, age, gender, body_fat_percentage, metabolic_rate } = profile;
+
+  let bmr;
+  // Katch-McArdle se il grasso corporeo è noto (più accurato)
+  if (body_fat_percentage && body_fat_percentage > 0) {
+    const leanBodyMass = current_weight * (1 - body_fat_percentage / 100);
+    bmr = 370 + (21.6 * leanBodyMass);
+  } else {
+    // Mifflin-St Jeor altrimenti
+    if (gender === 'male') {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age - 161;
+    }
+  }
+
+  // Aggiustamento basato sul metabolismo percepito
+  switch (metabolic_rate) {
+    case 'slow':
+      return bmr * 0.9; // Riduci del 10%
+    case 'fast':
+      return bmr * 1.1; // Aumenta del 10%
+    default:
+      return bmr;
+  }
+};
+
+const calculateTDEE = (bmr: number, activity_level: UserProfile['activity_level']): number => {
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
+  return bmr * activityMultipliers[activity_level];
+};
+
+const getTargetCalories = (tdee: number, goal: UserProfile['goal'], body_type?: UserProfile['body_type']): number => {
+  let adjustment = 0;
+  switch (goal) {
+    case 'weight_loss':
+    case 'targeted_fat_loss':
+      adjustment = -500; // Deficit calorico standard
+      if (body_type === 'endomorph') adjustment -= 150; // Endomorfi richiedono un deficit maggiore
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi un deficit minore
+      break;
+    case 'muscle_gain':
+      adjustment = 300; // Surplus calorico standard
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi richiedono un surplus maggiore
+      if (body_type === 'endomorph') adjustment -= 100; // Endomorfi un surplus minore
+      break;
+    case 'maintenance':
+    default:
+      return tdee;
+  }
+  return tdee + adjustment;
+};
+
+const selectMealForSlot = (
+  slot: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+  targetCalories: number,
+  profile: UserProfile,
+  existingMeals: Meal[]
+): Meal => {
+  const { goal, targeted_fat_area, stress_level, dietary_preferences } = profile;
+
+  let filteredMeals = mealDatabase.filter(meal => !existingMeals.some(existing => existing.name === meal.name));
+
+  // Filtra per preferenze dietetiche
+  if (dietary_preferences?.vegan) {
+    // Logica per vegano
+  }
+  if (dietary_preferences?.vegetarian) {
+    // Logica per vegetariano
+  }
+
+  // Filtra per obiettivo specifico
+  if (goal === 'targeted_fat_loss') {
+    filteredMeals = filteredMeals.filter(m => m.antiInflammatory);
+    if (targeted_fat_area === 'abdominal' || stress_level === 'high') {
+      // Privilegia cibi che aiutano a gestire il cortisolo
+    }
+  } else if (goal === 'muscle_gain') {
+    // Privilegia cibi ad alto contenuto proteico
+  }
+
+  // Scegli un pasto casuale tra quelli filtrati
+  const randomMeal = filteredMeals[Math.floor(Math.random() * filteredMeals.length)];
+  return randomMeal || mealDatabase[0]; // Fallback
+};
+
+interface UserProfile {
+  weight: number;
+  height: number;
+  age: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  goal: 'fat_loss' | 'muscle_gain' | 'maintenance';
+  problemAreas: {
+    chest: boolean;  // ginecomastia
+    abdomen: boolean;  // grasso viscerale
+    hips: boolean;  // accumulo fianchi
+  };
+  dietaryPreferences: {
+    vegan: boolean;
+    vegetarian: boolean;
+    keto: boolean;
+    mediterranean: boolean;
+  };
+  metabolicProfile: {
+    insulinSensitive: boolean;
+    stressLevel: 'low' | 'moderate' | 'high';
+    sleepQuality: 'poor' | 'moderate' | 'good';
+    digestion: 'poor' | 'moderate' | 'good';
+  };
+}
+
+const generateDietPlan = (profile: UserProfile): DailyPlan[] => {
+  // Calcolo BMR usando l'equazione di Mifflin-St Jeor
+  const bmr = profile.gender === 'male'
+    ? (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5
+    : (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161;
+
+  // Moltiplicatori per livello di attività
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9
+  };
+
+  // Calcolo TDEE (Total Daily Energy Expenditure)
+  const tdee = bmr * activityMultipliers[profile.activityLevel];
+
+  // Aggiustamento calorie in base all'obiettivo
+  let targetCalories = tdee;
+  switch(profile.goal) {
+    case 'fat_loss':
+      targetCalories *= 0.8; // Deficit del 20%
+      break;
+    case 'muscle_gain':
+      targetCalories *= 1.1; // Surplus del 10%
+      break;
+    // maintenance rimane uguale a tdee
+  }
+
+  // Selezione pasti in base alle aree problematiche
+  const selectMealsForProblemAreas = (meals: Meal[]): Meal[] => {
+    let selectedMeals = [...meals];
+    
+    if (profile.problemAreas.chest) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-aromatasi') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('dim') || 
+          ing.notes?.toLowerCase().includes('anti-estrogeni')
+        )
+      );
+    }
+
+    if (profile.problemAreas.abdomen) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-cortisolo') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('termogenico') || 
+          ing.notes?.toLowerCase().includes('anti-infiammatoria')
+        )
+      );
+    }
+
+    if (profile.problemAreas.hips) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('drenante') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('drenante') || 
+          ing.notes?.toLowerCase().includes('detox')
+        )
+      );
+    }
+
+    return selectedMeals;
+  };
+
+  // Aggiustamento pasti in base al profilo metabolico
+  const adjustMealsForMetabolicProfile = (meals: Meal[]): Meal[] => {
+    let adjustedMeals = [...meals];
+
+    if (!profile.metabolicProfile.insulinSensitive) {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('controllo glicemico')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.stressLevel === 'high') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('riduce cortisolo') || 
+          ing.notes?.toLowerCase().includes('anti-stress')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.sleepQuality === 'poor') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('magnesio') || 
+          ing.notes?.toLowerCase().includes('rilassante')
+        )
+      );
+    }
+
+    return adjustedMeals;
+  };
+
+  // Generazione piano settimanale
+  const weeklyPlan: DailyPlan[] = Array.from({ length: 7 }, (_, dayIndex) => {
+    // Filtraggio pasti in base a tutti i criteri
+    let availableMeals = mealDatabase;
+    availableMeals = selectMealsForProblemAreas(availableMeals);
+    availableMeals = adjustMealsForMetabolicProfile(availableMeals);
+
+    // Selezione casuale dei pasti per il giorno
+    const dailyMeals = [];
+    for (let i = 0; i < 3; i++) {
+      const randomIndex = Math.floor(Math.random() * availableMeals.length);
+      dailyMeals.push(availableMeals[randomIndex]);
+    }
+
+    return {
+      date: new Date(Date.now() + dayIndex * 24 * 60 * 60 * 1000),
+      meals: dailyMeals,
+      totalCalories: dailyMeals.reduce((sum, meal) => sum + meal.calories, 0),
+      totalMacros: {
+        protein: dailyMeals.reduce((sum, meal) => sum + meal.macros.protein, 0),
+        carbs: dailyMeals.reduce((sum, meal) => sum + meal.macros.carbs, 0),
+        fat: dailyMeals.reduce((sum, meal) => sum + meal.macros.fat, 0),
+        fiber: dailyMeals.reduce((sum, meal) => sum + meal.macros.fiber, 0)
+      }
+    };
+  });
+
+  return weeklyPlan;
+};
+
+export const usePersonalizedDiet = () => {
+  const { userProfile } = useProgressTracking();
+  const [dietPlan, setDietPlan] = useState<PersonalizedDiet | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userProfile) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastGeneratedDate = localStorage.getItem('dietLastGeneratedDate');
+
+      if (lastGeneratedDate !== today || !localStorage.getItem('dietPlan')) {
+        console.log('Generating new diet plan for today...');
+        const newPlan = generateDietPlan(userProfile);
+        setDietPlan(newPlan);
+        localStorage.setItem('dietPlan', JSON.stringify(newPlan));
+        localStorage.setItem('dietLastGeneratedDate', today);
+      } else {
+        console.log('Loading diet plan from cache...');
+        const cachedPlan = localStorage.getItem('dietPlan');
+        if (cachedPlan) {
+          setDietPlan(JSON.parse(cachedPlan));
+        }
+      }
+      setLoading(false);
+    }
+  }, [userProfile]);
+
+  return { dietPlan, loading };
+};
+
+const calculateBMR = (profile: UserProfile): number => {
+  const { current_weight, height, age, gender, body_fat_percentage, metabolic_rate } = profile;
+
+  let bmr;
+  // Katch-McArdle se il grasso corporeo è noto (più accurato)
+  if (body_fat_percentage && body_fat_percentage > 0) {
+    const leanBodyMass = current_weight * (1 - body_fat_percentage / 100);
+    bmr = 370 + (21.6 * leanBodyMass);
+  } else {
+    // Mifflin-St Jeor altrimenti
+    if (gender === 'male') {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age - 161;
+    }
+  }
+
+  // Aggiustamento basato sul metabolismo percepito
+  switch (metabolic_rate) {
+    case 'slow':
+      return bmr * 0.9; // Riduci del 10%
+    case 'fast':
+      return bmr * 1.1; // Aumenta del 10%
+    default:
+      return bmr;
+  }
+};
+
+const calculateTDEE = (bmr: number, activity_level: UserProfile['activity_level']): number => {
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
+  return bmr * activityMultipliers[activity_level];
+};
+
+const getTargetCalories = (tdee: number, goal: UserProfile['goal'], body_type?: UserProfile['body_type']): number => {
+  let adjustment = 0;
+  switch (goal) {
+    case 'weight_loss':
+    case 'targeted_fat_loss':
+      adjustment = -500; // Deficit calorico standard
+      if (body_type === 'endomorph') adjustment -= 150; // Endomorfi richiedono un deficit maggiore
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi un deficit minore
+      break;
+    case 'muscle_gain':
+      adjustment = 300; // Surplus calorico standard
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi richiedono un surplus maggiore
+      if (body_type === 'endomorph') adjustment -= 100; // Endomorfi un surplus minore
+      break;
+    case 'maintenance':
+    default:
+      return tdee;
+  }
+  return tdee + adjustment;
+};
+
+const selectMealForSlot = (
+  slot: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+  targetCalories: number,
+  profile: UserProfile,
+  existingMeals: Meal[]
+): Meal => {
+  const { goal, targeted_fat_area, stress_level, dietary_preferences } = profile;
+
+  let filteredMeals = mealDatabase.filter(meal => !existingMeals.some(existing => existing.name === meal.name));
+
+  // Filtra per preferenze dietetiche
+  if (dietary_preferences?.vegan) {
+    // Logica per vegano
+  }
+  if (dietary_preferences?.vegetarian) {
+    // Logica per vegetariano
+  }
+
+  // Filtra per obiettivo specifico
+  if (goal === 'targeted_fat_loss') {
+    filteredMeals = filteredMeals.filter(m => m.antiInflammatory);
+    if (targeted_fat_area === 'abdominal' || stress_level === 'high') {
+      // Privilegia cibi che aiutano a gestire il cortisolo
+    }
+  } else if (goal === 'muscle_gain') {
+    // Privilegia cibi ad alto contenuto proteico
+  }
+
+  // Scegli un pasto casuale tra quelli filtrati
+  const randomMeal = filteredMeals[Math.floor(Math.random() * filteredMeals.length)];
+  return randomMeal || mealDatabase[0]; // Fallback
+};
+
+interface UserProfile {
+  weight: number;
+  height: number;
+  age: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  goal: 'fat_loss' | 'muscle_gain' | 'maintenance';
+  problemAreas: {
+    chest: boolean;  // ginecomastia
+    abdomen: boolean;  // grasso viscerale
+    hips: boolean;  // accumulo fianchi
+  };
+  dietaryPreferences: {
+    vegan: boolean;
+    vegetarian: boolean;
+    keto: boolean;
+    mediterranean: boolean;
+  };
+  metabolicProfile: {
+    insulinSensitive: boolean;
+    stressLevel: 'low' | 'moderate' | 'high';
+    sleepQuality: 'poor' | 'moderate' | 'good';
+    digestion: 'poor' | 'moderate' | 'good';
+  };
+}
+
+const generateDietPlan = (profile: UserProfile): DailyPlan[] => {
+  // Calcolo BMR usando l'equazione di Mifflin-St Jeor
+  const bmr = profile.gender === 'male'
+    ? (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5
+    : (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161;
+
+  // Moltiplicatori per livello di attività
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9
+  };
+
+  // Calcolo TDEE (Total Daily Energy Expenditure)
+  const tdee = bmr * activityMultipliers[profile.activityLevel];
+
+  // Aggiustamento calorie in base all'obiettivo
+  let targetCalories = tdee;
+  switch(profile.goal) {
+    case 'fat_loss':
+      targetCalories *= 0.8; // Deficit del 20%
+      break;
+    case 'muscle_gain':
+      targetCalories *= 1.1; // Surplus del 10%
+      break;
+    // maintenance rimane uguale a tdee
+  }
+
+  // Selezione pasti in base alle aree problematiche
+  const selectMealsForProblemAreas = (meals: Meal[]): Meal[] => {
+    let selectedMeals = [...meals];
+    
+    if (profile.problemAreas.chest) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-aromatasi') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('dim') || 
+          ing.notes?.toLowerCase().includes('anti-estrogeni')
+        )
+      );
+    }
+
+    if (profile.problemAreas.abdomen) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-cortisolo') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('termogenico') || 
+          ing.notes?.toLowerCase().includes('anti-infiammatoria')
+        )
+      );
+    }
+
+    if (profile.problemAreas.hips) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('drenante') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('drenante') || 
+          ing.notes?.toLowerCase().includes('detox')
+        )
+      );
+    }
+
+    return selectedMeals;
+  };
+
+  // Aggiustamento pasti in base al profilo metabolico
+  const adjustMealsForMetabolicProfile = (meals: Meal[]): Meal[] => {
+    let adjustedMeals = [...meals];
+
+    if (!profile.metabolicProfile.insulinSensitive) {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('controllo glicemico')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.stressLevel === 'high') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('riduce cortisolo') || 
+          ing.notes?.toLowerCase().includes('anti-stress')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.sleepQuality === 'poor') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('magnesio') || 
+          ing.notes?.toLowerCase().includes('rilassante')
+        )
+      );
+    }
+
+    return adjustedMeals;
+  };
+
+  // Generazione piano settimanale
+  const weeklyPlan: DailyPlan[] = Array.from({ length: 7 }, (_, dayIndex) => {
+    // Filtraggio pasti in base a tutti i criteri
+    let availableMeals = mealDatabase;
+    availableMeals = selectMealsForProblemAreas(availableMeals);
+    availableMeals = adjustMealsForMetabolicProfile(availableMeals);
+
+    // Selezione casuale dei pasti per il giorno
+    const dailyMeals = [];
+    for (let i = 0; i < 3; i++) {
+      const randomIndex = Math.floor(Math.random() * availableMeals.length);
+      dailyMeals.push(availableMeals[randomIndex]);
+    }
+
+    return {
+      date: new Date(Date.now() + dayIndex * 24 * 60 * 60 * 1000),
+      meals: dailyMeals,
+      totalCalories: dailyMeals.reduce((sum, meal) => sum + meal.calories, 0),
+      totalMacros: {
+        protein: dailyMeals.reduce((sum, meal) => sum + meal.macros.protein, 0),
+        carbs: dailyMeals.reduce((sum, meal) => sum + meal.macros.carbs, 0),
+        fat: dailyMeals.reduce((sum, meal) => sum + meal.macros.fat, 0),
+        fiber: dailyMeals.reduce((sum, meal) => sum + meal.macros.fiber, 0)
+      }
+    };
+  });
+
+  return weeklyPlan;
+};
+
+export const usePersonalizedDiet = () => {
+  const { userProfile } = useProgressTracking();
+  const [dietPlan, setDietPlan] = useState<PersonalizedDiet | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userProfile) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastGeneratedDate = localStorage.getItem('dietLastGeneratedDate');
+
+      if (lastGeneratedDate !== today || !localStorage.getItem('dietPlan')) {
+        console.log('Generating new diet plan for today...');
+        const newPlan = generateDietPlan(userProfile);
+        setDietPlan(newPlan);
+        localStorage.setItem('dietPlan', JSON.stringify(newPlan));
+        localStorage.setItem('dietLastGeneratedDate', today);
+      } else {
+        console.log('Loading diet plan from cache...');
+        const cachedPlan = localStorage.getItem('dietPlan');
+        if (cachedPlan) {
+          setDietPlan(JSON.parse(cachedPlan));
+        }
+      }
+      setLoading(false);
+    }
+  }, [userProfile]);
+
+  return { dietPlan, loading };
+};
+
+const calculateBMR = (profile: UserProfile): number => {
+  const { current_weight, height, age, gender, body_fat_percentage, metabolic_rate } = profile;
+
+  let bmr;
+  // Katch-McArdle se il grasso corporeo è noto (più accurato)
+  if (body_fat_percentage && body_fat_percentage > 0) {
+    const leanBodyMass = current_weight * (1 - body_fat_percentage / 100);
+    bmr = 370 + (21.6 * leanBodyMass);
+  } else {
+    // Mifflin-St Jeor altrimenti
+    if (gender === 'male') {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age - 161;
+    }
+  }
+
+  // Aggiustamento basato sul metabolismo percepito
+  switch (metabolic_rate) {
+    case 'slow':
+      return bmr * 0.9; // Riduci del 10%
+    case 'fast':
+      return bmr * 1.1; // Aumenta del 10%
+    default:
+      return bmr;
+  }
+};
+
+const calculateTDEE = (bmr: number, activity_level: UserProfile['activity_level']): number => {
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
+  return bmr * activityMultipliers[activity_level];
+};
+
+const getTargetCalories = (tdee: number, goal: UserProfile['goal'], body_type?: UserProfile['body_type']): number => {
+  let adjustment = 0;
+  switch (goal) {
+    case 'weight_loss':
+    case 'targeted_fat_loss':
+      adjustment = -500; // Deficit calorico standard
+      if (body_type === 'endomorph') adjustment -= 150; // Endomorfi richiedono un deficit maggiore
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi un deficit minore
+      break;
+    case 'muscle_gain':
+      adjustment = 300; // Surplus calorico standard
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi richiedono un surplus maggiore
+      if (body_type === 'endomorph') adjustment -= 100; // Endomorfi un surplus minore
+      break;
+    case 'maintenance':
+    default:
+      return tdee;
+  }
+  return tdee + adjustment;
+};
+
+const selectMealForSlot = (
+  slot: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+  targetCalories: number,
+  profile: UserProfile,
+  existingMeals: Meal[]
+): Meal => {
+  const { goal, targeted_fat_area, stress_level, dietary_preferences } = profile;
+
+  let filteredMeals = mealDatabase.filter(meal => !existingMeals.some(existing => existing.name === meal.name));
+
+  // Filtra per preferenze dietetiche
+  if (dietary_preferences?.vegan) {
+    // Logica per vegano
+  }
+  if (dietary_preferences?.vegetarian) {
+    // Logica per vegetariano
+  }
+
+  // Filtra per obiettivo specifico
+  if (goal === 'targeted_fat_loss') {
+    filteredMeals = filteredMeals.filter(m => m.antiInflammatory);
+    if (targeted_fat_area === 'abdominal' || stress_level === 'high') {
+      // Privilegia cibi che aiutano a gestire il cortisolo
+    }
+  } else if (goal === 'muscle_gain') {
+    // Privilegia cibi ad alto contenuto proteico
+  }
+
+  // Scegli un pasto casuale tra quelli filtrati
+  const randomMeal = filteredMeals[Math.floor(Math.random() * filteredMeals.length)];
+  return randomMeal || mealDatabase[0]; // Fallback
+};
+
+interface UserProfile {
+  weight: number;
+  height: number;
+  age: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  goal: 'fat_loss' | 'muscle_gain' | 'maintenance';
+  problemAreas: {
+    chest: boolean;  // ginecomastia
+    abdomen: boolean;  // grasso viscerale
+    hips: boolean;  // accumulo fianchi
+  };
+  dietaryPreferences: {
+    vegan: boolean;
+    vegetarian: boolean;
+    keto: boolean;
+    mediterranean: boolean;
+  };
+  metabolicProfile: {
+    insulinSensitive: boolean;
+    stressLevel: 'low' | 'moderate' | 'high';
+    sleepQuality: 'poor' | 'moderate' | 'good';
+    digestion: 'poor' | 'moderate' | 'good';
+  };
+}
+
+const generateDietPlan = (profile: UserProfile): DailyPlan[] => {
+  // Calcolo BMR usando l'equazione di Mifflin-St Jeor
+  const bmr = profile.gender === 'male'
+    ? (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5
+    : (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161;
+
+  // Moltiplicatori per livello di attività
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9
+  };
+
+  // Calcolo TDEE (Total Daily Energy Expenditure)
+  const tdee = bmr * activityMultipliers[profile.activityLevel];
+
+  // Aggiustamento calorie in base all'obiettivo
+  let targetCalories = tdee;
+  switch(profile.goal) {
+    case 'fat_loss':
+      targetCalories *= 0.8; // Deficit del 20%
+      break;
+    case 'muscle_gain':
+      targetCalories *= 1.1; // Surplus del 10%
+      break;
+    // maintenance rimane uguale a tdee
+  }
+
+  // Selezione pasti in base alle aree problematiche
+  const selectMealsForProblemAreas = (meals: Meal[]): Meal[] => {
+    let selectedMeals = [...meals];
+    
+    if (profile.problemAreas.chest) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-aromatasi') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('dim') || 
+          ing.notes?.toLowerCase().includes('anti-estrogeni')
+        )
+      );
+    }
+
+    if (profile.problemAreas.abdomen) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-cortisolo') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('termogenico') || 
+          ing.notes?.toLowerCase().includes('anti-infiammatoria')
+        )
+      );
+    }
+
+    if (profile.problemAreas.hips) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('drenante') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('drenante') || 
+          ing.notes?.toLowerCase().includes('detox')
+        )
+      );
+    }
+
+    return selectedMeals;
+  };
+
+  // Aggiustamento pasti in base al profilo metabolico
+  const adjustMealsForMetabolicProfile = (meals: Meal[]): Meal[] => {
+    let adjustedMeals = [...meals];
+
+    if (!profile.metabolicProfile.insulinSensitive) {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('controllo glicemico')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.stressLevel === 'high') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('riduce cortisolo') || 
+          ing.notes?.toLowerCase().includes('anti-stress')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.sleepQuality === 'poor') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('magnesio') || 
+          ing.notes?.toLowerCase().includes('rilassante')
+        )
+      );
+    }
+
+    return adjustedMeals;
+  };
+
+  // Generazione piano settimanale
+  const weeklyPlan: DailyPlan[] = Array.from({ length: 7 }, (_, dayIndex) => {
+    // Filtraggio pasti in base a tutti i criteri
+    let availableMeals = mealDatabase;
+    availableMeals = selectMealsForProblemAreas(availableMeals);
+    availableMeals = adjustMealsForMetabolicProfile(availableMeals);
+
+    // Selezione casuale dei pasti per il giorno
+    const dailyMeals = [];
+    for (let i = 0; i < 3; i++) {
+      const randomIndex = Math.floor(Math.random() * availableMeals.length);
+      dailyMeals.push(availableMeals[randomIndex]);
+    }
+
+    return {
+      date: new Date(Date.now() + dayIndex * 24 * 60 * 60 * 1000),
+      meals: dailyMeals,
+      totalCalories: dailyMeals.reduce((sum, meal) => sum + meal.calories, 0),
+      totalMacros: {
+        protein: dailyMeals.reduce((sum, meal) => sum + meal.macros.protein, 0),
+        carbs: dailyMeals.reduce((sum, meal) => sum + meal.macros.carbs, 0),
+        fat: dailyMeals.reduce((sum, meal) => sum + meal.macros.fat, 0),
+        fiber: dailyMeals.reduce((sum, meal) => sum + meal.macros.fiber, 0)
+      }
+    };
+  });
+
+  return weeklyPlan;
+};
+
+export const usePersonalizedDiet = () => {
+  const { userProfile } = useProgressTracking();
+  const [dietPlan, setDietPlan] = useState<PersonalizedDiet | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userProfile) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastGeneratedDate = localStorage.getItem('dietLastGeneratedDate');
+
+      if (lastGeneratedDate !== today || !localStorage.getItem('dietPlan')) {
+        console.log('Generating new diet plan for today...');
+        const newPlan = generateDietPlan(userProfile);
+        setDietPlan(newPlan);
+        localStorage.setItem('dietPlan', JSON.stringify(newPlan));
+        localStorage.setItem('dietLastGeneratedDate', today);
+      } else {
+        console.log('Loading diet plan from cache...');
+        const cachedPlan = localStorage.getItem('dietPlan');
+        if (cachedPlan) {
+          setDietPlan(JSON.parse(cachedPlan));
+        }
+      }
+      setLoading(false);
+    }
+  }, [userProfile]);
+
+  return { dietPlan, loading };
+};
+
+const calculateBMR = (profile: UserProfile): number => {
+  const { current_weight, height, age, gender, body_fat_percentage, metabolic_rate } = profile;
+
+  let bmr;
+  // Katch-McArdle se il grasso corporeo è noto (più accurate)
+  if (body_fat_percentage && body_fat_percentage > 0) {
+    const leanBodyMass = current_weight * (1 - body_fat_percentage / 100);
+    bmr = 370 + (21.6 * leanBodyMass);
+  } else {
+    // Mifflin-St Jeor altrimenti
+    if (gender === 'male') {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age - 161;
+    }
+  }
+
+  // Aggiustamento basato sul metabolismo percepito
+  switch (metabolic_rate) {
+    case 'slow':
+      return bmr * 0.9; // Riduci del 10%
+    case 'fast':
+      return bmr * 1.1; // Aumenta del 10%
+    default:
+      return bmr;
+  }
+};
+
+const calculateTDEE = (bmr: number, activity_level: UserProfile['activity_level']): number => {
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
+  return bmr * activityMultipliers[activity_level];
+};
+
+const getTargetCalories = (tdee: number, goal: UserProfile['goal'], body_type?: UserProfile['body_type']): number => {
+  let adjustment = 0;
+  switch (goal) {
+    case 'weight_loss':
+    case 'targeted_fat_loss':
+      adjustment = -500; // Deficit calorico standard
+      if (body_type === 'endomorph') adjustment -= 150; // Endomorfi richiedono un deficit maggiore
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi un deficit minore
+      break;
+    case 'muscle_gain':
+      adjustment = 300; // Surplus calorico standard
+      if (body_type === 'ectomorph') adjustment += 150; // Ectomorfi richiedono un surplus maggiore
+      if (body_type === 'endomorph') adjustment -= 100; // Endomorfi un surplus minore
+      break;
+    case 'maintenance':
+    default:
+      return tdee;
+  }
+  return tdee + adjustment;
+};
+
+const selectMealForSlot = (
+  slot: 'breakfast' | 'lunch' | 'snack' | 'dinner',
+  targetCalories: number,
+  profile: UserProfile,
+  existingMeals: Meal[]
+): Meal => {
+  const { goal, targeted_fat_area, stress_level, dietary_preferences } = profile;
+
+  let filteredMeals = mealDatabase.filter(meal => !existingMeals.some(existing => existing.name === meal.name));
+
+  // Filtra per preferenze dietetiche
+  if (dietary_preferences?.vegan) {
+    // Logica per vegano
+  }
+  if (dietary_preferences?.vegetarian) {
+    // Logica per vegetariano
+  }
+
+  // Filtra per obiettivo specifico
+  if (goal === 'targeted_fat_loss') {
+    filteredMeals = filteredMeals.filter(m => m.antiInflammatory);
+    if (targeted_fat_area === 'abdominal' || stress_level === 'high') {
+      // Privilegia cibi che aiutano a gestire il cortisolo
+    }
+  } else if (goal === 'muscle_gain') {
+    // Privilegia cibi ad alto contenuto proteico
+  }
+
+  // Scegli un pasto casuale tra quelli filtrati
+  const randomMeal = filteredMeals[Math.floor(Math.random() * filteredMeals.length)];
+  return randomMeal || mealDatabase[0]; // Fallback
+};
+
+interface UserProfile {
+  weight: number;
+  height: number;
+  age: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  goal: 'fat_loss' | 'muscle_gain' | 'maintenance';
+  problemAreas: {
+    chest: boolean;  // ginecomastia
+    abdomen: boolean;  // grasso viscerale
+    hips: boolean;  // accumulo fianchi
+  };
+  dietaryPreferences: {
+    vegan: boolean;
+    vegetarian: boolean;
+    keto: boolean;
+    mediterranean: boolean;
+  };
+  metabolicProfile: {
+    insulinSensitive: boolean;
+    stressLevel: 'low' | 'moderate' | 'high';
+    sleepQuality: 'poor' | 'moderate' | 'good';
+    digestion: 'poor' | 'moderate' | 'good';
+  };
+}
+
+const generateDietPlan = (profile: UserProfile): DailyPlan[] => {
+  // Calcolo BMR usando l'equazione di Mifflin-St Jeor
+  const bmr = profile.gender === 'male'
+    ? (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5
+    : (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161;
+
+  // Moltiplicatori per livello di attività
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9
+  };
+
+  // Calcolo TDEE (Total Daily Energy Expenditure)
+  const tdee = bmr * activityMultipliers[profile.activityLevel];
+
+  // Aggiustamento calorie in base all'obiettivo
+  let targetCalories = tdee;
+  switch(profile.goal) {
+    case 'fat_loss':
+      targetCalories *= 0.8; // Deficit del 20%
+      break;
+    case 'muscle_gain':
+      targetCalories *= 1.1; // Surplus del 10%
+      break;
+    // maintenance rimane uguale a tdee
+  }
+
+  // Selezione pasti in base alle aree problematiche
+  const selectMealsForProblemAreas = (meals: Meal[]): Meal[] => {
+    let selectedMeals = [...meals];
+    
+    if (profile.problemAreas.chest) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-aromatasi') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('dim') || 
+          ing.notes?.toLowerCase().includes('anti-estrogeni')
+        )
+      );
+    }
+
+    if (profile.problemAreas.abdomen) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('anti-cortisolo') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('termogenico') || 
+          ing.notes?.toLowerCase().includes('anti-infiammatoria')
+        )
+      );
+    }
+
+    if (profile.problemAreas.hips) {
+      selectedMeals = selectedMeals.filter(meal => 
+        meal.name.toLowerCase().includes('drenante') || 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('drenante') || 
+          ing.notes?.toLowerCase().includes('detox')
+        )
+      );
+    }
+
+    return selectedMeals;
+  };
+
+  // Aggiustamento pasti in base al profilo metabolico
+  const adjustMealsForMetabolicProfile = (meals: Meal[]): Meal[] => {
+    let adjustedMeals = [...meals];
+
+    if (!profile.metabolicProfile.insulinSensitive) {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('controllo glicemico')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.stressLevel === 'high') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('riduce cortisolo') || 
+          ing.notes?.toLowerCase().includes('anti-stress')
+        )
+      );
+    }
+
+    if (profile.metabolicProfile.sleepQuality === 'poor') {
+      adjustedMeals = adjustedMeals.filter(meal => 
+        meal.ingredients.some(ing => 
+          ing.notes?.toLowerCase().includes('magnesio') || 
+          ing.notes?.toLowerCase().includes('rilassante')
+        )
+      );
+    }
+
+    return adjustedMeals;
+  };
+
+  // Generazione piano settimanale
+  const weeklyPlan: DailyPlan[] = Array.from({ length: 7 }, (_, dayIndex) => {
+    // Filtraggio pasti in base a tutti i criteri
+    let availableMeals = mealDatabase;
+    availableMeals = selectMealsForProblemAreas(availableMeals);
+    availableMeals = adjustMealsForMetabolicProfile(availableMeals);
+
+    // Selezione casuale dei pasti per il giorno
+    const dailyMeals = [];
+    for (let i = 0; i < 3; i++) {
+      const randomIndex = Math.floor(Math.random() * availableMeals.length);
+      dailyMeals.push(availableMeals[randomIndex]);
+    }
+
+    return {
+      date: new Date(Date.now() + dayIndex * 24 * 60 * 60 * 1000),
+      meals: dailyMeals,
+      totalCalories: dailyMeals.reduce((sum, meal) => sum + meal.calories, 0),
+      totalMacros: {
+        protein: dailyMeals.reduce((sum, meal) => sum + meal.macros.protein, 0),
+        carbs: dailyMeals.reduce((sum, meal) => sum + meal.macros.carbs, 0),
+        fat: dailyMeals.reduce((sum, meal) => sum + meal.macros.fat, 0),
+        fiber: dailyMeals.reduce((sum, meal) => sum + meal.macros.fiber, 0)
+      }
+    };
+  });
+
+  return weeklyPlan;
+};
+
+export const usePersonalizedDiet = () => {
+  const { userProfile } = useProgressTracking();
+  const [dietPlan, setDietPlan] = useState<PersonalizedDiet | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userProfile) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastGeneratedDate = localStorage.getItem('dietLastGeneratedDate');
+
+      if (lastGeneratedDate !== today || !localStorage.getItem('dietPlan')) {
+        console.log('Generating new diet plan for today...');
+        const newPlan = generateDietPlan(userProfile);
+        setDietPlan(newPlan);
+        localStorage.setItem('dietPlan', JSON.stringify(newPlan));
+        localStorage.setItem('dietLastGeneratedDate', today);
+      } else {
+        console.log('Loading diet plan from cache...');
+        const cachedPlan = localStorage.getItem('dietPlan');
+        if (cachedPlan) {
+          setDietPlan(JSON.parse(cachedPlan));
+        }
+      }
+      setLoading(false);
+    }
+  }, [userProfile]);
+
+  return { dietPlan, loading };
+};
+
+// --- LOGICA DI CALCOLO E GENERAZIONE --- 
+
+const calculateBMR = (profile: UserProfile): number => {
+  const { current_weight, height, age, gender, body_fat_percentage, metabolic_rate } = profile;
+
+  let bmr;
+  // Katch-McArdle se il grasso corporeo è noto (più accurate)
+  if (body_fat_percentage && body_fat_percentage > 0) {
+    const leanBodyMass = current_weight * (1 - body_fat_percentage / 100);
+    bmr = 370 + (21.6 * leanBodyMass);
+  } else {
+    // Mifflin-St Jeor altrimenti
+    if (gender === 'male') {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age + 5;
+    } else {
+      bmr = 10 * current_weight + 6.25 * height - 5 * age - 161;
+    }
+  }
+
+  // Aggiustamento basato sul metabolismo percepito
+  switch (metabolic_rate) {
+    case 'slow':
+      return bmr * 0.9; // Riduci del 10%
+    case 'fast':
+      return bmr * 1.1; // Aumenta del 10%
+    default:
+      return bmr;
+  }
+};
+
+const calculateTDEE = (bmr: number, activity_level: UserProfile['activity_level']): number => {
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    active: 1.725,
+    very_active: 1.9,
+  };
+  return bmr * activityMultipliers[activity_level];
+};
+
+const getTargetCalories = (tdee: number, goal: UserProfile['goal'], body_type?: UserProfile['body_type']): number => {
+  let adjustment = 0;
+  switch (goal) {
+    case 'weight_loss':
+    case 'targeted_fat_loss':
+      adjustment = -500; // Deficit calorico standard
+      if (body_type === 'endomorph') adjustment -= 150; // Endomorfi rich

@@ -8,25 +8,32 @@ export interface UserProfile {
   name: string;
   email: string;
   gender: 'male' | 'female';
-  current_weight: number | null;
+  weight: number | null;
   age: number | null;
   height: number | null;
-  start_weight: number | null;
-  target_weight: number | null;
-  activity_level: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active' | null;
-  intermittent_fasting: boolean | null;
-  lactose_intolerant: boolean | null;
-  goal: 'weight_loss' | 'muscle_gain' | 'maintenance' | 'targeted_fat_loss' | null;
-  targeted_fat_area?: 'abdominal' | 'gynecomastia' | 'love_handles' | 'thighs' | 'back_fat' | 'overall' | null;
-  workoutDays: number | null;
-  experience: string | null;
-  target_calories?: number;
-  target_protein?: number;
-  target_carbs?: number;
-  target_fats?: number;
-  target_water?: number;
-  body_fat_percentage?: number | null;
-  // Nuovi campi per algoritmi avanzati
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active' | null;
+  goal: 'fat_loss' | 'muscle_gain' | 'maintenance' | null;
+
+  // Nuovi campi per la personalizzazione avanzata
+  problemAreas?: {
+    chest?: boolean; // Ginecomastia
+    abdomen?: boolean; // Grasso addominale/viscerale
+    hips?: boolean; // Fianchi
+  };
+
+  dietaryPreferences?: {
+    vegan?: boolean;
+    vegetarian?: boolean;
+    keto?: boolean;
+    mediterranean?: boolean;
+  };
+
+  metabolicProfile?: {
+    insulinSensitive?: boolean;
+    stressLevel?: 'low' | 'moderate' | 'high';
+    sleepQuality?: 'poor' | 'moderate' | 'good';
+    digestion?: 'poor' | 'moderate' | 'good';
+  };
 }
 
 export interface DailyProgress {
@@ -49,22 +56,28 @@ export function useProgressTracking() {
       name: 'Utente Demo',
       email: 'user@example.com',
       gender: 'male',
-      current_weight: 75,
+      weight: 75,
       age: 30,
       height: 175,
-      start_weight: 75,
-      target_weight: 70,
-      activity_level: 'moderate',
-      intermittent_fasting: false,
-      lactose_intolerant: false,
-      goal: 'weight_loss',
-      workoutDays: 3,
-      experience: 'beginner',
-      target_calories: 2000,
-      target_protein: 150,
-      target_carbs: 150,
-      target_fats: 60,
-      target_water: 2500
+      activityLevel: 'moderate',
+      goal: 'fat_loss',
+      problemAreas: {
+        chest: false,
+        abdomen: true,
+        hips: false,
+      },
+      dietaryPreferences: {
+        vegan: false,
+        vegetarian: false,
+        keto: false,
+        mediterranean: true,
+      },
+      metabolicProfile: {
+        insulinSensitive: false,
+        stressLevel: 'moderate',
+        sleepQuality: 'good',
+        digestion: 'good',
+      }
   });
 
   // Storico di tutti i progressi

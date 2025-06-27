@@ -13,477 +13,316 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from './ui/use-toast';
 
 const UserProfile = () => {
-  const { userProfile, updateProfile, loading } = useProgressTracking();
+  const { userProfile, updateProfile } = useProgressTracking();
 
-  const [profile, setProfile] = useState<Partial<UserProfileType>>({});
-  const [isEditing, setIsEditing] = useState(false);
-  
-  useEffect(() => {
-    if (userProfile) {
-      setProfile(userProfile);
-    }
-  }, [userProfile]);
-  
-  if (loading || !userProfile || Object.keys(profile).length === 0) {
-    return (
-      <Card className="p-6 space-y-4">
-        <div className="flex items-center space-x-4">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-full" />
-      </Card>
-    );
-  }
-  
-  const handleInputChange = (fieldName: keyof UserProfileType, value: string) => {
-    let finalValue: string | number | null = value;
-    if (['age', 'height', 'current_weight', 'target_weight', 'workoutDays', 'body_fat_percentage'].includes(fieldName)) {
-      finalValue = value === '' ? null : parseFloat(value);
-      if (finalValue !== null && isNaN(finalValue)) {
-        finalValue = profile[fieldName] as number | null;
-      }
-    }
-    setProfile(prev => ({ ...prev, [fieldName]: finalValue }));
-  };
-
-
-
-  const handleCheckedChange = (name: keyof UserProfileType, checked: boolean) => {
-    setProfile(prev => ({ ...prev, [name]: checked }));
-  };
-
-  const calculatePersonalizedMetrics = () => {
-    const weight = profile.current_weight || 0;
-    const height = profile.height || 0;
-    const age = profile.age || 0;
-    const targetWeight = profile.target_weight || 0;
-
-    if (weight === 0 || height === 0 || age === 0) {
-      return { bmr: 0, tdee: 0, targetCalories: 0, proteinTarget: 0, fatTarget: 0, carbTarget: 0, waterTarget: 0, deficit: 0, fastingWindow: "N/D", weightLossWeekly: 0, timeToGoal: "N/D" };
-    }
-    
-    const bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-    const activityMultipliers: { [key: string]: number } = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9 };
-    const tdee = bmr * (activityMultipliers[profile.activity_level || 'moderate']);
-    
-    const deficitPercentage: { [key: string]: number } = { 'fat-loss': 0.25, 'muscle-gain': -0.10, 'maintenance': 0, 'recomp': 0.15 };
-    const targetCalories = Math.round(tdee * (1 - (deficitPercentage[profile.goal || 'fat-loss'])));
-    
-    const proteinMultipliers: { [key: string]: number } = { 'fat-loss': 2.8, 'muscle-gain': 3.2, 'maintenance': 2.0, 'recomp': 3.0 };
-    const proteinTarget = Math.round(weight * (proteinMultipliers[profile.goal || 'fat-loss']));
-    
-    const fatTarget = Math.round((targetCalories * 0.28) / 9);
-    const carbTarget = Math.round((targetCalories - (proteinTarget * 4) - (fatTarget * 9)) / 4);
-    const waterTarget = Math.round(weight * 35);
-    
-    const weightToLose = weight - targetWeight;
-    const deficit = Math.round(tdee - targetCalories);
-    const weightLossWeekly = deficit > 0 ? (deficit * 7) / 7700 : 0;
-    const timeToGoal = weightLossWeekly > 0 && weightToLose > 0 ? Math.ceil(weightToLose / weightLossWeekly) : "N/D";
-
-    return { bmr: Math.round(bmr), tdee: Math.round(tdee), targetCalories, proteinTarget, fatTarget, carbTarget, waterTarget, deficit, timeToGoal, weightLossWeekly: Number(weightLossWeekly.toFixed(1)) };
-  };
-
-  const metrics = calculatePersonalizedMetrics();
-
-  const handleSave = () => {
-    
-    // Validazioni con messaggi più specifici
-    if (!profile.age || profile.age < 16 || profile.age > 80) { 
-      toast({ title: 'Errore', description: 'Età non valida (16-80 anni)', variant: 'destructive' }); 
-      return; 
-    }
-    if (!profile.height || profile.height < 140 || profile.height > 220) { 
-      toast({ title: 'Errore', description: 'Altezza non valida (140-220 cm)', variant: 'destructive' }); 
-      return; 
-    }
-    if (!profile.current_weight || profile.current_weight < 40 || profile.current_weight > 200) { 
-      toast({ title: 'Errore', description: 'Peso attuale non valido (40-200 kg)', variant: 'destructive' }); 
-      return; 
-    }
-    if (!profile.target_weight || profile.target_weight < 40 || profile.target_weight > 200) { 
-      toast({ title: 'Errore', description: 'Peso obiettivo non valido (40-200 kg)', variant: 'destructive' }); 
-      return; 
-    }
-    if (!profile.gender) {
-      toast({ title: 'Errore', description: 'Seleziona il sesso', variant: 'destructive' }); 
-      return; 
-    }
-    if (!profile.activity_level) {
-      toast({ title: 'Errore', description: 'Seleziona il livello di attività', variant: 'destructive' }); 
-      return; 
-    }
-    if (!profile.goal) {
-      toast({ title: 'Errore', description: 'Seleziona l\'obiettivo principale', variant: 'destructive' }); 
-      return; 
-    }
-
-    const profileDataToSave: Partial<UserProfileType> = {
-      ...profile,
-      // Assicuriamoci che i campi Select siano inclusi esplicitamente
-      gender: profile.gender,
-      activity_level: profile.activity_level,
-      goal: profile.goal,
-      target_calories: metrics.targetCalories,
-      target_protein: metrics.proteinTarget,
-      target_carbs: metrics.carbTarget,
-      target_fats: metrics.fatTarget,
-      target_water: metrics.waterTarget,
-      start_weight: userProfile.start_weight || profile.current_weight,
-    };
-    
-    updateProfile(profileDataToSave);
-    setIsEditing(false);
-    toast({ title: 'Profilo Salvato', description: 'I tuoi dati sono stati aggiornati con successo!' });
-  };
-
-  const getTotalWeightLoss = () => {
-    if (userProfile && userProfile.start_weight && userProfile.current_weight) {
-      return (userProfile.start_weight - userProfile.current_weight).toFixed(1);
-    }
-    return '0.0';
-  };
-  
   return (
-    <Card className="w-full max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 bg-white shadow-lg rounded-2xl">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white">
-                    <User size={32} />
-                </div>
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">{profile.name}</h1>
-                    <p className="text-sm text-slate-500">{userProfile.email}</p>
-                </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Il Tuo Profilo</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form className="space-y-6">
+          {/* Dati Base */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="weight">Peso (kg)</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  value={userProfile?.weight || ''}
+                  onChange={(e) => updateProfile({ weight: Number(e.target.value) })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="height">Altezza (cm)</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  value={userProfile?.height || ''}
+                  onChange={(e) => updateProfile({ height: Number(e.target.value) })}
+                />
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-                {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                        <Settings className="mr-2 h-4 w-4" /> Modifica
-                    </Button>
-                ) : (
-                    <Button onClick={handleSave} size="sm">
-                        <Save className="mr-2 h-4 w-4" /> Salva
-                    </Button>
-                )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="age">Età</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  value={userProfile?.age || ''}
+                  onChange={(e) => updateProfile({ age: Number(e.target.value) })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="gender">Genere</Label>
+                <Select
+                  value={userProfile?.gender || 'male'}
+                  onValueChange={(value) => updateProfile({ gender: value as 'male' | 'female' })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona genere" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Uomo</SelectItem>
+                    <SelectItem value="female">Donna</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-        </div>
 
-        {!isEditing ? (
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="p-4 bg-slate-50 rounded-lg">
-                    <h3 className="font-semibold text-slate-500 text-sm">Peso Attuale</h3>
-                    <p className="text-2xl font-bold text-slate-800">{userProfile.current_weight} <span className="text-base font-normal">kg</span></p>
-                </div>
-                 <div className="p-4 bg-slate-50 rounded-lg">
-                    <h3 className="font-semibold text-slate-500 text-sm">Perdita Totale</h3>
-                    <p className="text-2xl font-bold text-green-600">{getTotalWeightLoss()} <span className="text-base font-normal">kg</span></p>
-                </div>
-                 <div className="p-4 bg-slate-50 rounded-lg">
-                    <h3 className="font-semibold text-slate-500 text-sm">Calorie Target</h3>
-                     <p className="text-2xl font-bold text-slate-800">{userProfile.target_calories || 0}</p>
-                </div>
-                 <div className="p-4 bg-slate-50 rounded-lg">
-                    <h3 className="font-semibold text-slate-500 text-sm">Acqua Target</h3>
-                     <p className="text-2xl font-bold text-slate-800">{userProfile.target_water || 0} <span className="text-base font-normal">ml</span></p>
-                </div>
+            <div>
+              <Label htmlFor="activityLevel">Livello di Attività</Label>
+              <Select
+                value={userProfile?.activityLevel || 'moderate'}
+                onValueChange={(value) => updateProfile({ activityLevel: value as any })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleziona livello di attività" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sedentary">Sedentario</SelectItem>
+                  <SelectItem value="light">Leggermente Attivo</SelectItem>
+                  <SelectItem value="moderate">Moderatamente Attivo</SelectItem>
+                  <SelectItem value="active">Molto Attivo</SelectItem>
+                  <SelectItem value="very_active">Estremamente Attivo</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-        ) : (
-            <div className="space-y-8">
-                {/* Sezione Dati Personali */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
-                        👤 Dati Personali
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="name">Nome</Label>
-                            <Input 
-                                id="name" 
-                                value={profile.name || ''} 
-                                onChange={(e) => handleInputChange('name', e.target.value)}
-                                className="mt-1"
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="age">Età (anni)</Label>
-                            <Input 
-                                id="age" 
-                                type="number" 
-                                value={profile.age || ''} 
-                                onChange={(e) => handleInputChange('age', e.target.value)}
-                                className="mt-1"
-                            />
-                        </div>
-                        <div>
-                            <Label>Sesso</Label>
-                            <div className="flex space-x-2 mt-1">
-                                <Button
-                                    type="button"
-                                    variant={profile.gender === 'male' ? 'default' : 'outline'}
-                                    className="flex-1"
-                                    onClick={() => setProfile(prev => ({ ...prev, gender: 'male' }))}
-                                >
-                                    👨 Maschio
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant={profile.gender === 'female' ? 'default' : 'outline'}
-                                    className="flex-1"
-                                    onClick={() => setProfile(prev => ({ ...prev, gender: 'female' }))}
-                                >
-                                    👩 Femmina
-                                </Button>
-                            </div>
-                        </div>
-                        <div>
-                            <Label htmlFor="height">Altezza (cm)</Label>
-                            <Input 
-                                id="height" 
-                                type="number" 
-                                value={profile.height || ''} 
-                                onChange={(e) => handleInputChange('height', e.target.value)}
-                                className="mt-1"
-                            />
-                        </div>
-                    </div>
-                </div>
 
-                {/* Sezione Peso */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
-                        ⚖️ Peso e Composizione
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <Label htmlFor="current_weight">Peso Attuale (kg)</Label>
-                            <Input 
-                                id="current_weight" 
-                                type="number" 
-                                step="0.1" 
-                                value={profile.current_weight || ''} 
-                                onChange={(e) => handleInputChange('current_weight', e.target.value)}
-                                className="mt-1"
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="target_weight">Peso Obiettivo (kg)</Label>
-                            <Input 
-                                id="target_weight" 
-                                type="number" 
-                                step="0.1" 
-                                value={profile.target_weight || ''} 
-                                onChange={(e) => handleInputChange('target_weight', e.target.value)}
-                                className="mt-1"
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="body_fat_percentage">% Grasso Corporeo</Label>
-                            <Input 
-                                id="body_fat_percentage" 
-                                type="number" 
-                                step="0.1" 
-                                placeholder="es. 15.5 (opzionale)" 
-                                value={profile.body_fat_percentage || ''} 
-                                onChange={(e) => handleInputChange('body_fat_percentage', e.target.value)}
-                                className="mt-1"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Sezione Obiettivi */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
-                        🎯 Obiettivi
-                    </h3>
-                    <div>
-                        <Label className="text-base font-medium">Obiettivo Principale</Label>
-                        <div className="grid grid-cols-2 gap-3 mt-2">
-                            {[
-                                { value: 'weight_loss', label: '📉 Perdita Peso', desc: 'Dimagrimento generale' },
-                                { value: 'targeted_fat_loss', label: '🎯 Grasso Localizzato', desc: 'Focus anti-infiammatorio' },
-                                { value: 'muscle_gain', label: '💪 Aumento Muscolare', desc: 'Crescita massa magra' },
-                                { value: 'maintenance', label: '⚖️ Mantenimento', desc: 'Peso stabile' }
-                            ].map((option) => (
-                                <Button
-                                    key={option.value}
-                                    type="button"
-                                    variant={profile.goal === option.value ? 'default' : 'outline'}
-                                    className="h-auto p-3 flex flex-col items-start text-left"
-                                    onClick={() => setProfile(prev => ({ ...prev, goal: option.value as any }))}
-                                >
-                                    <span className="font-medium text-sm">{option.label}</span>
-                                    <span className="text-xs text-muted-foreground mt-1">{option.desc}</span>
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Selezione Tipo di Grasso Localizzato */}
-                    {profile.goal === 'targeted_fat_loss' && (
-                        <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
-                            <Label className="text-base font-medium text-orange-800 mb-3 block">
-                                🎯 Tipo di Grasso Localizzato
-                            </Label>
-                            <div className="grid grid-cols-1 gap-3">
-                                {[
-                                    { 
-                                        value: 'abdominal', 
-                                        label: '🔥 Grasso Addominale', 
-                                        desc: 'Pancia, grasso viscerale, circonferenza vita',
-                                        icon: '🔥'
-                                    },
-                                    { 
-                                        value: 'gynecomastia', 
-                                        label: '💪 Ginecomastia', 
-                                        desc: 'Tessuto mammario maschile, petto',
-                                        icon: '💪'
-                                    },
-                                    { 
-                                        value: 'love_handles', 
-                                        label: '⚡ Maniglie dell\'Amore', 
-                                        desc: 'Fianchi, grasso laterale, obliqui',
-                                        icon: '⚡'
-                                    },
-                                    { 
-                                        value: 'thighs', 
-                                        label: '🦵 Cosce e Glutei', 
-                                        desc: 'Grasso femmorale, cellulite, parte inferiore',
-                                        icon: '🦵'
-                                    },
-                                    { 
-                                        value: 'back_fat', 
-                                        label: '🎯 Grasso Dorsale', 
-                                        desc: 'Schiena, sotto le scapole, braccia posteriori',
-                                        icon: '🎯'
-                                    },
-                                    { 
-                                        value: 'overall', 
-                                        label: '🌟 Combinato', 
-                                        desc: 'Approccio multi-area, anti-infiammatorio generale',
-                                        icon: '🌟'
-                                    }
-                                ].map((fatType) => (
-                                    <Button
-                                        key={fatType.value}
-                                        type="button"
-                                        variant={profile.targeted_fat_area === fatType.value ? 'default' : 'outline'}
-                                        className="h-auto p-3 justify-start text-left hover:bg-orange-100"
-                                        onClick={() => setProfile(prev => ({ ...prev, targeted_fat_area: fatType.value as any }))}
-                                    >
-                                        <div className="flex items-start space-x-3">
-                                            <span className="text-lg">{fatType.icon}</span>
-                                            <div className="flex flex-col items-start">
-                                                <span className="font-medium text-sm">{fatType.label}</span>
-                                                <span className="text-xs text-muted-foreground mt-1">{fatType.desc}</span>
-                                            </div>
-                                        </div>
-                                    </Button>
-                                ))}
-                            </div>
-                            
-                            {profile.targeted_fat_area && (
-                                <div className="mt-3 p-3 bg-white rounded-lg border border-orange-300">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                        <span className="text-orange-600 font-medium">✨ Piano Personalizzato:</span>
-                                    </div>
-                                    <p className="text-sm text-slate-600">
-                                        {profile.targeted_fat_area === 'abdominal' && 
-                                            "Protocollo anti-infiammatorio con focus su grasso viscerale, insulino-resistenza e cortisolo. Alimenti termogenici e HIIT specifico."
-                                        }
-                                        {profile.targeted_fat_area === 'gynecomastia' && 
-                                            "Strategia anti-aromatasi con inibitori naturali di estrogeni, DIM, tè verde e allenamento petto specifico."
-                                        }
-                                        {profile.targeted_fat_area === 'love_handles' && 
-                                            "Approccio multi-angolare con rotazioni, plank laterali e nutrizione per ridurre grasso ostinato dei fianchi."
-                                        }
-                                        {profile.targeted_fat_area === 'thighs' && 
-                                            "Piano femminile-specifico con focus su circolazione, drenaggio linfatico e alimenti anti-cellulite."
-                                        }
-                                        {profile.targeted_fat_area === 'back_fat' && 
-                                            "Combinazione di allenamento dorsale, postura e nutrizione anti-infiammatoria per grasso inter-scapolare."
-                                        }
-                                        {profile.targeted_fat_area === 'overall' && 
-                                            "Strategia sistemica che combina tutti gli approcci per una riduzione del grasso corporeo generale ma mirata."
-                                        }
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                {/* Sezione Attività */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
-                        🏃‍♂️ Attività Fisica
-                    </h3>
-                    <div>
-                        <Label className="text-base font-medium">Livello di Attività</Label>
-                        <div className="grid grid-cols-1 gap-2 mt-2">
-                            {[
-                                { value: 'sedentary', label: '🪑 Sedentario', desc: 'Lavoro da ufficio, poca attività' },
-                                { value: 'light', label: '🚶‍♂️ Leggero', desc: 'Esercizio leggero 1-2 volte/settimana' },
-                                { value: 'moderate', label: '🏃‍♂️ Moderato', desc: 'Esercizio moderato 3-5 volte/settimana' },
-                                { value: 'active', label: '💪 Attivo', desc: 'Esercizio intenso 6-7 volte/settimana' },
-                                { value: 'very_active', label: '🔥 Molto Attivo', desc: 'Lavoro fisico + allenamento quotidiano' }
-                            ].map((option) => (
-                                <Button
-                                    key={option.value}
-                                    type="button"
-                                    variant={profile.activity_level === option.value ? 'default' : 'outline'}
-                                    className="h-auto p-3 justify-start text-left"
-                                    onClick={() => setProfile(prev => ({ ...prev, activity_level: option.value as any }))}
-                                >
-                                    <div className="flex flex-col items-start">
-                                        <span className="font-medium text-sm">{option.label}</span>
-                                        <span className="text-xs text-muted-foreground mt-1">{option.desc}</span>
-                                    </div>
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Sezione Preferenze */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-slate-800 border-b border-slate-200 pb-2">
-                        ⚙️ Preferenze Alimentari
-                    </h3>
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                            <div>
-                                <Label htmlFor="intermittent_fasting" className="font-medium">🕐 Digiuno Intermittente (16/8)</Label>
-                                <p className="text-sm text-muted-foreground">Finestra alimentare di 8 ore</p>
-                            </div>
-                            <Switch 
-                                id="intermittent_fasting" 
-                                checked={profile.intermittent_fasting || false} 
-                                onCheckedChange={(c) => handleCheckedChange('intermittent_fasting', c)} 
-                            />
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                            <div>
-                                <Label htmlFor="lactose_intolerant" className="font-medium">🥛 Intolleranza al Lattosio</Label>
-                                <p className="text-sm text-muted-foreground">Evita prodotti lattiero-caseari</p>
-                            </div>
-                            <Switch 
-                                id="lactose_intolerant" 
-                                checked={profile.lactose_intolerant || false} 
-                                onCheckedChange={(c) => handleCheckedChange('lactose_intolerant', c)} 
-                            />
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <Label htmlFor="goal">Obiettivo</Label>
+              <Select
+                value={userProfile?.goal || 'fat_loss'}
+                onValueChange={(value) => updateProfile({ goal: value as any })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleziona obiettivo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fat_loss">Perdita di Grasso</SelectItem>
+                  <SelectItem value="muscle_gain">Aumento Massa Muscolare</SelectItem>
+                  <SelectItem value="maintenance">Mantenimento</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-        )}
+          </div>
+
+          {/* Aree Problematiche */}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Aree Problematiche</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="chest"
+                  checked={userProfile?.problemAreas?.chest}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      problemAreas: { 
+                        ...userProfile?.problemAreas, 
+                        chest: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="chest">Petto (Ginecomastia)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="abdomen"
+                  checked={userProfile?.problemAreas?.abdomen}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      problemAreas: { 
+                        ...userProfile?.problemAreas, 
+                        abdomen: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="abdomen">Addome (Grasso Viscerale)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="hips"
+                  checked={userProfile?.problemAreas?.hips}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      problemAreas: { 
+                        ...userProfile?.problemAreas, 
+                        hips: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="hips">Fianchi</Label>
+              </div>
+            </div>
+          </div>
+
+          {/* Preferenze Alimentari */}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Preferenze Alimentari</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="vegan"
+                  checked={userProfile?.dietaryPreferences?.vegan}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      dietaryPreferences: { 
+                        ...userProfile?.dietaryPreferences, 
+                        vegan: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="vegan">Vegano</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="vegetarian"
+                  checked={userProfile?.dietaryPreferences?.vegetarian}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      dietaryPreferences: { 
+                        ...userProfile?.dietaryPreferences, 
+                        vegetarian: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="vegetarian">Vegetariano</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="keto"
+                  checked={userProfile?.dietaryPreferences?.keto}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      dietaryPreferences: { 
+                        ...userProfile?.dietaryPreferences, 
+                        keto: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="keto">Chetogenico</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="mediterranean"
+                  checked={userProfile?.dietaryPreferences?.mediterranean}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      dietaryPreferences: { 
+                        ...userProfile?.dietaryPreferences, 
+                        mediterranean: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="mediterranean">Mediterraneo</Label>
+              </div>
+            </div>
+          </div>
+
+          {/* Profilo Metabolico */}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Profilo Metabolico</h3>
+            <div className="grid gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="insulinSensitive"
+                  checked={userProfile?.metabolicProfile?.insulinSensitive}
+                  onCheckedChange={(checked) => 
+                    updateProfile({ 
+                      metabolicProfile: { 
+                        ...userProfile?.metabolicProfile, 
+                        insulinSensitive: checked as boolean 
+                      } 
+                    })
+                  }
+                />
+                <Label htmlFor="insulinSensitive">Sensibile all'Insulina</Label>
+              </div>
+
+              <div>
+                <Label htmlFor="stressLevel">Livello di Stress</Label>
+                <Select
+                  value={userProfile?.metabolicProfile?.stressLevel || 'moderate'}
+                  onValueChange={(value) => 
+                    updateProfile({ 
+                      metabolicProfile: { 
+                        ...userProfile?.metabolicProfile, 
+                        stressLevel: value as 'low' | 'moderate' | 'high' 
+                      } 
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona livello di stress" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Basso</SelectItem>
+                    <SelectItem value="moderate">Moderato</SelectItem>
+                    <SelectItem value="high">Alto</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="sleepQuality">Qualità del Sonno</Label>
+                <Select
+                  value={userProfile?.metabolicProfile?.sleepQuality || 'moderate'}
+                  onValueChange={(value) => 
+                    updateProfile({ 
+                      metabolicProfile: { 
+                        ...userProfile?.metabolicProfile, 
+                        sleepQuality: value as 'poor' | 'moderate' | 'good' 
+                      } 
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona qualità del sonno" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="poor">Scarsa</SelectItem>
+                    <SelectItem value="moderate">Moderata</SelectItem>
+                    <SelectItem value="good">Buona</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="digestion">Digestione</Label>
+                <Select
+                  value={userProfile?.metabolicProfile?.digestion || 'moderate'}
+                  onValueChange={(value) => 
+                    updateProfile({ 
+                      metabolicProfile: { 
+                        ...userProfile?.metabolicProfile, 
+                        digestion: value as 'poor' | 'moderate' | 'good' 
+                      } 
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona qualità della digestione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="poor">Scarsa</SelectItem>
+                    <SelectItem value="moderate">Moderata</SelectItem>
+                    <SelectItem value="good">Buona</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </CardContent>
     </Card>
   );
 };
